@@ -1,0 +1,313 @@
+import { Pencil, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
+import { getStaffList, toggleStaffActive } from "../../api/usersService";
+
+export default function AdminStaff() {
+  const [staff, setStaff] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [filter, setFilter] = useState({
+    role: "",
+    isActive: null,
+  });
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Fetch staff list khi page, filter, hoặc searchQuery thay đổi
+  useEffect(() => {
+    fetchStaff();
+  }, [page, filter]);
+
+  const fetchStaff = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await getStaffList(
+        page,
+        pageSize,
+        filter.role || null,
+        filter.isActive,
+      );
+
+      let filteredStaff = response.users;
+
+      // Client-side filter by search query
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        filteredStaff = filteredStaff.filter(
+          (member) =>
+            member.fullname?.toLowerCase().includes(query) ||
+            member.username?.toLowerCase().includes(query) ||
+            member.phone?.includes(query),
+        );
+      }
+
+      setStaff(filteredStaff);
+      setTotal(response.total);
+      setTotalPages(response.totalPages);
+    } catch (err) {
+      console.error("Error fetching staff:", err);
+      setError("Lỗi tải danh sách nhân viên");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFilterChange = (filterName, value) => {
+    setFilter((prev) => ({
+      ...prev,
+      [filterName]: value === "" ? null : value,
+    }));
+    setPage(1); // Reset to first page
+  };
+
+  const handleToggleActive = async (id) => {
+    try {
+      await toggleStaffActive(id);
+      // Refresh list
+      fetchStaff();
+    } catch (err) {
+      setError("Lỗi cập nhật trạng thái nhân viên");
+    }
+  };
+
+  const handleSearch = (value) => {
+    setSearchQuery(value);
+    setPage(1);
+  };
+
+  const handlePreviousPage = () => {
+    setPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  const handlePageClick = (pageNum) => {
+    setPage(pageNum);
+  };
+
+  // Tính số mục hiển thị
+  const startIndex = (page - 1) * pageSize + 1;
+  const endIndex = Math.min(page * pageSize, total);
+  const displayCount = staff.length > 0 ? `${startIndex} - ${endIndex}` : "0";
+
+  // Generate page numbers to display
+  const pageNumbers = [];
+  const maxPagesToShow = 5;
+  let startPage = Math.max(1, page - Math.floor(maxPagesToShow / 2));
+  let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+  if (endPage - startPage + 1 < maxPagesToShow) {
+    startPage = Math.max(1, endPage - maxPagesToShow + 1);
+  }
+  for (let i = startPage; i <= endPage; i++) {
+    pageNumbers.push(i);
+  }
+
+  return (
+    <div className="p-8 space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Quản lý Nhân sự</h2>
+        </div>
+
+        <NavLink
+          to="/admin/staff/create"
+          className="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 text-sm font-medium"
+        >
+          Thêm nhân viên mới
+        </NavLink>
+      </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-100 border border-red-300 rounded-lg p-4 text-red-700 text-sm">
+          {error}
+        </div>
+      )}
+
+      {/* Filters */}
+      <div className="bg-white border border-stone-200 rounded-xl p-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="md:col-span-2 relative">
+          <input
+            type="text"
+            placeholder="Tìm theo tên nhân viên..."
+            value={searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="w-full border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-red-500"
+          />
+        </div>
+
+        <select
+          value={filter.role}
+          onChange={(e) => handleFilterChange("role", e.target.value)}
+          className="border rounded-lg px-4 py-2"
+        >
+          <option value="">Tất cả vai trò</option>
+          <option value="RECEPTIONIST">Lễ Tân</option>
+          <option value="TECHNICIAN">Kỹ Thuật Viên</option>
+        </select>
+
+        <select
+          value={
+            filter.isActive === null
+              ? ""
+              : filter.isActive
+                ? "active"
+                : "inactive"
+          }
+          onChange={(e) => {
+            if (e.target.value === "") {
+              handleFilterChange("isActive", "");
+            } else {
+              handleFilterChange("isActive", e.target.value === "active");
+            }
+          }}
+          className="border rounded-lg px-4 py-2"
+        >
+          <option value="">Tất cả trạng thái</option>
+          <option value="active">Đang làm việc</option>
+          <option value="inactive">Vô hiệu hóa</option>
+        </select>
+      </div>
+
+      {/* Table */}
+      <div className="bg-white border border-stone-200 rounded-xl overflow-hidden">
+        <div className="overflow-x-auto">
+          {loading ? (
+            <div className="p-8 text-center text-stone-500">
+              Đang tải dữ liệu...
+            </div>
+          ) : staff.length === 0 ? (
+            <div className="p-8 text-center text-stone-500">
+              Không tìm thấy nhân viên nào
+            </div>
+          ) : (
+            <table className="w-full text-sm">
+              <thead className="bg-stone-50 text-left">
+                <tr>
+                  <th className="px-4 py-3">Nhân viên</th>
+                  <th className="px-4 py-3">Chức vụ</th>
+                  <th className="px-4 py-3">Liên hệ</th>
+                  <th className="px-4 py-3">Trạng thái</th>
+                  <th className="px-4 py-3 text-right">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                {staff.map((member) => (
+                  <tr
+                    key={member.id}
+                    className="border-t hover:bg-stone-50 transition"
+                  >
+                    <td className="px-4 py-4">
+                      <div>
+                        <p className="font-semibold">{member.fullname}</p>
+                        <p className="text-xs text-stone-500">
+                          @{member.username}
+                        </p>
+                      </div>
+                    </td>
+
+                    <td className="px-4 py-4">
+                      <p className="font-medium">
+                        {member.role?.roleName === "RECEPTIONIST"
+                          ? "Lễ Tân"
+                          : member.role?.roleName === "TECHNICIAN"
+                            ? "Kỹ Thuật Viên"
+                            : member.role?.roleName}
+                      </p>
+                    </td>
+
+                    <td className="px-4 py-4">
+                      <p>{member.phone || "Chưa cập nhật"}</p>
+                      <p className="text-xs text-stone-500">
+                        {member.email || "Chưa cập nhật"}
+                      </p>
+                    </td>
+
+                    <td className="px-4 py-4">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          member.isActive
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {member.isActive ? "Đang làm việc" : "Vô hiệu hóa"}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-4">
+                      <div className="flex justify-end gap-2">
+                        <button
+                          type="button"
+                          className="p-2 hover:cursor-pointer hover:bg-zinc-100 rounded-lg"
+                          title="Chỉnh sửa nhân viên"
+                        >
+                          <Pencil className="w-4 h-4 text-zinc-500" />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleToggleActive(member.id)}
+                          className="inline-flex hover:cursor-pointer h-9 w-9 items-center justify-center rounded-lg border border-red-200 text-red-500 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                          title="Ngưng hoạt động"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        {/* Pagination */}
+        <div className="border-t px-4 py-3 flex justify-between items-center text-sm">
+          <p className="text-stone-500">
+            Hiển thị {displayCount} trong {total} mục
+          </p>
+
+          <div className="flex gap-2">
+            <button
+              onClick={handlePreviousPage}
+              disabled={page === 1}
+              className="px-3 py-1 border rounded hover:bg-stone-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              ← Trước
+            </button>
+
+            {pageNumbers.map((pageNum) => (
+              <button
+                key={pageNum}
+                onClick={() => handlePageClick(pageNum)}
+                className={`px-3 py-1 rounded ${
+                  page === pageNum
+                    ? "bg-red-600 text-white"
+                    : "border hover:bg-stone-100"
+                }`}
+              >
+                {pageNum}
+              </button>
+            ))}
+
+            <button
+              onClick={handleNextPage}
+              disabled={page === totalPages}
+              className="px-3 py-1 border rounded hover:bg-stone-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Sau →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,46 @@
+import axios from "axios";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
+
+const api = axios.create({
+  baseURL: API_URL,
+  timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Interceptor: tự động gắn token nếu có
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("access_token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  console.log(`📡 ${config.method.toUpperCase()} ${config.url}`);
+  return config;
+});
+
+// Interceptor: xử lý lỗi 401 tập trung
+api.interceptors.response.use(
+  (response) => {
+    console.log(`✅ Response from ${response.config.url}:`, response.status);
+    return response;
+  },
+  (error) => {
+    console.error("❌ API Error:", {
+      url: error.config?.url,
+      status: error.response?.status,
+      message: error.message,
+      data: error.response?.data,
+    });
+
+    // if (error.response?.status === 401) {
+    //   localStorage.removeItem('access_token');
+    //   window.location.href = '/admin/login';
+    // }
+    return Promise.reject(error);
+  },
+);
+
+export default api;
