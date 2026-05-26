@@ -101,7 +101,7 @@ export default function AdminCombos() {
     };
 
     fetchCombos();
-  }, [notify]);
+  }, []);
 
   const handleDeleteCombo = async (combo) => {
     const result = await Swal.fire({
@@ -148,7 +148,10 @@ export default function AdminCombos() {
   ];
 
   const totalPages = Math.ceil(combos.length / PAGE_SIZE);
-  const paginatedCombos = combos.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  const paginatedCombos = combos.slice(
+    page * PAGE_SIZE,
+    (page + 1) * PAGE_SIZE,
+  );
 
   return (
     <div className="min-h-screen bg-zinc-50 flex font-sans">
@@ -329,7 +332,8 @@ export default function AdminCombos() {
             <div className="flex items-center justify-between border-t px-6 py-3 text-sm">
               <span className="text-zinc-500">
                 Hiển thị {combos.length === 0 ? 0 : page * PAGE_SIZE + 1}–
-                {Math.min((page + 1) * PAGE_SIZE, combos.length)} trên {combos.length} combo
+                {Math.min((page + 1) * PAGE_SIZE, combos.length)} trên{" "}
+                {combos.length} combo
               </span>
               <Pagination
                 pageCount={totalPages}
