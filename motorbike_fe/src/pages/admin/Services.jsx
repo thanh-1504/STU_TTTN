@@ -1,11 +1,4 @@
-import {
-  ChevronLeft,
-  ChevronRight,
-  Eye,
-  EyeOff,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { Eye, EyeOff, Loader, Pencil, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
@@ -17,8 +10,9 @@ import {
   NotificationContainer,
   useNotification,
 } from "../../components/Notification";
+import Pagination from "../../components/Pagination";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 5;
 
 const formatPrice = (value) => `${Number(value || 0).toLocaleString("vi-VN")}d`;
 
@@ -31,7 +25,7 @@ export default function AdminServices() {
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   // Confirm delete dialog
   const [confirmDelete, setConfirmDelete] = useState(null); // service object to delete
   // Warning modal (wasDeactivated)
@@ -81,11 +75,11 @@ export default function AdminServices() {
   );
 
   useEffect(() => {
-    setPage((prev) => Math.min(prev, totalPages));
+    setPage((prev) => Math.min(prev, totalPages - 1));
   }, [totalPages]);
 
   const paginatedServices = useMemo(() => {
-    const start = (page - 1) * PAGE_SIZE;
+    const start = page * PAGE_SIZE;
     return filteredServices.slice(start, start + PAGE_SIZE);
   }, [filteredServices, page]);
 
@@ -146,9 +140,8 @@ export default function AdminServices() {
     }
   };
 
-  const startIndex =
-    filteredServices.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
-  const endIndex = Math.min(page * PAGE_SIZE, filteredServices.length);
+  const startIndex = filteredServices.length === 0 ? 0 : page * PAGE_SIZE + 1;
+  const endIndex = Math.min((page + 1) * PAGE_SIZE, filteredServices.length);
 
   return (
     <div className="min-h-screen bg-stone-50 p-6 md:p-8 text-stone-800">
@@ -219,8 +212,9 @@ export default function AdminServices() {
         <div className="overflow-hidden rounded-xl border bg-white">
           <div className="overflow-x-auto">
             {loading ? (
-              <div className="p-8 text-center text-sm text-stone-500">
-                Đang tải dữ liệu...
+              <div className="p-12 flex items-center justify-center gap-2 text-sm text-stone-500">
+                <Loader className="animate-spin" size={18} />
+                <span>Đang tải dữ liệu...</span>
               </div>
             ) : paginatedServices.length === 0 ? (
               <div className="p-8 text-center text-sm text-stone-500">
@@ -343,27 +337,15 @@ export default function AdminServices() {
 
           <div className="flex items-center justify-between border-t px-4 py-3 text-sm">
             <p className="text-stone-500">
-              Hien thi {startIndex}-{endIndex} trong tong so{" "}
-              {filteredServices.length} dich vu
+              Hiển thị {startIndex}–{endIndex} trong tổng số{" "}
+              {filteredServices.length} dịch vụ
             </p>
 
-            <div className="flex gap-2">
-              <PageBtn
-                icon={<ChevronLeft size={16} />}
-                disabled={page === 1}
-                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-              />
-              <span className="inline-flex h-8 min-w-8 items-center justify-center rounded border border-red-600 bg-red-600 px-3 text-white">
-                {page}
-              </span>
-              <PageBtn
-                icon={<ChevronRight size={16} />}
-                disabled={page === totalPages}
-                onClick={() =>
-                  setPage((prev) => Math.min(prev + 1, totalPages))
-                }
-              />
-            </div>
+            <Pagination
+              pageCount={totalPages}
+              currentPage={page}
+              onPageChange={({ selected }) => setPage(selected)}
+            />
           </div>
         </div>
       </div>
@@ -435,18 +417,5 @@ export default function AdminServices() {
         </div>
       )}
     </div>
-  );
-}
-
-function PageBtn({ disabled, icon, onClick }) {
-  return (
-    <button
-      type="button"
-      disabled={disabled}
-      onClick={onClick}
-      className="inline-flex h-8 w-8 items-center justify-center rounded border border-stone-300 hover:bg-stone-100 disabled:cursor-not-allowed disabled:opacity-50"
-    >
-      {icon}
-    </button>
   );
 }

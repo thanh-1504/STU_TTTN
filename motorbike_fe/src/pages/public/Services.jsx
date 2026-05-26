@@ -400,70 +400,88 @@ function Services() {
       </main>
 
       {/* ── Footer ── */}
-      <footer className="bg-gray-100 border-t border-gray-300 mt-12 pt-10 pb-6">
-        <div className="max-w-[1200px] mx-auto px-[15px]">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Col 1 */}
-            <div data-purpose="footer-col-1">
-              <h4 className="font-bold text-sm mb-4 uppercase">Hỗ trợ khách hàng</h4>
-              <ul className="text-xs space-y-2 text-gray-600">
-                <li><a className="hover:text-[#D73417]" href="#">Hướng dẫn mua hàng</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Phương thức thanh toán</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Chính sách bảo mật</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Chính sách đổi trả</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Câu hỏi thường gặp</a></li>
-              </ul>
-            </div>
-
-            {/* Col 2 */}
-            <div data-purpose="footer-col-2">
-              <h4 className="font-bold text-sm mb-4 uppercase">Về Shop2banh</h4>
-              <ul className="text-xs space-y-2 text-gray-600">
-                <li><a className="hover:text-[#D73417]" href="#">Giới thiệu hệ thống</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Tuyển dụng</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Tin tức xe máy</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Liên hệ quảng cáo</a></li>
-              </ul>
-            </div>
-
-            {/* Col 3 */}
-            <div data-purpose="footer-col-3">
-              <h4 className="font-bold text-sm mb-4 uppercase">Sản phẩm nổi bật</h4>
-              <ul className="text-xs space-y-2 text-gray-600">
-                <li><a className="hover:text-[#D73417]" href="#">Đồ chơi xe Exciter</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Đồ chơi xe Winner</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Đồ chơi xe Vario/Click</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Phụ tùng xe Honda</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Phụ tùng xe Yamaha</a></li>
-              </ul>
-            </div>
-
-            {/* Col 4 */}
-            <div data-purpose="footer-col-4">
-              <h4 className="font-bold text-sm mb-4 uppercase">Kết nối với chúng tôi</h4>
-              <div className="flex space-x-4 mb-4">
-                <a className="bg-blue-600 text-white p-2 rounded-full" href="#">
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
-                  </svg>
-                </a>
-                <a className="bg-red-600 text-white p-2 rounded-full" href="#">
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
-                  </svg>
-                </a>
+     <footer className="bg-gray-900 text-gray-400 pt-12 pb-6">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+            <div>
+              <div className="text-xl font-black text-white uppercase mb-3">
+                Shop2banh
               </div>
-              <div className="text-xs text-gray-600">
-                <p className="font-bold">CÔNG TY TNHH TRUYỀN THÔNG SỐ</p>
-                <p>📍 Trụ sở: 309 Vườn Lài, P. Phú Thọ Hòa, Q. Tân Phú, TP.HCM</p>
-                <p>📞 Điện thoại: 0938.82.02.02</p>
-                <p>📧 Email: info@shop2banh.vn</p>
-              </div>
+              <p className="text-sm leading-relaxed mb-4">
+                Hệ thống dịch vụ xe máy chuyên nghiệp, uy tín tại TP.HCM.
+              </p>
             </div>
-          </div>
 
-          <div className="mt-10 pt-6 border-t border-gray-200 text-center text-[10px] text-gray-500 uppercase tracking-widest">
-            Copyright © 2023 Shop2banh.vn. All rights reserved.
+            <div>
+              <h4 className="text-white font-bold text-sm mb-4 uppercase">
+                Dịch vụ
+              </h4>
+              <ul className="space-y-2 text-sm">
+                {[
+                  "Bảo dưỡng định kỳ",
+                  "Thay nhớt",
+                  "Rửa xe",
+                  "Sửa chữa điện",
+                  "Thay lốp",
+                ].map((item) => (
+                  <li key={item}>
+                    <a
+                      href="/services"
+                      className="hover:text-red-400 transition-colors"
+                    >
+                      {item}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-white font-bold text-sm mb-4 uppercase">
+                Hỗ trợ
+              </h4>
+              <ul className="space-y-2 text-sm">
+                {[
+                  "Hướng dẫn đặt lịch",
+                  "Chính sách bảo hành",
+                  "Câu hỏi thường gặp",
+                  "Liên hệ",
+                ].map((item) => (
+                  <li key={item}>
+                    <a
+                      href="#"
+                      className="hover:text-red-400 transition-colors"
+                    >
+                      {item}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-white font-bold text-sm mb-4 uppercase">
+                Liên hệ
+              </h4>
+              <ul className="space-y-2 text-sm">
+                <li>309 Vườn Lài, P. Phú Thọ Hòa, Q. Tân Phú, TP.HCM</li>
+                <li>
+                  SĐT:{" "}
+                  <a href="tel:0938820202" className="hover:text-red-400">
+                    0938.82.02.02
+                  </a>
+                </li>
+                <li>
+                  Email:{" "}
+                  <a
+                    href="mailto:info@shop2banh.vn"
+                    className="hover:text-red-400"
+                  >
+                    shop2banh@gmail.com
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </footer>

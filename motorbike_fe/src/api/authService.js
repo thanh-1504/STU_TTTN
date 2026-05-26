@@ -84,26 +84,39 @@ export const getCustomerMe = async () => {
  * Logout - xóa token khỏi localStorage
  */
 export const logout = () => {
-  localStorage.removeItem("access_token");
-  localStorage.removeItem("user_type"); // 'staff' hoặc 'customer'
+  localStorage.removeItem("admin_token");
+  localStorage.removeItem("customer_token");
+  localStorage.removeItem("access_token"); // legacy cleanup
+  localStorage.removeItem("user_type");
   localStorage.removeItem("user_info");
 };
 
 /**
  * Lấy token từ localStorage
+ * @param {'staff'|'customer'} [userType] - optional, defaults to reading user_type
  * @returns {string|null}
  */
-export const getToken = () => {
-  return localStorage.getItem("access_token");
+export const getToken = (userType) => {
+  const type = userType || localStorage.getItem("user_type");
+  if (type === "staff") return localStorage.getItem("admin_token");
+  if (type === "customer") return localStorage.getItem("customer_token");
+  return localStorage.getItem("access_token"); // legacy fallback
 };
 
 /**
  * Lưu token và thông tin người dùng
  * @param {string} token
- * @param {string} userType - 'staff' hoặc 'customer'
+ * @param {'staff'|'customer'} userType
  * @param {object} userInfo
  */
 export const saveAuthData = (token, userType, userInfo) => {
+  // Store in the correct per-role key so tokens never collide
+  if (userType === "staff") {
+    localStorage.setItem("admin_token", token);
+  } else {
+    localStorage.setItem("customer_token", token);
+  }
+  // Keep a legacy key for any code that still reads access_token directly
   localStorage.setItem("access_token", token);
   localStorage.setItem("user_type", userType);
   localStorage.setItem("user_info", JSON.stringify(userInfo));

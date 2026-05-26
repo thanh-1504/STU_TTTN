@@ -8,7 +8,10 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [fieldErrors, setFieldErrors] = useState({ username: "", password: "" });
+  const [fieldErrors, setFieldErrors] = useState({
+    username: "",
+    password: "",
+  });
   const [form, setForm] = useState({
     username: "",
     password: "",
@@ -59,8 +62,15 @@ export default function AdminLogin() {
       console.log("💾 Auth data saved");
 
       // Redirect đến dashboard
-      console.log("🔄 Redirecting to /admin");
-      navigate("/admin");
+      const role = data.user.role;
+
+      if (role === "ADMIN") {
+        navigate("/admin");
+      } else if (role === "RECEPTIONIST") {
+        navigate("/receptionist");
+      } else if (role === "TECHNICIAN") {
+        navigate("/technician");
+      }
     } catch (err) {
       console.error("💥 Error in handleSubmit:", err);
       const message =
@@ -122,7 +132,9 @@ export default function AdminLogin() {
                 }`}
               />
               {fieldErrors.username && (
-                <p className="mt-1 text-xs text-red-600">{fieldErrors.username}</p>
+                <p className="mt-1 text-xs text-red-600">
+                  {fieldErrors.username}
+                </p>
               )}
             </div>
 
@@ -157,7 +169,9 @@ export default function AdminLogin() {
                 </button>
               </div>
               {fieldErrors.password && (
-                <p className="mt-1 text-xs text-red-600">{fieldErrors.password}</p>
+                <p className="mt-1 text-xs text-red-600">
+                  {fieldErrors.password}
+                </p>
               )}
             </div>
 

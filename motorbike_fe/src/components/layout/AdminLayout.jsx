@@ -1,4 +1,6 @@
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import { logout } from "../../api/authService";
 
 const adminNavItems = [
   { to: "/admin", label: "📊 Dashboard", end: true },
@@ -10,19 +12,36 @@ const adminNavItems = [
   { to: "/admin/vouchers", label: "🎟️ Voucher" },
   { to: "/admin/staff", label: "👤 Nhân viên" },
   { to: "/admin/blog", label: "📝 Blog" },
-  { to: "/admin/banners", label: "🖼️ Banner" },
-  { to: "/admin/reviews", label: "⭐ Đánh giá" },
-  { to: "/admin/reports", label: "📈 Báo cáo" },
 ];
 
 export default function AdminLayout() {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    const result = await Swal.fire({
+      title: "Đăng xuất?",
+      text: "Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Đăng xuất",
+      cancelButtonText: "Hủy",
+      confirmButtonColor: "#dc2626",
+      reverseButtons: true,
+    });
+
+    if (!result.isConfirmed) return;
+
+    logout();
+    navigate("/admin/login", { replace: true });
+  };
+
   return (
     <div className="min-h-screen flex bg-gray-100">
       {/* Sidebar */}
       <aside className="w-64 bg-gray-900 text-gray-100 flex flex-col shrink-0">
         <div className="px-5 py-4 border-b border-gray-700">
           <Link to="/admin" className="text-white font-bold text-lg">
-            🏍️ Admin Panel
+            Admin Panel
           </Link>
         </div>
         <nav className="flex-1 overflow-y-auto py-4">
@@ -54,7 +73,10 @@ export default function AdminLayout() {
           <h1 className="text-gray-700 font-semibold text-lg">
             Quản trị hệ thống
           </h1>
-          <button className="text-sm text-red-600 hover:underline">
+          <button
+            onClick={handleLogout}
+            className="text-sm text-red-600 hover:underline"
+          >
             Đăng xuất
           </button>
         </header>

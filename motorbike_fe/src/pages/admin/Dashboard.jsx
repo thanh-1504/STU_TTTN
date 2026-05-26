@@ -1,17 +1,22 @@
-import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
 import {
-  BarChart,
   Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from "recharts";
 import api from "../../api/axios";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const fmtDisplay = (str) => {
+  const [y, m, d] = str.split("-");
+  return `${d}/${m}/${y}`;
+};
 
 const fmt = (d) => {
   const y = d.getFullYear();
@@ -85,7 +90,9 @@ function StatCard({ label, value, icon, bg, loading }) {
   return (
     <div className="bg-white border border-zinc-200 p-5 rounded-xl shadow-sm">
       <div className="flex items-center gap-3 mb-3">
-        <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-lg ${bg}`}>
+        <div
+          className={`w-9 h-9 rounded-lg flex items-center justify-center text-lg ${bg}`}
+        >
           {icon}
         </div>
       </div>
@@ -93,14 +100,22 @@ function StatCard({ label, value, icon, bg, loading }) {
         {label}
       </p>
       <p className="text-xl font-bold text-zinc-900">
-        {loading ? <span className="text-zinc-300 animate-pulse">—</span> : value}
+        {loading ? (
+          <span className="text-zinc-300 animate-pulse">—</span>
+        ) : (
+          value
+        )}
       </p>
     </div>
   );
 }
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
-const TABS = ["Doanh thu & Dịch vụ", "Hiệu suất nhân viên", "Tồn kho & Hàng sắp hết"];
+const TABS = [
+  "Doanh thu & Dịch vụ",
+  "Hiệu suất nhân viên",
+  "Tồn kho & Hàng sắp hết",
+];
 const PERIODS = [
   { key: "day", label: "Ngày" },
   { key: "week", label: "Tuần" },
@@ -125,7 +140,9 @@ export default function Dashboard() {
   const { data: revenueData, isLoading: loadingRevenue } = useQuery({
     queryKey: ["revenue", from, to],
     queryFn: () =>
-      api.get(`/admin/reports/revenue?from=${from}&to=${to}`).then((r) => r.data),
+      api
+        .get(`/admin/reports/revenue?from=${from}&to=${to}`)
+        .then((r) => r.data),
     staleTime: 30_000,
   });
 
@@ -152,9 +169,14 @@ export default function Dashboard() {
   const byDate = revenueData?.byDate ?? [];
   const topServices = servicesData?.data ?? [];
   const belowMinStock = inventoryData?.belowMinStock ?? [];
-  const chartData = useMemo(() => buildChartData(byDate, period), [byDate, period]);
+  const chartData = useMemo(
+    () => buildChartData(byDate, period),
+    [byDate, period],
+  );
 
-  const periodLabel = { day: "hôm nay", week: "tuần này", month: "tháng này" }[period];
+  const periodLabel = { day: "hôm nay", week: "tuần này", month: "tháng này" }[
+    period
+  ];
   const chartTitle = {
     day: "Doanh thu theo ngày",
     week: "Doanh thu theo ngày trong tuần",
@@ -165,15 +187,18 @@ export default function Dashboard() {
   return (
     <div className="text-zinc-900 antialiased bg-stone-50 min-h-screen w-full">
       <div className="p-6 xl:p-8 max-w-[1300px] mx-auto">
-
         {/* Page title + period switcher */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-zinc-900">Báo cáo &amp; Thống kê</h2>
+            <h2 className="text-2xl font-bold text-zinc-900">
+              Báo cáo &amp; Thống kê
+            </h2>
             <p className="text-zinc-500 text-sm mt-0.5">
               Tổng quan hiệu suất kinh doanh —{" "}
               <span className="font-semibold text-red-700">
-                {from === to ? from : `${from} → ${to}`}
+                {from === to
+                  ? fmtDisplay(from)
+                  : `${fmtDisplay(from)} → ${fmtDisplay(to)}`}
               </span>
             </p>
           </div>
@@ -254,9 +279,13 @@ export default function Dashboard() {
               {/* Revenue chart */}
               <div className="bg-white border border-zinc-200 rounded-xl p-6 shadow-sm">
                 <div className="flex items-center justify-between mb-5">
-                  <h4 className="text-base font-bold text-zinc-900">{chartTitle}</h4>
+                  <h4 className="text-base font-bold text-zinc-900">
+                    {chartTitle}
+                  </h4>
                   {loadingRevenue && (
-                    <span className="text-xs text-zinc-400 animate-pulse">Đang tải...</span>
+                    <span className="text-xs text-zinc-400 animate-pulse">
+                      Đang tải...
+                    </span>
                   )}
                 </div>
 
@@ -290,12 +319,15 @@ export default function Dashboard() {
                           v >= 1_000_000
                             ? `${(v / 1_000_000).toFixed(0)}M`
                             : v >= 1_000
-                            ? `${(v / 1_000).toFixed(0)}K`
-                            : v
+                              ? `${(v / 1_000).toFixed(0)}K`
+                              : v
                         }
                         width={48}
                       />
-                      <Tooltip content={<CustomTooltip />} cursor={{ fill: "#fef2f2" }} />
+                      <Tooltip
+                        content={<CustomTooltip />}
+                        cursor={{ fill: "#fef2f2" }}
+                      />
                       <Bar
                         dataKey="amount"
                         fill="#b91c1c"
@@ -323,7 +355,9 @@ export default function Dashboard() {
                     Top dịch vụ bán chạy — {periodLabel}
                   </h4>
                   {loadingServices && (
-                    <span className="text-xs text-zinc-400 animate-pulse">Đang tải...</span>
+                    <span className="text-xs text-zinc-400 animate-pulse">
+                      Đang tải...
+                    </span>
                   )}
                 </div>
 
@@ -360,7 +394,10 @@ export default function Dashboard() {
                               </tr>
                             ))
                           : topServices.map((svc, idx) => (
-                              <tr key={idx} className="hover:bg-zinc-50 transition-colors">
+                              <tr
+                                key={idx}
+                                className="hover:bg-zinc-50 transition-colors"
+                              >
                                 <td className="px-6 py-3 text-sm font-bold text-zinc-400">
                                   {idx + 1}
                                 </td>
@@ -373,7 +410,10 @@ export default function Dashboard() {
                                   </span>
                                 </td>
                                 <td className="px-6 py-3 text-right text-sm font-bold text-zinc-900">
-                                  {Number(svc.totalAmount).toLocaleString("vi-VN")}đ
+                                  {Number(svc.totalAmount).toLocaleString(
+                                    "vi-VN",
+                                  )}
+                                  đ
                                 </td>
                               </tr>
                             ))}
@@ -388,7 +428,9 @@ export default function Dashboard() {
             <div className="space-y-6">
               <div className="bg-white border border-zinc-200 rounded-xl shadow-sm overflow-hidden">
                 <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
-                  <h4 className="text-base font-bold text-zinc-900">Cảnh báo tồn kho</h4>
+                  <h4 className="text-base font-bold text-zinc-900">
+                    Cảnh báo tồn kho
+                  </h4>
                   {!loadingInventory && belowMinStock.length > 0 && (
                     <span className="bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase">
                       {belowMinStock.length} mặt hàng
@@ -399,7 +441,10 @@ export default function Dashboard() {
                 {loadingInventory ? (
                   <div className="p-5 space-y-3">
                     {Array.from({ length: 3 }).map((_, i) => (
-                      <div key={i} className="h-8 bg-zinc-100 rounded animate-pulse" />
+                      <div
+                        key={i}
+                        className="h-8 bg-zinc-100 rounded animate-pulse"
+                      />
                     ))}
                   </div>
                 ) : belowMinStock.length === 0 ? (
@@ -417,7 +462,9 @@ export default function Dashboard() {
                           <p className="text-xs font-semibold text-zinc-800 truncate">
                             {item.partName}
                           </p>
-                          <p className="text-[10px] text-zinc-400">{item.partNumber}</p>
+                          <p className="text-[10px] text-zinc-400">
+                            {item.partNumber}
+                          </p>
                         </div>
                         <div className="text-right ml-3 flex-shrink-0">
                           <p className="text-xs font-black text-red-600">
@@ -435,23 +482,32 @@ export default function Dashboard() {
                 <div className="p-4 border-t border-zinc-100 text-center text-xs text-zinc-500">
                   Tổng giá trị tồn kho:{" "}
                   <span className="font-bold text-zinc-800">
-                    {Number(inventoryData?.totalValue ?? 0).toLocaleString("vi-VN")}đ
+                    {Number(inventoryData?.totalValue ?? 0).toLocaleString(
+                      "vi-VN",
+                    )}
+                    đ
                   </span>
                 </div>
               </div>
 
               {/* Quick system stats */}
               <div className="bg-white border border-zinc-200 rounded-xl shadow-sm p-5">
-                <h4 className="text-sm font-bold text-zinc-900 mb-3">Tổng quan hệ thống</h4>
+                <h4 className="text-sm font-bold text-zinc-900 mb-3">
+                  Tổng quan hệ thống
+                </h4>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between p-3 rounded-lg bg-orange-50">
-                    <span className="text-xs font-medium text-zinc-600">Đang sửa chữa</span>
+                    <span className="text-xs font-medium text-zinc-600">
+                      Đang sửa chữa
+                    </span>
                     <span className="text-sm font-bold text-orange-600">
-                      {loadingDash ? "..." : dashStats?.inProgressOrders ?? 0}
+                      {loadingDash ? "..." : (dashStats?.inProgressOrders ?? 0)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between p-3 rounded-lg bg-emerald-50">
-                    <span className="text-xs font-medium text-zinc-600">Doanh thu all-time</span>
+                    <span className="text-xs font-medium text-zinc-600">
+                      Doanh thu all-time
+                    </span>
                     <span className="text-sm font-bold text-emerald-700">
                       {loadingDash
                         ? "..."
@@ -468,8 +524,12 @@ export default function Dashboard() {
         {activeTab === 1 && (
           <div className="bg-white border border-zinc-200 rounded-xl p-10 text-center shadow-sm">
             <div className="text-4xl mb-3">👷</div>
-            <h3 className="text-lg font-bold text-zinc-700 mb-1">Hiệu suất nhân viên</h3>
-            <p className="text-zinc-400 text-sm">Tính năng đang được phát triển</p>
+            <h3 className="text-lg font-bold text-zinc-700 mb-1">
+              Hiệu suất nhân viên
+            </h3>
+            <p className="text-zinc-400 text-sm">
+              Tính năng đang được phát triển
+            </p>
           </div>
         )}
 
@@ -477,8 +537,12 @@ export default function Dashboard() {
         {activeTab === 2 && (
           <div className="bg-white border border-zinc-200 rounded-xl p-10 text-center shadow-sm">
             <div className="text-4xl mb-3">📦</div>
-            <h3 className="text-lg font-bold text-zinc-700 mb-1">Tồn kho &amp; Hàng sắp hết</h3>
-            <p className="text-zinc-400 text-sm">Tính năng đang được phát triển</p>
+            <h3 className="text-lg font-bold text-zinc-700 mb-1">
+              Tồn kho &amp; Hàng sắp hết
+            </h3>
+            <p className="text-zinc-400 text-sm">
+              Tính năng đang được phát triển
+            </p>
           </div>
         )}
       </div>

@@ -3,6 +3,9 @@ import { createBrowserRouter } from "react-router-dom";
 // Layouts
 import AdminLayout from "../components/layout/AdminLayout";
 import PublicLayout from "../components/layout/PublicLayout";
+import ReceptionistLayout from "../components/layout/ReceptionistLayout";
+import TechnicianLayout from "../components/layout/TechnicianLayout";
+import RoleProtectedRoute from "../components/RoleProtectedRoute";
 
 // Public Pages
 import Blog from "../pages/public/Blog";
@@ -12,6 +15,27 @@ import BookingHistory from "../pages/public/BookingHistory";
 import CustomerPortal from "../pages/public/CustomerPortal";
 import Home from "../pages/public/Home";
 import Services from "../pages/public/Services";
+
+// Receptionist Pages
+import ReceptionistAppointments from "../pages/receptionist/Appointments";
+import ReceptionistCreateAppointment from "../pages/receptionist/CreateAppointment";
+import ReceptionistCreateRepairOrder from "../pages/receptionist/CreateRepairOrder";
+import ReceptionistCustomerDetail from "../pages/receptionist/CustomerDetail";
+import ReceptionistCustomers from "../pages/receptionist/Customers";
+import ReceptionistPayment from "../pages/receptionist/Payment";
+import ReceptionistDashboard from "../pages/receptionist/ReceptionistDashboard";
+import ReceptionistRepairOrderDetail from "../pages/receptionist/RepairOrderDetail";
+import ReceptionistRepairOrders from "../pages/receptionist/RepairOrders";
+import ReceptionistVehicleDetail from "../pages/receptionist/VehicleDetail";
+import ReceptionistVehicles from "../pages/receptionist/Vehicles";
+
+// Technician Pages
+import TechnicianCompleted from "../pages/technician/Completed";
+import TechnicianExtraQuote from "../pages/technician/ExtraQuote";
+import TechnicianMyTasks from "../pages/technician/MyTasks";
+import TechnicianOrderDetail from "../pages/technician/OrderDetail";
+import TechnicianPendingApproval from "../pages/technician/PendingApproval";
+import TechnicianDashboard from "../pages/technician/TechnicianDashboard";
 
 // Admin Pages
 import AddService from "../pages/admin/AddService";
@@ -74,7 +98,11 @@ const router = createBrowserRouter([
   // ── ADMIN ROUTES ───────────────────────────────────────────
   {
     path: "/admin",
-    element: <AdminLayout />,
+    element: (
+      <RoleProtectedRoute allowedRoles={["ADMIN"]}>
+        <AdminLayout />
+      </RoleProtectedRoute>
+    ),
     children: [
       { index: true, element: <Dashboard /> },
       { path: "appointments", element: <AdminAppointments /> },
@@ -105,6 +133,53 @@ const router = createBrowserRouter([
       { path: "vouchers/edit/:id", element: <ManageVoucher /> },
       { path: "services/edit/:id", element: <AddService /> },
       { path: "combos/edit/:id", element: <ManageCombo /> },
+    ],
+  },
+
+  // ── RECEPTIONIST ROUTES ────────────────────────────────────
+  {
+    path: "/receptionist",
+    element: (
+      <RoleProtectedRoute allowedRoles={["RECEPTIONIST", "ADMIN"]}>
+        <ReceptionistLayout />
+      </RoleProtectedRoute>
+    ),
+    children: [
+      { index: true, element: <ReceptionistDashboard /> },
+      { path: "appointments", element: <ReceptionistAppointments /> },
+      {
+        path: "appointments/create",
+        element: <ReceptionistCreateAppointment />,
+      },
+      { path: "repair-orders", element: <ReceptionistRepairOrders /> },
+      {
+        path: "repair-orders/create",
+        element: <ReceptionistCreateRepairOrder />,
+      },
+      { path: "repair-orders/:id", element: <ReceptionistRepairOrderDetail /> },
+      { path: "payment", element: <ReceptionistPayment /> },
+      { path: "customers", element: <ReceptionistCustomers /> },
+      { path: "customers/:id", element: <ReceptionistCustomerDetail /> },
+      { path: "vehicles", element: <ReceptionistVehicles /> },
+      { path: "vehicles/:id", element: <ReceptionistVehicleDetail /> },
+    ],
+  },
+
+  // ── TECHNICIAN ROUTES ──────────────────────────────────────
+  {
+    path: "/technician",
+    element: (
+      <RoleProtectedRoute allowedRoles={["TECHNICIAN", "ADMIN"]}>
+        <TechnicianLayout />
+      </RoleProtectedRoute>
+    ),
+    children: [
+      { index: true, element: <TechnicianDashboard /> },
+      { path: "tasks", element: <TechnicianMyTasks /> },
+      { path: "orders/:id", element: <TechnicianOrderDetail /> },
+      { path: "orders/:id/extra-quote", element: <TechnicianExtraQuote /> },
+      { path: "extra-quotes", element: <TechnicianPendingApproval /> },
+      { path: "completed", element: <TechnicianCompleted /> },
     ],
   },
 ]);

@@ -1,7 +1,12 @@
 // LoginPage.jsx
 import { useEffect, useState } from "react";
 import { NavLink, Navigate, useNavigate } from "react-router-dom";
-import { getToken, saveAuthData, sendOtp, verifyOtp } from "../../api/authService";
+import {
+  getToken,
+  saveAuthData,
+  sendOtp,
+  verifyOtp,
+} from "../../api/authService";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -226,36 +231,6 @@ export default function LoginPage() {
               </button>
             </>
           )}
-
-          {/* Divider */}
-          <div className="flex items-center gap-4 my-8">
-            <div className="h-px bg-gray-200 flex-1" />
-            <span className="text-xs uppercase text-gray-400">Hoặc</span>
-            <div className="h-px bg-gray-200 flex-1" />
-          </div>
-
-          {/* Social Login */}
-          <div className="space-y-4">
-            <button className="w-full border py-3 rounded-lg hover:bg-gray-50 transition font-medium">
-              Tiếp tục với Google
-            </button>
-
-            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg transition font-medium">
-              Tiếp tục với Facebook
-            </button>
-          </div>
-
-          {/* Terms */}
-          <p className="text-xs text-center text-gray-500 mt-8 leading-5">
-            Bằng việc đăng nhập, bạn đồng ý với{" "}
-            <span className="text-blue-600 cursor-pointer">
-              Điều khoản dịch vụ
-            </span>{" "}
-            và{" "}
-            <span className="text-blue-600 cursor-pointer">
-              Chính sách bảo mật
-            </span>
-          </p>
         </div>
       </div>
     </div>

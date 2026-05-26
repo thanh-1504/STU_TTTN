@@ -3,25 +3,82 @@ import {
   Bike,
   Edit,
   History,
+  ImagePlus,
   PlusCircle,
   Trash2,
   User,
   Wrench,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import { deleteVehicle, getMyVehicles } from "../../api/portalService";
+import {
+  getVehicleImage,
+  removeVehicleImage,
+  saveVehicleImage,
+} from "../../utils/vehicleImage";
+
+// Re-export so other modules can import from here if needed
+export { saveVehicleImage };
+
+// ─── VehicleCard ─────────────────────────────────────────────────────────────
 
 function VehicleCard({ item, onDelete }) {
   const navigate = useNavigate();
+  const imageUrl = getVehicleImage(item.id);
+
+  const confirmDelete = async () => {
+    const result = await Swal.fire({
+      title: "Xóa xe này?",
+      html: `Xe <strong>${item.brand} ${item.model || ""}</strong> (${item.licensePlate}) sẽ bị xóa vĩnh viễn.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Xóa xe",
+      cancelButtonText: "Hủy",
+      reverseButtons: true,
+      focusCancel: true,
+      customClass: {
+        title: "swal2-title-custom",
+        popup: "swal2-popup-custom",
+      },
+    });
+
+    if (result.isConfirmed) {
+      onDelete(item.id);
+    }
+  };
 
   return (
     <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-red-600 transition flex flex-col">
-      <div className="relative h-52 bg-gray-100 flex items-center justify-center">
-        <Bike size={64} className="text-gray-300" />
+      {/* Image area */}
+      <div className="relative h-52 bg-gray-100 flex items-center justify-center overflow-hidden">
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={`${item.brand} ${item.model || ""}`}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <Bike size={64} className="text-gray-300" />
+        )}
+        {/* KM badge */}
         <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full shadow text-sm font-semibold flex items-center gap-1">
           <Bike size={16} className="text-red-600" />
           {item.currentKm?.toLocaleString() || 0} km
         </div>
+        {/* Upload hint when no image */}
+        {!imageUrl && (
+          <button
+            onClick={() => navigate(`/portal/edit/${item.id}`)}
+            title="Thêm ảnh xe"
+            className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1 text-xs text-gray-400 hover:text-red-600 bg-white/80 rounded-full px-3 py-1 shadow transition"
+          >
+            <ImagePlus size={14} />
+            Thêm ảnh
+          </button>
+        )}
       </div>
 
       <div className="p-5 flex-1 flex flex-col">
@@ -48,11 +105,7 @@ function VehicleCard({ item, onDelete }) {
             </button>
 
             <button
-              onClick={() => {
-                if (window.confirm("Bạn có chắc chắn muốn xóa xe này?")) {
-                  onDelete(item.id);
-                }
-              }}
+              onClick={confirmDelete}
               className="w-11 h-11 rounded-xl border text-red-600 hover:bg-red-50 flex items-center justify-center"
             >
               <Trash2 size={16} />
@@ -64,6 +117,8 @@ function VehicleCard({ item, onDelete }) {
   );
 }
 
+// ─── CustomerPortal ───────────────────────────────────────────────────────────
+
 export default function CustomerPortal() {
   const queryClient = useQueryClient();
 
@@ -74,12 +129,30 @@ export default function CustomerPortal() {
 
   const deleteMutation = useMutation({
     mutationFn: deleteVehicle,
-    onSuccess: () => {
+    onSuccess: (_, vehicleId) => {
+      removeVehicleImage(vehicleId);
       queryClient.invalidateQueries(["myVehicles"]);
-      alert("Xóa xe thành công!");
+      Swal.fire({
+        title: "Xóa thành công!",
+        text: "Xe đã được xóa khỏi Gara của bạn.",
+        icon: "success",
+        confirmButtonColor: "#dc2626",
+        confirmButtonText: "OK",
+        timer: 2500,
+        timerProgressBar: true,
+      });
     },
     onError: (err) => {
-      alert(err.response?.data?.message || "Xóa xe thất bại");
+      const msg =
+        err.response?.data?.message ||
+        "Xóa xe thất bại. Xe có thể đang có phiếu sửa chữa chưa hoàn tất.";
+      Swal.fire({
+        title: "Xóa thất bại!",
+        text: msg,
+        icon: "error",
+        confirmButtonColor: "#dc2626",
+        confirmButtonText: "Đóng",
+      });
     },
   });
 
@@ -130,28 +203,6 @@ export default function CustomerPortal() {
       </main>
 
       {/* Footer desktop */}
-      <footer className="hidden md:flex border-t bg-gray-50 py-10 px-4 flex-col items-center gap-4">
-        <div className="font-bold text-lg">Shop2banh</div>
-
-        <div className="flex flex-wrap gap-6 text-sm text-gray-500">
-          <a href="#" className="hover:text-red-600">
-            Về chúng tôi
-          </a>
-          <a href="#" className="hover:text-red-600">
-            Chính sách bảo mật
-          </a>
-          <a href="#" className="hover:text-red-600">
-            Điều khoản dịch vụ
-          </a>
-          <a href="#" className="hover:text-red-600">
-            Liên hệ
-          </a>
-        </div>
-
-        <p className="text-sm text-gray-500 text-center">
-          © 2024 Shop2banh.vn - Phụ tùng & Đồ chơi xe máy chuyên nghiệp
-        </p>
-      </footer>
 
       {/* Mobile Bottom Nav */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t grid grid-cols-4 text-xs z-50">

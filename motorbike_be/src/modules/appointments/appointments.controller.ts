@@ -14,6 +14,7 @@ import {
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointments.dto';
 import { UpdateAppointmentDto } from './dto/update-appointments.dto';
+import { AdminCreateAppointmentDto } from './dto/admin-create-appointment.dto';
 import { CustomerJwtAuthGuard } from '../auth/guards/customer-jwt-auth.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -80,6 +81,12 @@ export class AppointmentsCustomerController {
 @Roles(RoleName.ADMIN, RoleName.RECEPTIONIST, RoleName.TECHNICIAN)
 export class AppointmentsAdminController {
   constructor(private readonly appointmentsService: AppointmentsService) {}
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  create(@Body() dto: AdminCreateAppointmentDto) {
+    return this.appointmentsService.createByAdmin(dto);
+  }
 
   /**
    * GET /admin/appointments?status=PENDING|CONFIRMED|CANCELLED&date=YYYY-MM-DD

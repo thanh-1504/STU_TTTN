@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   createImportOrder,
@@ -17,10 +18,8 @@ export default function ManageStock() {
   const [notes, setNotes] = useState("");
   const [items, setItems] = useState([]);
 
-  // For view mode
   const [orderData, setOrderData] = useState(null);
 
-  // For adding new item
   const [selectedPartId, setSelectedPartId] = useState("");
   const [addQty, setAddQty] = useState(1);
   const [addPrice, setAddPrice] = useState(0);
@@ -71,7 +70,6 @@ export default function ManageStock() {
     const part = spareParts.find((p) => p.id === parseInt(selectedPartId));
     if (!part) return;
 
-    // Check if already exists
     if (items.find((i) => i.sparePartId === part.id)) {
       alert("Phụ tùng này đã có trong danh sách");
       return;
@@ -138,7 +136,7 @@ export default function ManageStock() {
     const res = await createImportOrder(payload);
     setSubmitting(false);
     if (res.success) {
-      alert("Tạo phiếu nhập thành công!");
+      toast.success("Tạo phiếu nhập thành công!");
       navigate("/admin/stock");
     } else {
       alert(res.errors?.general || "Có lỗi xảy ra");
@@ -156,10 +154,8 @@ export default function ManageStock() {
 
   return (
     <div className="min-h-screen bg-[#fbf9f8] text-stone-900">
-      {/* Main */}
       <main className="min-h-screen p-8">
         <div className="mx-auto ">
-          {/* Header */}
           <div className="mb-8 flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold">
@@ -190,9 +186,7 @@ export default function ManageStock() {
           </div>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            {/* Left */}
             <div className="space-y-6 lg:col-span-2">
-              {/* General */}
               <Card title="Thông tin chung">
                 <div className="grid grid-cols-2 gap-6">
                   {isViewMode && (
@@ -231,7 +225,6 @@ export default function ManageStock() {
                 </div>
               </Card>
 
-              {/* Parts */}
               <section className="overflow-hidden rounded border border-stone-200 bg-white shadow-sm">
                 <div className="flex items-center justify-between border-b border-stone-100 p-6">
                   <div className="flex items-center gap-2">
@@ -405,7 +398,6 @@ export default function ManageStock() {
               </section>
             </div>
 
-            {/* Right */}
             <div>
               <section className="sticky top-24 rounded border border-stone-200 bg-white shadow-sm">
                 <div className="border-b border-stone-100 bg-stone-50/50 p-6">
@@ -457,8 +449,6 @@ export default function ManageStock() {
     </div>
   );
 }
-
-/* Components */
 
 function Card({ title, icon, children }) {
   return (

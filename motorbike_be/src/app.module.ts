@@ -2,23 +2,26 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { SharedModule } from './shared/shared.module';
 import {
-  AuthModule,
-  UsersModule,
-  CustomersModule,
-  VehiclesModule,
   AppointmentsModule,
-  ServicesModule,
-  CombosModule,
-  SparePartsModule,
-  VouchersModule,
-  BlogModule,
+  AuthModule,
   BannersModule,
-  ReviewsModule,
+  BlogModule,
+  CombosModule,
+  CustomersModule,
+  ReceptionistModule,
+  RepairOrderModule,
   ReportsModule,
+  ReviewsModule,
+  ServicesModule,
+  SparePartsModule,
   SystemConfigModule,
+  TechnicianModule,
+  UsersModule,
+  VehiclesModule,
+  VouchersModule,
 } from './modules';
+import { SharedModule } from './shared/shared.module';
 
 @Module({
   imports: [
@@ -39,6 +42,9 @@ import {
     ReviewsModule,
     ReportsModule,
     SystemConfigModule,
+    RepairOrderModule,
+    ReceptionistModule,
+    TechnicianModule,
   ],
   controllers: [AppController],
   providers: [AppService],

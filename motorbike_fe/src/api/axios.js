@@ -11,9 +11,13 @@ const api = axios.create({
   },
 });
 
-// Interceptor: tự động gắn token nếu có
+// Interceptor: tự động gắn token theo loại tài khoản
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("access_token");
+  // Admin routes use the staff token; everything else uses the customer token
+  const isAdminRoute = config.url?.startsWith("/admin") || config.url?.startsWith("/auth/login") || config.url?.startsWith("/auth/me");
+  const token = isAdminRoute
+    ? localStorage.getItem("admin_token")
+    : localStorage.getItem("customer_token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

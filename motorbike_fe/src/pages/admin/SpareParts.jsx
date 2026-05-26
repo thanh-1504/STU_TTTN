@@ -1,4 +1,4 @@
-import { AlertTriangle, Package2, Pencil, Search, Wallet } from "lucide-react";
+import { AlertTriangle, Loader, Package2, Pencil, Search, Wallet } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { getSpareParts } from "../../api/sparePartsService";
@@ -6,9 +6,12 @@ import {
   NotificationContainer,
   useNotification,
 } from "../../components/Notification";
+import Pagination from "../../components/Pagination";
 
 const formatCurrency = (value) =>
   `${Number(value || 0).toLocaleString("vi-VN")}d`;
+
+const PAGE_SIZE = 10;
 
 export default function AdminSpareParts() {
   const navigate = useNavigate();
@@ -17,6 +20,7 @@ export default function AdminSpareParts() {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [stockFilter, setStockFilter] = useState("all");
+  const [page, setPage] = useState(0);
 
   const fetchSpareParts = async () => {
     setLoading(true);
@@ -63,6 +67,12 @@ export default function AdminSpareParts() {
   const totalStockValue = displayedParts.reduce(
     (sum, item) => sum + Number(item.sellingPrice) * Number(item.stockQuantity),
     0,
+  );
+
+  const totalPages = Math.ceil(displayedParts.length / PAGE_SIZE);
+  const paginatedParts = displayedParts.slice(
+    page * PAGE_SIZE,
+    (page + 1) * PAGE_SIZE,
   );
 
   const handleSearchSubmit = (event) => {
@@ -167,11 +177,11 @@ export default function AdminSpareParts() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td
-                      colSpan="8"
-                      className="px-4 py-8 text-center text-stone-500"
-                    >
-                      Đang tải...
+                    <td colSpan="8" className="px-4 py-12 text-center">
+                      <div className="inline-flex items-center gap-2 text-sm text-stone-500">
+                        <Loader className="animate-spin" size={18} />
+                        <span>Đang tải dữ liệu...</span>
+                      </div>
                     </td>
                   </tr>
                 ) : displayedParts.length === 0 ? (
@@ -184,7 +194,7 @@ export default function AdminSpareParts() {
                     </td>
                   </tr>
                 ) : (
-                  displayedParts.map((item) => (
+                  paginatedParts.map((item) => (
                     <tr key={item.id} className="border-t hover:bg-stone-50">
                       <td className="px-4 py-4 font-mono text-xs">
                         {item.partNumber}
@@ -227,6 +237,17 @@ export default function AdminSpareParts() {
                 )}
               </tbody>
             </table>
+          </div>
+          <div className="flex items-center justify-between border-t px-4 py-3 text-sm">
+            <span className="text-stone-500">
+              Hiển thị {displayedParts.length === 0 ? 0 : page * PAGE_SIZE + 1}–
+              {Math.min((page + 1) * PAGE_SIZE, displayedParts.length)} trên {displayedParts.length} phụ tùng
+            </span>
+            <Pagination
+              pageCount={totalPages}
+              currentPage={page}
+              onPageChange={({ selected }) => setPage(selected)}
+            />
           </div>
         </div>
       </div>

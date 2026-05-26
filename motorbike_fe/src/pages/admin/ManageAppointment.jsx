@@ -1,25 +1,33 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  createAppointment,
+  createAdminAppointment,
   getAdminAppointmentDetail,
   getAvailableSlots,
   updateAppointment,
 } from "../../api/appointmentsService";
+import { getServices } from "../../api/servicesService";
 import { useNotification } from "../../components/Notification";
 
-const services = [
-  "Bảo dưỡng tổng quát",
-  "Thay nhớt & Lọc nhớt",
-  "Vệ sinh kim phun",
-  "Làm nồi",
-];
-
 const brands = ["Honda", "Yamaha", "Suzuki", "Kymco"];
+
+const buildAppointmentTime = (date, time) =>
+  new Date(`${date}T${time}:00`).toISOString();
+
+const buildNotes = (note, selectedServices) =>
+  [note.trim()]
+    .concat(
+      selectedServices.length > 0
+        ? [`Dịch vụ liên quan: ${selectedServices.join(", ")}`]
+        : [],
+    )
+    .filter(Boolean)
+    .join("\n");
 
 const ManageAppointment = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const isEditMode = Boolean(id);
   const { notify, notifications, NotificationContainer, removeNotification } =
     useNotification();
 
@@ -32,39 +40,43 @@ const ManageAppointment = () => {
     note: "",
     date: "",
     time: "",
-    technician: "",
     services: [],
     symptoms: "",
     vehicleId: null,
   });
-
   const [availableSlots, setAvailableSlots] = useState([]);
+  const [serviceOptions, setServiceOptions] = useState([]);
+  const [servicesLoading, setServicesLoading] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isEditMode] = useState(!!id);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const toggleService = (service) => {
+  const toggleService = (serviceName) => {
     setForm((prev) => ({
       ...prev,
-      services: prev.services.includes(service)
-        ? prev.services.filter((s) => s !== service)
-        : [...prev.services, service],
+      services: prev.services.includes(serviceName)
+        ? prev.services.filter((item) => item !== serviceName)
+        : [...prev.services, serviceName],
     }));
   };
 
-  // Fetch available slots when date changes
   const fetchAvailableSlots = useCallback(
     async (date) => {
-      if (!date) return;
+      if (!date) {
+        setAvailableSlots([]);
+        return;
+      }
+
       try {
-        const slots = await getAvailableSlots(date);
-        setAvailableSlots(slots || []);
-      } catch (err) {
+        const response = await getAvailableSlots(date);
+        setAvailableSlots(response?.availableSlots || []);
+      } catch (error) {
+        setAvailableSlots([]);
         notify.error("Lỗi tải slot giờ");
-        console.error(err);
+        console.error(error);
       }
     },
     [notify],
@@ -76,48 +88,66 @@ const ManageAppointment = () => {
     }
   }, [form.date, fetchAvailableSlots]);
 
-  // Fetch appointment detail if edit mode
   useEffect(() => {
-    if (id && isEditMode) {
-      fetchAppointmentDetail(id);
-    }
-  }, [id]);
+    const fetchServices = async () => {
+      try {
+        setServicesLoading(true);
+        const response = await getServices();
+        const activeServices = Array.isArray(response)
+          ? response.filter((service) => service.isActive).slice(0, 8)
+          : [];
+        setServiceOptions(activeServices);
+      } catch (error) {
+        setServiceOptions([]);
+        notify.error("Lỗi tải danh sách dịch vụ");
+        console.error(error);
+      } finally {
+        setServicesLoading(false);
+      }
+    };
 
-  const fetchAppointmentDetail = async (appointmentId) => {
-    try {
-      setLoading(true);
-      const appointment = await getAdminAppointmentDetail(appointmentId);
-      const appointmentDate = new Date(appointment.appointmentTime)
-        .toISOString()
-        .split("T")[0];
-      const appointmentTime = new Date(appointment.appointmentTime)
-        .toTimeString()
-        .substring(0, 5);
+    fetchServices();
+  }, [notify]);
 
-      setForm({
-        phone: appointment.customer?.phone || "",
-        name: appointment.customer?.name || "",
-        brand: appointment.vehicle?.brand || "",
-        model: appointment.vehicle?.model || "",
-        plate: appointment.vehicle?.licensePlate || "",
-        date: appointmentDate,
-        time: appointmentTime,
-        symptoms: appointment.symptoms || "",
-        note: appointment.notes || "",
-        vehicleId: appointment.vehicleId,
-        services: [],
-        technician: "",
-      });
-    } catch (err) {
-      notify.error("Lỗi tải chi tiết lịch hẹn");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    if (!isEditMode || !id) return;
+
+    const fetchAppointmentDetail = async () => {
+      try {
+        setLoading(true);
+        const appointment = await getAdminAppointmentDetail(id);
+        const appointmentDate = new Date(appointment.appointmentTime)
+          .toISOString()
+          .split("T")[0];
+        const appointmentTime = new Date(appointment.appointmentTime)
+          .toTimeString()
+          .slice(0, 5);
+
+        setForm({
+          phone: appointment.customer?.phone || "",
+          name: appointment.customer?.customerName || "",
+          brand: appointment.vehicle?.brand || "",
+          model: appointment.vehicle?.model || "",
+          plate: appointment.vehicle?.licensePlate || "",
+          note: appointment.notes || "",
+          date: appointmentDate,
+          time: appointmentTime,
+          services: [],
+          symptoms: appointment.symptoms || "",
+          vehicleId: appointment.vehicleId || null,
+        });
+      } catch (error) {
+        notify.error("Lỗi tải chi tiết lịch hẹn");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointmentDetail();
+  }, [id, isEditMode, notify]);
 
   const handleSubmit = async () => {
-    // Validation
     if (!form.name.trim()) {
       notify.error("Vui lòng nhập tên khách hàng");
       return;
@@ -141,29 +171,36 @@ const ManageAppointment = () => {
 
     try {
       setLoading(true);
-      const appointmentDateTime = new Date(`${form.date}T${form.time}:00Z`);
-
       const data = {
-        appointmentTime: appointmentDateTime.toISOString(),
-        vehicleId: form.vehicleId || undefined,
-        symptoms: form.symptoms || undefined,
-        notes: form.note || undefined,
+        appointmentTime: buildAppointmentTime(form.date, form.time),
+        symptoms: form.symptoms.trim() || undefined,
+        notes: buildNotes(form.note, form.services) || undefined,
       };
 
       if (isEditMode) {
-        await updateAppointment(id, data);
+        await updateAppointment(id, {
+          ...data,
+          vehicleId: form.vehicleId || undefined,
+        });
         notify.success("Cập nhật lịch hẹn thành công");
       } else {
-        await createAppointment(data);
+        await createAdminAppointment({
+          ...data,
+          phone: form.phone.trim(),
+          customerName: form.name.trim(),
+          brand: form.brand.trim() || undefined,
+          model: form.model.trim() || undefined,
+          licensePlate: form.plate.trim() || undefined,
+        });
         notify.success("Tạo lịch hẹn thành công");
       }
 
       setTimeout(() => navigate("/admin/appointments"), 1500);
-    } catch (err) {
+    } catch (error) {
       const errorMsg =
-        err.response?.data?.message || "Lỗi khi tạo/cập nhật lịch hẹn";
-      notify.error(errorMsg);
-      console.error(err);
+        error.response?.data?.message || "Lỗi khi tạo hoặc cập nhật lịch hẹn";
+      notify.error(Array.isArray(errorMsg) ? errorMsg.join(", ") : errorMsg);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -176,9 +213,7 @@ const ManageAppointment = () => {
         removeNotification={removeNotification}
       />
 
-      {/* MAIN */}
       <div className="flex-1">
-        {/* TOPBAR */}
         <header className="h-14 bg-white border-b flex items-center justify-between px-6">
           <h1 className="font-bold text-red-700">
             {isEditMode ? "Chỉnh sửa lịch hẹn" : "Tạo lịch hẹn mới"}
@@ -186,9 +221,7 @@ const ManageAppointment = () => {
         </header>
 
         <main className="p-6 grid lg:grid-cols-3 gap-6">
-          {/* LEFT FORM */}
           <div className="lg:col-span-2 space-y-6">
-            {/* CUSTOMER */}
             <div className="bg-white p-6 rounded border">
               <h3 className="font-bold mb-4">Thông tin khách hàng</h3>
 
@@ -218,9 +251,9 @@ const ManageAppointment = () => {
                   onChange={handleChange}
                 >
                   <option value="">Hãng xe</option>
-                  {brands.map((b) => (
-                    <option key={b} value={b}>
-                      {b}
+                  {brands.map((brand) => (
+                    <option key={brand} value={brand}>
+                      {brand}
                     </option>
                   ))}
                 </select>
@@ -243,7 +276,6 @@ const ManageAppointment = () => {
               </div>
             </div>
 
-            {/* SERVICES */}
             <div className="bg-white p-6 rounded border">
               <h3 className="font-bold mb-4">Triệu chứng & Dịch vụ</h3>
 
@@ -258,16 +290,30 @@ const ManageAppointment = () => {
 
               <h4 className="text-sm font-semibold mb-2">Dịch vụ liên quan:</h4>
               <div className="grid md:grid-cols-2 gap-2">
-                {services.map((s) => (
-                  <label key={s} className="border p-2 rounded flex gap-2">
-                    <input
-                      type="checkbox"
-                      checked={form.services.includes(s)}
-                      onChange={() => toggleService(s)}
-                    />
-                    {s}
-                  </label>
-                ))}
+                {servicesLoading && (
+                  <p className="text-sm text-gray-500">Đang tải dịch vụ...</p>
+                )}
+
+                {!servicesLoading && serviceOptions.length === 0 && (
+                  <p className="text-sm text-gray-500">
+                    Chưa có dịch vụ khả dụng.
+                  </p>
+                )}
+
+                {!servicesLoading &&
+                  serviceOptions.map((service) => (
+                    <label
+                      key={service.id}
+                      className="border p-2 rounded flex gap-2"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={form.services.includes(service.serviceName)}
+                        onChange={() => toggleService(service.serviceName)}
+                      />
+                      {service.serviceName}
+                    </label>
+                  ))}
               </div>
 
               <div className="mt-4">
@@ -284,9 +330,7 @@ const ManageAppointment = () => {
             </div>
           </div>
 
-          {/* RIGHT */}
           <div className="space-y-6">
-            {/* TIME */}
             <div className="bg-white p-6 rounded border">
               <h3 className="font-bold mb-4">Thời gian hẹn</h3>
 
@@ -315,7 +359,7 @@ const ManageAppointment = () => {
                     onChange={handleChange}
                   >
                     <option value="">Chọn giờ</option>
-                    {availableSlots?.availableSlots?.map((slot) => (
+                    {availableSlots.map((slot) => (
                       <option key={slot} value={slot}>
                         {slot}
                       </option>
@@ -330,7 +374,6 @@ const ManageAppointment = () => {
               </div>
             </div>
 
-            {/* ACTION */}
             <div className="space-y-3">
               <button
                 onClick={handleSubmit}

@@ -247,7 +247,7 @@ export default function Booking() {
         <div className="max-w-7xl mx-auto px-4 h-16 flex justify-between items-center">
           <NavLink
             to="/"
-            className="text-2xl font-black text-red-600 uppercase"
+            className="text-2xl font-black text-red-600 uppercase tracking-tight"
           >
             Shop2banh
           </NavLink>
@@ -381,9 +381,9 @@ export default function Booking() {
                     <button
                       type="button"
                       onClick={handleAddServiceRow}
-                      className="bg-[#d7000e] text-white font-bold py-3 px-10 rounded-full hover:bg-red-700 transition-colors uppercase tracking-widest text-sm"
+                      className="bg-[#d7000e] text-white font-bold py-3 px-10 rounded-full hover:bg-red-700 transition-colors uppercase tracking-widest text-sm cursor-pointer"
                     >
-                      + THÊM DỊCH VỤ
+                      THÊM DỊCH VỤ
                     </button>
                   </div>
                 </>
@@ -532,7 +532,7 @@ export default function Booking() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="bg-[#d7000e] text-white font-extrabold py-4 px-16 rounded-full hover:bg-red-700 transition-all hover:scale-105 flex items-center gap-2 shadow-lg disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
+                className="bg-[#d7000e] text-white font-extrabold py-4 px-16 rounded-full hover:bg-red-700 transition-all hover:scale-105 flex items-center gap-2 shadow-lg disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 cursor-pointer"
               >
                 {submitting ? (
                   <>
@@ -558,9 +558,7 @@ export default function Booking() {
                     Đang xử lý...
                   </>
                 ) : (
-                  <>
-                    <span>📅</span> ĐẶT LỊCH
-                  </>
+                  <>ĐẶT LỊCH</>
                 )}
               </button>
             </div>
@@ -569,23 +567,88 @@ export default function Booking() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-black text-white">
-        <div className="max-w-[1200px] mx-auto py-10 px-6 grid md:grid-cols-4 gap-6">
-          <div>
-            <h3 className="font-bold text-lg mb-2">Shop2banh</h3>
-            <p className="text-sm text-gray-400">© 2024 Shop2banh</p>
-          </div>
-          <div>
-            <h4 className="text-red-500 font-semibold">Dịch vụ</h4>
-          </div>
-          <div>
-            <h4 className="text-red-500 font-semibold">Chính sách</h4>
-          </div>
-          <div>
-            <input
-              className="p-2 w-full text-black rounded"
-              placeholder="Email đăng ký nhận tin"
-            />
+      <footer className="bg-gray-900 text-gray-400 pt-12 pb-6">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+            <div>
+              <div className="text-xl font-black text-white uppercase mb-3">
+                Shop2banh
+              </div>
+              <p className="text-sm leading-relaxed mb-4">
+                Hệ thống dịch vụ xe máy chuyên nghiệp, uy tín tại TP.HCM.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="text-white font-bold text-sm mb-4 uppercase">
+                Dịch vụ
+              </h4>
+              <ul className="space-y-2 text-sm">
+                {[
+                  "Bảo dưỡng định kỳ",
+                  "Thay nhớt",
+                  "Rửa xe",
+                  "Sửa chữa điện",
+                  "Thay lốp",
+                ].map((item) => (
+                  <li key={item}>
+                    <a
+                      href="/services"
+                      className="hover:text-red-400 transition-colors"
+                    >
+                      {item}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-white font-bold text-sm mb-4 uppercase">
+                Hỗ trợ
+              </h4>
+              <ul className="space-y-2 text-sm">
+                {[
+                  "Hướng dẫn đặt lịch",
+                  "Chính sách bảo hành",
+                  "Câu hỏi thường gặp",
+                  "Liên hệ",
+                ].map((item) => (
+                  <li key={item}>
+                    <a
+                      href="#"
+                      className="hover:text-red-400 transition-colors"
+                    >
+                      {item}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-white font-bold text-sm mb-4 uppercase">
+                Liên hệ
+              </h4>
+              <ul className="space-y-2 text-sm">
+                <li>309 Vườn Lài, P. Phú Thọ Hòa, Q. Tân Phú, TP.HCM</li>
+                <li>
+                  SĐT:{" "}
+                  <a href="tel:0938820202" className="hover:text-red-400">
+                    0938.82.02.02
+                  </a>
+                </li>
+                <li>
+                  Email:{" "}
+                  <a
+                    href="mailto:info@shop2banh.vn"
+                    className="hover:text-red-400"
+                  >
+                    shop2banh@gmail.com
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </footer>

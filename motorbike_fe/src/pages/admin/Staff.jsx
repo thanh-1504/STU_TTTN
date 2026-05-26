@@ -1,7 +1,9 @@
-import { Pencil, Trash2 } from "lucide-react";
+import { Loader, Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { getStaffList, toggleStaffActive } from "../../api/usersService";
+import Swal from "sweetalert2";
+import { deleteStaff, getStaffList } from "../../api/usersService";
+import Pagination from "../../components/Pagination";
 
 export default function AdminStaff() {
   const [staff, setStaff] = useState([]);
@@ -17,7 +19,6 @@ export default function AdminStaff() {
   });
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch staff list khi page, filter, hoặc searchQuery thay đổi
   useEffect(() => {
     fetchStaff();
   }, [page, filter]);
@@ -35,7 +36,6 @@ export default function AdminStaff() {
 
       let filteredStaff = response.users;
 
-      // Client-side filter by search query
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase();
         filteredStaff = filteredStaff.filter(
@@ -62,13 +62,25 @@ export default function AdminStaff() {
       ...prev,
       [filterName]: value === "" ? null : value,
     }));
-    setPage(1); // Reset to first page
+    setPage(1);
   };
 
-  const handleToggleActive = async (id) => {
+  const handleDeleteStaff = async (member) => {
+    const result = await Swal.fire({
+      title: "Xóa người dùng?",
+      text: `Bạn có muốn xóa người dùng "${member.fullname}" không?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
+      confirmButtonColor: "#dc2626",
+      reverseButtons: true,
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
-      await toggleStaffActive(id);
-      // Refresh list
+      await deleteStaff(member.id);
       fetchStaff();
     } catch (err) {
       setError("Lỗi cập nhật trạng thái nhân viên");
@@ -80,34 +92,9 @@ export default function AdminStaff() {
     setPage(1);
   };
 
-  const handlePreviousPage = () => {
-    setPage((prev) => Math.max(prev - 1, 1));
-  };
-
-  const handleNextPage = () => {
-    setPage((prev) => Math.min(prev + 1, totalPages));
-  };
-
-  const handlePageClick = (pageNum) => {
-    setPage(pageNum);
-  };
-
-  // Tính số mục hiển thị
   const startIndex = (page - 1) * pageSize + 1;
   const endIndex = Math.min(page * pageSize, total);
   const displayCount = staff.length > 0 ? `${startIndex} - ${endIndex}` : "0";
-
-  // Generate page numbers to display
-  const pageNumbers = [];
-  const maxPagesToShow = 5;
-  let startPage = Math.max(1, page - Math.floor(maxPagesToShow / 2));
-  let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-  if (endPage - startPage + 1 < maxPagesToShow) {
-    startPage = Math.max(1, endPage - maxPagesToShow + 1);
-  }
-  for (let i = startPage; i <= endPage; i++) {
-    pageNumbers.push(i);
-  }
 
   return (
     <div className="p-8 space-y-6">
@@ -124,14 +111,12 @@ export default function AdminStaff() {
         </NavLink>
       </div>
 
-      {/* Error Message */}
       {error && (
         <div className="bg-red-100 border border-red-300 rounded-lg p-4 text-red-700 text-sm">
           {error}
         </div>
       )}
 
-      {/* Filters */}
       <div className="bg-white border border-stone-200 rounded-xl p-4 grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="md:col-span-2 relative">
           <input
@@ -176,12 +161,12 @@ export default function AdminStaff() {
         </select>
       </div>
 
-      {/* Table */}
       <div className="bg-white border border-stone-200 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           {loading ? (
-            <div className="p-8 text-center text-stone-500">
-              Đang tải dữ liệu...
+            <div className="p-12 flex items-center justify-center gap-2 text-sm text-stone-500">
+              <Loader className="animate-spin" size={18} />
+              <span>Đang tải dữ liệu...</span>
             </div>
           ) : staff.length === 0 ? (
             <div className="p-8 text-center text-stone-500">
@@ -254,7 +239,7 @@ export default function AdminStaff() {
 
                         <button
                           type="button"
-                          onClick={() => handleToggleActive(member.id)}
+                          onClick={() => handleDeleteStaff(member)}
                           className="inline-flex hover:cursor-pointer h-9 w-9 items-center justify-center rounded-lg border border-red-200 text-red-500 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
                           title="Ngưng hoạt động"
                         >
@@ -269,43 +254,16 @@ export default function AdminStaff() {
           )}
         </div>
 
-        {/* Pagination */}
         <div className="border-t px-4 py-3 flex justify-between items-center text-sm">
           <p className="text-stone-500">
             Hiển thị {displayCount} trong {total} mục
           </p>
 
-          <div className="flex gap-2">
-            <button
-              onClick={handlePreviousPage}
-              disabled={page === 1}
-              className="px-3 py-1 border rounded hover:bg-stone-100 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              ← Trước
-            </button>
-
-            {pageNumbers.map((pageNum) => (
-              <button
-                key={pageNum}
-                onClick={() => handlePageClick(pageNum)}
-                className={`px-3 py-1 rounded ${
-                  page === pageNum
-                    ? "bg-red-600 text-white"
-                    : "border hover:bg-stone-100"
-                }`}
-              >
-                {pageNum}
-              </button>
-            ))}
-
-            <button
-              onClick={handleNextPage}
-              disabled={page === totalPages}
-              className="px-3 py-1 border rounded hover:bg-stone-100 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Sau →
-            </button>
-          </div>
+          <Pagination
+            pageCount={totalPages}
+            currentPage={page - 1}
+            onPageChange={({ selected }) => setPage(selected + 1)}
+          />
         </div>
       </div>
     </div>

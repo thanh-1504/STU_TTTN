@@ -1,6 +1,6 @@
-import { existsSync, mkdirSync } from 'fs';
 import { NestFactory } from '@nestjs/core';
 import express from 'express';
+import { existsSync, mkdirSync } from 'fs';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { join } from 'path';
 import { AppModule } from './app.module';

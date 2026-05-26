@@ -22,7 +22,9 @@ export const getStaffList = async (
     console.log(`📋 Fetching staff list (page ${page}, size ${pageSize})`);
 
     const response = await api.get(`/admin/users?${params.toString()}`);
-    const users = response.data;
+    const users = Array.isArray(response.data)
+      ? response.data.filter((user) => user.role?.roleName !== "ADMIN")
+      : [];
 
     // Backend trả array, frontend xử lý phân trang
     const total = users.length;

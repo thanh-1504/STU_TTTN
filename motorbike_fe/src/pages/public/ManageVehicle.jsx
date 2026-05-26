@@ -1,21 +1,24 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
-  Bell,
   CalendarDays,
   ChevronDown,
-  Headset,
   Home,
-  Info,
-  LayoutDashboard,
+  ImagePlus,
   Save,
   User,
-  UserCircle2,
   Warehouse,
+  X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { addVehicle, getMyVehicles, updateVehicleKm } from "../../api/portalService";
+import toast from "react-hot-toast";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
+import {
+  addVehicle,
+  getMyVehicles,
+  updateVehicleKm,
+} from "../../api/portalService";
+import { getVehicleImage, saveVehicleImage } from "../../utils/vehicleImage";
 
 export default function ManageVehicle() {
   const { id } = useParams();
@@ -26,8 +29,12 @@ export default function ManageVehicle() {
   const [brand, setBrand] = useState("");
   const [model, setModel] = useState("");
   const [licensePlate, setLicensePlate] = useState("");
-  const [currentKm, setCurrentKm] = useState("");
+  const [currentKm, setCurrentKm] = useState(0);
   const [vehicleType, setVehicleType] = useState("");
+  const [notes, setNotes] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const { data: vehicles = [] } = useQuery({
     queryKey: ["myVehicles"],
@@ -41,47 +48,107 @@ export default function ManageVehicle() {
         setBrand(vehicle.brand);
         setModel(vehicle.model || "");
         setLicensePlate(vehicle.licensePlate);
-        setCurrentKm(vehicle.currentKm);
+        setCurrentKm(Number(vehicle.currentKm));
         setVehicleType(vehicle.vehicleType);
+        // Restore previously saved image for this vehicle
+        const saved = getVehicleImage(vehicle.id);
+        if (saved) setImagePreview(saved);
       }
     }
   }, [id, isEditMode, vehicles]);
 
   const addMutation = useMutation({
     mutationFn: addVehicle,
-    onSuccess: () => {
+    onSuccess: (newVehicle) => {
+      // Persist the selected image so CustomerPortal can display it
+      if (imagePreview && newVehicle?.id) {
+        saveVehicleImage(newVehicle.id, imagePreview);
+      }
       queryClient.invalidateQueries(["myVehicles"]);
-      alert("Thêm xe thành công!");
-      navigate("/portal");
+      toast.success("Thêm xe thành công!", {
+        duration: 3000,
+        style: { fontFamily: "inherit" },
+      });
+      navigate("/history");
     },
     onError: (err) => {
-      alert(err.response?.data?.message || "Lỗi khi thêm xe");
+      toast.error(
+        err.response?.data?.message || "Thêm xe thất bại. Vui lòng thử lại.",
+        { duration: 4000, style: { fontFamily: "inherit" } },
+      );
     },
   });
 
   const updateKmMutation = useMutation({
     mutationFn: (data) => updateVehicleKm(id, data.currentKm),
     onSuccess: () => {
+      // Also persist a newly selected image when updating
+      if (imagePreview) {
+        saveVehicleImage(parseInt(id), imagePreview);
+      }
       queryClient.invalidateQueries(["myVehicles"]);
-      alert("Cập nhật số KM thành công!");
-      navigate("/portal");
+      toast.success("Cập nhật số KM thành công!", {
+        duration: 3000,
+        style: { fontFamily: "inherit" },
+      });
+      navigate("/history");
     },
     onError: (err) => {
-      alert(err.response?.data?.message || "Lỗi khi cập nhật");
+      toast.error(
+        err.response?.data?.message || "Cập nhật thất bại. Vui lòng thử lại.",
+        { duration: 4000, style: { fontFamily: "inherit" } },
+      );
     },
   });
 
+  const handleImageChange = (file) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Vui lòng chọn file ảnh hợp lệ (PNG, JPG, WEBP...).", {
+        duration: 3500,
+        style: { fontFamily: "inherit" },
+      });
+      return;
+    }
+    if (file.size > 30 * 1024 * 1024) {
+      toast.error("Ảnh quá lớn. Vui lòng chọn ảnh dưới 30MB.", {
+        duration: 3500,
+        style: { fontFamily: "inherit" },
+      });
+      return;
+    }
+    setImageFile(file);
+    // Use FileReader so the preview is a base64 data URL (survives navigation)
+    const reader = new FileReader();
+    reader.onload = (e) => setImagePreview(e.target.result);
+    reader.readAsDataURL(file);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    handleImageChange(file);
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    const km = Number(currentKm) || 0;
     if (isEditMode) {
-      updateKmMutation.mutate({ currentKm: parseInt(currentKm) || 0 });
+      updateKmMutation.mutate({ currentKm: km });
     } else {
       addMutation.mutate({
         brand,
         model,
         licensePlate,
-        currentKm: parseInt(currentKm) || 0,
+        currentKm: km,
         vehicleType,
+        ...(notes ? { notes } : {}),
       });
     }
   };
@@ -90,50 +157,21 @@ export default function ManageVehicle() {
     <div className="min-h-screen bg-[#fbf9f8] text-zinc-900 pb-20 md:pb-0">
       {/* Header */}
       <header className="sticky top-0 z-50 h-16 bg-white border-b border-zinc-200 px-4 flex items-center justify-between">
-        <h1 className="text-xl font-black tracking-tight uppercase text-red-700">
-          Dịch vụ Xe máy
-        </h1>
-
-        <div className="flex items-center gap-2">
-          <button className="p-2 rounded-full hover:bg-zinc-100">
-            <Bell size={20} />
-          </button>
-          <button className="p-2 rounded-full hover:bg-zinc-100">
-            <UserCircle2 size={22} />
-          </button>
-        </div>
+        <NavLink to="/" className="text-2xl font-black text-red-600 uppercase">
+          Shop2banh
+        </NavLink>
       </header>
 
       <div className="flex min-h-screen">
-        {/* Sidebar */}
-        <aside className="hidden md:flex fixed top-16 left-0 w-64 h-[calc(100vh-64px)] bg-zinc-900 text-white flex-col">
-          <nav className="flex-1 py-8">
-            <ul className="space-y-1">
-              <SidebarItem icon={<LayoutDashboard size={18} />} label="Trang chủ" />
-              <SidebarItem icon={<CalendarDays size={18} />} label="Lịch hẹn" />
-
-              <li className="border-l-4 border-red-600 bg-zinc-800">
-                <a className="flex items-center gap-3 px-6 py-3 text-white font-semibold cursor-pointer" onClick={() => navigate("/portal")}>
-                  <Warehouse size={18} className="text-red-500" />
-                  Garage của tôi
-                </a>
-              </li>
-
-              <SidebarItem icon={<Headset size={18} />} label="Hỗ trợ" />
-            </ul>
-          </nav>
-
-          <div className="p-6 border-t border-zinc-800 text-xs uppercase tracking-widest text-zinc-500">
-            Hệ thống v2.1
-          </div>
-        </aside>
-
         {/* Main */}
-        <main className="flex-1 md:ml-64">
+        <main className="flex-1">
           <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
             {/* Title */}
             <div className="mb-8">
-              <button onClick={() => navigate("/portal")} className="flex items-center gap-1 text-zinc-500 hover:text-red-700 mb-4">
+              <button
+                onClick={() => navigate("/history")}
+                className="flex cursor-pointer items-center gap-1 text-zinc-500 hover:text-red-700 mb-4"
+              >
                 <ArrowLeft size={16} />
                 <span className="text-sm">Quay lại Gara</span>
               </button>
@@ -142,7 +180,9 @@ export default function ManageVehicle() {
                 {isEditMode ? "Cập nhật số KM" : "Thêm xe mới vào Gara"}
               </h2>
               <p className="text-zinc-500 mt-1">
-                {isEditMode ? "Cập nhật số kilomet để theo dõi lịch trình bảo dưỡng chính xác hơn." : "Đăng ký xe của bạn để theo dõi lịch trình bảo dưỡng định kỳ tốt hơn."}
+                {isEditMode
+                  ? "Cập nhật số kilomet để theo dõi lịch trình bảo dưỡng chính xác hơn."
+                  : "Đăng ký xe của bạn để theo dõi lịch trình bảo dưỡng định kỳ tốt hơn."}
               </p>
             </div>
 
@@ -150,17 +190,84 @@ export default function ManageVehicle() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left */}
               <div className="lg:col-span-5 space-y-6">
-                {/* Tip */}
-                <div className="bg-zinc-100 border border-zinc-200 rounded-xl p-5">
-                  <div className="flex gap-3">
-                    <Info size={20} className="text-red-700 mt-0.5" />
-                    <div>
-                      <h4 className="font-semibold mb-1">Mẹo nhỏ</h4>
-                      <p className="text-sm text-zinc-600 leading-relaxed">
-                        Cập nhật số km thường xuyên giúp hệ thống tính toán và nhắc nhở bạn thời gian bảo dưỡng, thay dầu nhớt kịp thời để đảm bảo tuổi thọ của xe.
-                      </p>
-                    </div>
+                {/* Image Upload */}
+                <div className="bg-white border border-zinc-200 rounded-xl p-5 shadow-sm">
+                  <p className="text-xs font-bold uppercase tracking-widest text-zinc-600 mb-3">
+                    Ảnh đại diện xe
+                  </p>
+
+                  <div
+                    onClick={() =>
+                      !imagePreview &&
+                      document.getElementById("vehicleImageInput").click()
+                    }
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setIsDragging(true);
+                    }}
+                    onDragLeave={() => setIsDragging(false)}
+                    onDrop={handleDrop}
+                    className={`relative rounded-xl border-2 border-dashed transition-all overflow-hidden
+                      ${
+                        isDragging
+                          ? "border-red-400 bg-red-50"
+                          : imagePreview
+                            ? "border-zinc-200 bg-zinc-50"
+                            : "border-zinc-300 bg-zinc-50 hover:border-red-400 hover:bg-red-50 cursor-pointer"
+                      }`}
+                    style={{ minHeight: "200px" }}
+                  >
+                    {imagePreview ? (
+                      <>
+                        <img
+                          src={imagePreview}
+                          alt="Ảnh xe"
+                          className="w-full h-full object-cover"
+                          style={{ maxHeight: "240px" }}
+                        />
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveImage();
+                          }}
+                          className="absolute top-2 right-2 bg-white border border-zinc-200 rounded-full p-1 shadow hover:bg-red-50 hover:border-red-300 transition"
+                          title="Xóa ảnh"
+                        >
+                          <X size={14} className="text-zinc-600" />
+                        </button>
+                      </>
+                    ) : (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4 text-center">
+                        <div className="w-12 h-12 rounded-full bg-zinc-200 flex items-center justify-center">
+                          <ImagePlus size={22} className="text-zinc-400" />
+                        </div>
+                        <p className="text-sm text-zinc-500 font-medium">
+                          Nhấp để tải lên hoặc kéo thả ảnh xe của bạn
+                        </p>
+                      </div>
+                    )}
                   </div>
+
+                  <input
+                    id="vehicleImageInput"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => handleImageChange(e.target.files?.[0])}
+                  />
+
+                  {imagePreview && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        document.getElementById("vehicleImageInput").click()
+                      }
+                      className="mt-3 w-full h-10 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-sm text-zinc-600 font-medium transition"
+                    >
+                      Đổi ảnh khác
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -185,7 +292,10 @@ export default function ManageVehicle() {
                           <option value="Suzuki">Suzuki</option>
                           <option value="Piaggio">Piaggio</option>
                         </select>
-                        <ChevronDown size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400" />
+                        <ChevronDown
+                          size={18}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400"
+                        />
                       </div>
                     </FormGroup>
 
@@ -212,11 +322,14 @@ export default function ManageVehicle() {
                           className="w-full h-12 rounded-xl border border-zinc-200 bg-zinc-50 px-4 appearance-none focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50"
                         >
                           <option value="">Chọn loại xe</option>
-                          <option value="MANUAL">Xe số (Manual)</option>
-                          <option value="SCOOTER">Xe tay ga (Scooter)</option>
-                          <option value="BIG">Phân khối lớn (Big)</option>
+                          <option value="MANUAL">Xe số </option>
+                          <option value="SCOOTER">Xe tay ga </option>
+                          <option value="BIG">Phân khối lớn </option>
                         </select>
-                        <ChevronDown size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400" />
+                        <ChevronDown
+                          size={18}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400"
+                        />
                       </div>
                     </FormGroup>
 
@@ -239,22 +352,37 @@ export default function ManageVehicle() {
                         <input
                           required
                           type="number"
-                          min="0"
+                          min={0}
                           value={currentKm}
-                          onChange={(e) => setCurrentKm(e.target.value)}
+                          onChange={(e) => setCurrentKm(Number(e.target.value))}
                           placeholder="0"
                           className="w-full h-12 rounded-xl border border-zinc-200 bg-zinc-50 px-4 pr-12 focus:outline-none focus:ring-2 focus:ring-red-500"
                         />
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-zinc-400">km</span>
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-zinc-400">
+                          km
+                        </span>
                       </div>
                     </FormGroup>
                   </div>
+
+                  {/* Notes */}
+                  <FormGroup label="Ghi chú (Tùy chọn)">
+                    <textarea
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="Nhập các lưu ý về tình trạng xe hoặc phụ tùng bạn quan tâm..."
+                      rows={4}
+                      className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 resize-y"
+                    />
+                  </FormGroup>
 
                   {/* Buttons */}
                   <div className="pt-6 border-t border-zinc-100 flex flex-col md:flex-row gap-4">
                     <button
                       type="submit"
-                      disabled={addMutation.isPending || updateKmMutation.isPending}
+                      disabled={
+                        addMutation.isPending || updateKmMutation.isPending
+                      }
                       className="h-14 px-8 bg-red-700 hover:bg-red-800 text-white rounded-xl font-semibold flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
                     >
                       <Save size={18} />
@@ -263,7 +391,7 @@ export default function ManageVehicle() {
 
                     <button
                       type="button"
-                      onClick={() => navigate("/portal")}
+                      onClick={() => navigate("/history")}
                       className="h-14 px-8 border border-zinc-300 rounded-xl hover:bg-zinc-50 text-zinc-700 font-medium"
                     >
                       Hủy
@@ -275,11 +403,88 @@ export default function ManageVehicle() {
           </div>
 
           {/* Footer */}
-          <footer className="mt-16 border-t border-zinc-200 bg-zinc-50">
-            <div className="max-w-7xl mx-auto px-6 py-10 flex flex-col md:flex-row justify-between items-center gap-6">
-              <div className="text-center md:text-left">
-                <h3 className="font-bold text-lg">Shop2banh Garage</h3>
-                <p className="text-sm text-zinc-500 mt-1">© 2024 Hệ thống Quản lý Garage. Bảo lưu mọi quyền.</p>
+          <footer className="bg-gray-900 text-gray-400 pt-12 pb-6">
+            <div className="max-w-7xl mx-auto px-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+                <div>
+                  <div className="text-xl font-black text-white uppercase mb-3">
+                    Shop2banh
+                  </div>
+                  <p className="text-sm leading-relaxed mb-4">
+                    Hệ thống dịch vụ xe máy chuyên nghiệp, uy tín tại TP.HCM.
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="text-white font-bold text-sm mb-4 uppercase">
+                    Dịch vụ
+                  </h4>
+                  <ul className="space-y-2 text-sm">
+                    {[
+                      "Bảo dưỡng định kỳ",
+                      "Thay nhớt",
+                      "Rửa xe",
+                      "Sửa chữa điện",
+                      "Thay lốp",
+                    ].map((item) => (
+                      <li key={item}>
+                        <a
+                          href="/services"
+                          className="hover:text-red-400 transition-colors"
+                        >
+                          {item}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div>
+                  <h4 className="text-white font-bold text-sm mb-4 uppercase">
+                    Hỗ trợ
+                  </h4>
+                  <ul className="space-y-2 text-sm">
+                    {[
+                      "Hướng dẫn đặt lịch",
+                      "Chính sách bảo hành",
+                      "Câu hỏi thường gặp",
+                      "Liên hệ",
+                    ].map((item) => (
+                      <li key={item}>
+                        <a
+                          href="#"
+                          className="hover:text-red-400 transition-colors"
+                        >
+                          {item}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div>
+                  <h4 className="text-white font-bold text-sm mb-4 uppercase">
+                    Liên hệ
+                  </h4>
+                  <ul className="space-y-2 text-sm">
+                    <li>309 Vườn Lài, P. Phú Thọ Hòa, Q. Tân Phú, TP.HCM</li>
+                    <li>
+                      SĐT:{" "}
+                      <a href="tel:0938820202" className="hover:text-red-400">
+                        0938.82.02.02
+                      </a>
+                    </li>
+                    <li>
+                      Email:{" "}
+                      <a
+                        href="mailto:info@shop2banh.vn"
+                        className="hover:text-red-400"
+                      >
+                        shop2banh@gmail.com
+                      </a>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </footer>
@@ -297,21 +502,11 @@ export default function ManageVehicle() {
   );
 }
 
-/* Components */
-function SidebarItem({ icon, label }) {
-  return (
-    <li>
-      <a className="flex items-center gap-3 px-6 py-3 text-zinc-400 hover:text-white hover:bg-zinc-800 transition cursor-pointer">
-        {icon}
-        {label}
-      </a>
-    </li>
-  );
-}
-
 function MobileItem({ icon, label, active }) {
   return (
-    <button className={`flex flex-col items-center text-[10px] ${active ? "text-red-700 font-bold" : "text-zinc-400"}`}>
+    <button
+      className={`flex flex-col items-center text-[10px] ${active ? "text-red-700 font-bold" : "text-zinc-400"}`}
+    >
       {icon}
       <span>{label}</span>
     </button>
@@ -321,7 +516,9 @@ function MobileItem({ icon, label, active }) {
 function FormGroup({ label, children }) {
   return (
     <div className="space-y-2">
-      <label className="text-xs font-bold uppercase tracking-widest text-zinc-600">{label}</label>
+      <label className="text-xs font-bold uppercase tracking-widest text-zinc-600">
+        {label}
+      </label>
       {children}
     </div>
   );

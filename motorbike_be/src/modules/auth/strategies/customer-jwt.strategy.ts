@@ -30,7 +30,7 @@ export class CustomerJwtStrategy extends PassportStrategy(Strategy, 'jwt-custome
 
   async validate(payload: CustomerJwtPayload) {
     if (payload.type !== 'customer') {
-      throw new UnauthorizedException('Token không hợp lệ cho khách hàng');
+      throw new UnauthorizedException('Bạn không có quyền thực hiện hành động này.');
     }
     const customer = await this.customerRepository.findByPhone(payload.phone);
     if (!customer) {

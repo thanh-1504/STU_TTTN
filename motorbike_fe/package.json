@@ -18,11 +18,14 @@
     "react-dom": "^19.2.5",
     "react-hot-toast": "^2.6.0",
     "react-is": "^19.2.5",
+    "react-paginate": "^8.3.0",
     "react-quill": "^2.0.0",
     "react-quill-new": "^3.8.3",
     "react-router-dom": "^6.30.3",
     "recharts": "^3.8.1",
     "slugify": "^1.6.9",
+    "sweetalert2": "^11.26.24",
+    "swiper": "^12.1.4",
     "tailwindcss": "^4.2.4"
   },
   "devDependencies": {

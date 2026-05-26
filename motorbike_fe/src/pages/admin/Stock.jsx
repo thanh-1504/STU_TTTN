@@ -1,11 +1,15 @@
-import { Eye } from "lucide-react";
+import { Eye, Loader } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { getImportOrders } from "../../api/sparePartsService";
+import Pagination from "../../components/Pagination";
+
+const PAGE_SIZE = 10;
 
 export default function AdminStock() {
   const [importOrders, setImportOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -57,6 +61,12 @@ export default function AdminStock() {
     },
   ];
 
+  const totalPages = Math.ceil(importOrders.length / PAGE_SIZE);
+  const paginatedOrders = importOrders.slice(
+    page * PAGE_SIZE,
+    (page + 1) * PAGE_SIZE,
+  );
+
   return (
     <div className="min-h-screen bg-[#fbf9f8] text-zinc-900">
       {/* Main */}
@@ -105,12 +115,7 @@ export default function AdminStock() {
                       className={`flex items-center text-xs font-bold ${
                         item.up ? "text-green-600" : "text-red-600"
                       }`}
-                    >
-                      <span className="material-symbols-outlined text-[14px]">
-                        {item.up ? "arrow_upward" : "arrow_downward"}
-                      </span>
-                      {item.trend}
-                    </span>
+                    ></span>
                   )}
                 </div>
               </div>
@@ -185,11 +190,11 @@ export default function AdminStock() {
                 <tbody className="divide-y divide-zinc-100">
                   {loading ? (
                     <tr>
-                      <td
-                        colSpan="7"
-                        className="px-6 py-4 text-center text-sm text-zinc-500"
-                      >
-                        Đang tải dữ liệu...
+                      <td colSpan="7" className="px-6 py-12 text-center">
+                        <div className="inline-flex items-center gap-2 text-sm text-zinc-500">
+                          <Loader className="animate-spin" size={18} />
+                          <span>Đang tải dữ liệu...</span>
+                        </div>
                       </td>
                     </tr>
                   ) : importOrders.length === 0 ? (
@@ -202,7 +207,7 @@ export default function AdminStock() {
                       </td>
                     </tr>
                   ) : (
-                    importOrders.map((order) => (
+                    paginatedOrders.map((order) => (
                       <tr key={order.id} className="hover:bg-zinc-50">
                         <td className="px-6 py-4 text-sm font-bold text-red-700">
                           #NK{order.id.toString().padStart(5, "0")}
@@ -243,19 +248,21 @@ export default function AdminStock() {
             {/* Pagination */}
             <div className="flex items-center justify-between border-t border-zinc-200 bg-zinc-50/50 px-6 py-4">
               <p className="text-xs text-zinc-500">
-                Hiển thị <span className="text-zinc-900">1 - 10</span> trong số{" "}
-                <span className="text-zinc-900">1,248</span> đơn nhập
+                Hiển thị{" "}
+                <span className="text-zinc-900">
+                  {importOrders.length === 0 ? 0 : page * PAGE_SIZE + 1} –{" "}
+                  {Math.min((page + 1) * PAGE_SIZE, importOrders.length)}
+                </span>{" "}
+                trong số{" "}
+                <span className="text-zinc-900">{importOrders.length}</span> đơn
+                nhập
               </p>
 
-              <div className="flex items-center gap-1">
-                <PageBtn icon="chevron_left" disabled />
-                <PageNumber active>1</PageNumber>
-                <PageNumber>2</PageNumber>
-                <PageNumber>3</PageNumber>
-                <span className="px-1 text-zinc-400">...</span>
-                <PageNumber>125</PageNumber>
-                <PageBtn icon="chevron_right" />
-              </div>
+              <Pagination
+                pageCount={totalPages}
+                currentPage={page}
+                onPageChange={({ selected }) => setPage(selected)}
+              />
             </div>
           </div>
         </div>

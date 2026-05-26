@@ -1,4 +1,4 @@
-import { CheckCircle2, Clock3, Pencil, Trash2, XCircle } from "lucide-react";
+import { CheckCircle2, Clock3, Loader, Pencil, Trash2, XCircle } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
@@ -10,6 +10,7 @@ import {
   NotificationContainer,
   useNotification,
 } from "../../components/Notification";
+import Pagination from "../../components/Pagination";
 
 const formatCurrency = (value) =>
   `${Number(value || 0).toLocaleString("vi-VN")}d`;
@@ -31,6 +32,8 @@ const getDiscountLabel = (voucher) => {
   return "-";
 };
 
+const PAGE_SIZE = 10;
+
 export default function AdminVouchers() {
   const navigate = useNavigate();
   const { notify, notifications } = useNotification();
@@ -39,6 +42,7 @@ export default function AdminVouchers() {
   const [revokeLoadingId, setRevokeLoadingId] = useState(null);
   const [statusFilter, setStatusFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(0);
 
   const fetchVouchers = async () => {
     setLoading(true);
@@ -83,6 +87,12 @@ export default function AdminVouchers() {
       );
     });
   }, [searchQuery, vouchers]);
+
+  const totalPages = Math.ceil(displayedVouchers.length / PAGE_SIZE);
+  const paginatedVouchers = displayedVouchers.slice(
+    page * PAGE_SIZE,
+    (page + 1) * PAGE_SIZE,
+  );
 
   const stats = useMemo(() => {
     const active = vouchers.filter(
@@ -232,11 +242,11 @@ export default function AdminVouchers() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td
-                      colSpan="7"
-                      className="px-4 py-8 text-center text-stone-500"
-                    >
-                      Đang tải dữ liệu...
+                    <td colSpan="7" className="px-4 py-12 text-center">
+                      <div className="inline-flex items-center gap-2 text-sm text-stone-500">
+                        <Loader className="animate-spin" size={18} />
+                        <span>Đang tải dữ liệu...</span>
+                      </div>
                     </td>
                   </tr>
                 ) : displayedVouchers.length === 0 ? (
@@ -249,7 +259,7 @@ export default function AdminVouchers() {
                     </td>
                   </tr>
                 ) : (
-                  displayedVouchers.map((voucher) => (
+                  paginatedVouchers.map((voucher) => (
                     <tr key={voucher.id} className="border-t hover:bg-stone-50">
                       <td className="px-4 py-4">
                         <div>
@@ -312,6 +322,17 @@ export default function AdminVouchers() {
                 )}
               </tbody>
             </table>
+          </div>
+          <div className="flex items-center justify-between border-t px-4 py-3 text-sm">
+            <span className="text-stone-500">
+              Hiển thị {displayedVouchers.length === 0 ? 0 : page * PAGE_SIZE + 1}–
+              {Math.min((page + 1) * PAGE_SIZE, displayedVouchers.length)} trên {displayedVouchers.length} khuyến mãi
+            </span>
+            <Pagination
+              pageCount={totalPages}
+              currentPage={page}
+              onPageChange={({ selected }) => setPage(selected)}
+            />
           </div>
         </div>
       </div>

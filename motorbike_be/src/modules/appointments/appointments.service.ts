@@ -1,17 +1,19 @@
 import {
-  Injectable,
-  NotFoundException,
   BadRequestException,
+  Injectable,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
+import { PrismaService } from '../../shared/services/prisma.service';
 import { AppointmentsRepository } from './appointments.repository';
+import { AdminCreateAppointmentDto } from './dto/admin-create-appointment.dto';
 import { CreateAppointmentDto } from './dto/create-appointments.dto';
 import { UpdateAppointmentDto } from './dto/update-appointments.dto';
-import { PrismaService } from '../../shared/services/prisma.service';
 import {
   Appointment,
   AppointmentStatus,
   NotificationType,
+  VehicleType,
 } from 'generated/prisma/client';
 
 @Injectable()
@@ -22,10 +24,6 @@ export class AppointmentsService {
     private readonly appointmentsRepository: AppointmentsRepository,
     private readonly prisma: PrismaService,
   ) {}
-
-  // ─────────────────────────────────────────────────────────────────────────────
-  // PUBLIC
-  // ─────────────────────────────────────────────────────────────────────────────
 
   async getAvailableSlots(dateStr: string) {
     let date: Date;
@@ -38,7 +36,9 @@ export class AppointmentsService {
     }
 
     if (isNaN(date.getTime())) {
-      throw new BadRequestException('Định dạng ngày không hợp lệ. Dùng YYYY-MM-DD.');
+      throw new BadRequestException(
+        'Định dạng ngày không hợp lệ. Dùng YYYY-MM-DD.',
+      );
     }
 
     const today = new Date();
@@ -47,7 +47,8 @@ export class AppointmentsService {
       throw new BadRequestException('Không thể tra cứu slot cho ngày đã qua.');
     }
 
-    const availableSlots = await this.appointmentsRepository.getAvailableSlots(date);
+    const availableSlots =
+      await this.appointmentsRepository.getAvailableSlots(date);
     return {
       date: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
       availableSlots,
@@ -55,20 +56,12 @@ export class AppointmentsService {
     };
   }
 
-  async createByCustomer(dto: CreateAppointmentDto, customerId: number): Promise<Appointment> {
+  async createByCustomer(
+    dto: CreateAppointmentDto,
+    customerId: number,
+  ): Promise<Appointment> {
     const appointmentDate = new Date(dto.appointmentTime);
-    const hour = appointmentDate.getHours();
-
-    const booked = await this.appointmentsRepository.countByTimeSlot(appointmentDate, hour);
-    const available = await this.appointmentsRepository.getAvailableSlots(appointmentDate);
-    const slotLabel = `${String(hour).padStart(2, '0')}:00`;
-
-    if (!available.includes(slotLabel)) {
-      throw new BadRequestException(
-        `Khung giờ ${slotLabel} đã đầy hoặc nằm ngoài giờ làm việc. ` +
-          `Hiện tại đã có ${booked} xe đặt trong giờ này.`,
-      );
-    }
+    await this.ensureSlotAvailable(appointmentDate);
 
     return this.appointmentsRepository.createAppointment({
       appointmentTime: appointmentDate,
@@ -79,19 +72,80 @@ export class AppointmentsService {
     });
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // ADMIN — READ
-  // ─────────────────────────────────────────────────────────────────────────────
+  async createByAdmin(dto: AdminCreateAppointmentDto): Promise<Appointment> {
+    const appointmentDate = new Date(dto.appointmentTime);
+    await this.ensureSlotAvailable(appointmentDate);
 
-  /**
-   * GET /admin/appointments?status=&date=YYYY-MM-DD
-   * Filter kết hợp status + date (parse an toàn giống getAvailableSlots).
-   */
+    const customer = await this.prisma.customer.upsert({
+      where: { phone: dto.phone },
+      create: {
+        phone: dto.phone,
+        customerName: dto.customerName,
+      },
+      update: {
+        customerName: dto.customerName,
+      },
+    });
+
+    const normalizedPlate = dto.licensePlate
+      ? dto.licensePlate.toUpperCase().replace(/\s/g, '')
+      : undefined;
+
+    let vehicleId: number | undefined;
+    if (normalizedPlate) {
+      const existingVehicle = await this.prisma.vehicle.findUnique({
+        where: { licensePlate: normalizedPlate },
+      });
+
+      if (existingVehicle && existingVehicle.customerId !== customer.id) {
+        throw new BadRequestException(
+          `Biển số ${normalizedPlate} đã thuộc về một khách hàng khác.`,
+        );
+      }
+
+      if (existingVehicle) {
+        const updatedVehicle = await this.prisma.vehicle.update({
+          where: { id: existingVehicle.id },
+          data: {
+            brand: dto.brand || existingVehicle.brand,
+            model: dto.model || existingVehicle.model,
+            vehicleType: dto.vehicleType || existingVehicle.vehicleType,
+            customerId: customer.id,
+          },
+        });
+        vehicleId = updatedVehicle.id;
+      } else {
+        const createdVehicle = await this.prisma.vehicle.create({
+          data: {
+            licensePlate: normalizedPlate,
+            brand: dto.brand || 'Chưa xác định',
+            model: dto.model || undefined,
+            vehicleType: dto.vehicleType || VehicleType.SCOOTER,
+            customerId: customer.id,
+          },
+        });
+        vehicleId = createdVehicle.id;
+      }
+    }
+
+    return this.appointmentsRepository.createAppointment({
+      appointmentTime: appointmentDate,
+      customerId: customer.id,
+      vehicleId,
+      symptoms: dto.symptoms || undefined,
+      notes: dto.notes || undefined,
+    });
+  }
+
   async findAll(status?: string, dateStr?: string) {
     let date: Date | undefined;
     if (dateStr) {
       const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateStr);
-      if (!m) throw new BadRequestException('Định dạng date không hợp lệ. Dùng YYYY-MM-DD.');
+      if (!m) {
+        throw new BadRequestException(
+          'Định dạng date không hợp lệ. Dùng YYYY-MM-DD.',
+        );
+      }
       date = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
     }
 
@@ -103,7 +157,9 @@ export class AppointmentsService {
 
   async findOne(id: number) {
     const appt = await this.appointmentsRepository.findById(id);
-    if (!appt) throw new NotFoundException(`Không tìm thấy lịch hẹn #${id}`);
+    if (!appt) {
+      throw new NotFoundException(`Không tìm thấy lịch hẹn #${id}`);
+    }
     return appt;
   }
 
@@ -115,14 +171,6 @@ export class AppointmentsService {
     return this.appointmentsRepository.findAllAdmin({ status });
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // ADMIN — CONFIRM / CANCEL
-  // ─────────────────────────────────────────────────────────────────────────────
-
-  /**
-   * PATCH /admin/appointments/:id/confirm
-   * PENDING → CONFIRMED + tạo Notification APPOINTMENT_CONFIRM cho customer.
-   */
   async adminConfirm(id: number) {
     const appt = await this.findOne(id);
 
@@ -134,22 +182,18 @@ export class AppointmentsService {
 
     const confirmed = await this.appointmentsRepository.confirm(id);
 
-    // Tạo Notification cho customer (async, không block response)
     this.createNotification({
       type: NotificationType.APPOINTMENT_CONFIRM,
       customerId: appt.customerId,
       title: 'Lịch hẹn đã được xác nhận',
       message: `Lịch hẹn của bạn vào lúc ${new Date(appt.appointmentTime).toLocaleString('vi-VN')} đã được xác nhận.`,
-    }).catch((err) => this.logger.warn(`Tạo notification thất bại: ${err.message}`));
+    }).catch((err) =>
+      this.logger.warn(`Tạo notification thất bại: ${err.message}`),
+    );
 
     return confirmed;
   }
 
-  /**
-   * PATCH /admin/appointments/:id/cancel
-   * → CANCELLED + tạo Notification APPOINTMENT_CANCEL cho customer.
-   * Body: { reason? }
-   */
   async adminCancel(id: number, reason?: string) {
     const appt = await this.findOne(id);
 
@@ -162,7 +206,6 @@ export class AppointmentsService {
 
     const cancelled = await this.appointmentsRepository.cancel(id, reason);
 
-    // Tạo Notification cho customer
     this.createNotification({
       type: NotificationType.APPOINTMENT_REMINDER,
       customerId: appt.customerId,
@@ -170,14 +213,12 @@ export class AppointmentsService {
       message:
         `Lịch hẹn vào lúc ${new Date(appt.appointmentTime).toLocaleString('vi-VN')} đã bị hủy` +
         (reason ? `. Lý do: ${reason}` : '.'),
-    }).catch((err) => this.logger.warn(`Tạo notification thất bại: ${err.message}`));
+    }).catch((err) =>
+      this.logger.warn(`Tạo notification thất bại: ${err.message}`),
+    );
 
     return cancelled;
   }
-
-  // ─────────────────────────────────────────────────────────────────────────────
-  // CUSTOMER — CANCEL
-  // ─────────────────────────────────────────────────────────────────────────────
 
   async cancel(id: number): Promise<Appointment> {
     const appt = await this.findOne(id);
@@ -190,18 +231,10 @@ export class AppointmentsService {
     return this.appointmentsRepository.cancel(id);
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // UPDATE (generic, dùng bởi Admin patch thông thường)
-  // ─────────────────────────────────────────────────────────────────────────────
-
   async update(id: number, dto: UpdateAppointmentDto): Promise<Appointment> {
     await this.findOne(id);
     return this.appointmentsRepository.update(id, dto as any);
   }
-
-  // ─────────────────────────────────────────────────────────────────────────────
-  // PRIVATE
-  // ─────────────────────────────────────────────────────────────────────────────
 
   private async createNotification(data: {
     type: NotificationType;
@@ -217,5 +250,23 @@ export class AppointmentsService {
         message: data.message,
       },
     });
+  }
+
+  private async ensureSlotAvailable(appointmentDate: Date) {
+    const hour = appointmentDate.getHours();
+    const booked = await this.appointmentsRepository.countByTimeSlot(
+      appointmentDate,
+      hour,
+    );
+    const available =
+      await this.appointmentsRepository.getAvailableSlots(appointmentDate);
+    const slotLabel = `${String(hour).padStart(2, '0')}:00`;
+
+    if (!available.includes(slotLabel)) {
+      throw new BadRequestException(
+        `Khung giờ ${slotLabel} đã đầy hoặc nằm ngoài giờ làm việc. ` +
+          `Hiện tại đã có ${booked} xe đặt trong giờ này.`,
+      );
+    }
   }
 }

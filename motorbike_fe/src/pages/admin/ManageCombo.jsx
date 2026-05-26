@@ -41,7 +41,7 @@ export default function ManageCombo() {
   const [initialLoading, setInitialLoading] = useState(isEditMode);
   const [uploading, setUploading] = useState(false);
 
-  const [availableServices, setAvailableServices] = useState([]);
+  const [allServices, setAllServices] = useState([]);
   const [serviceFilter, setServiceFilter] = useState("");
   const [openServiceModal, setOpenServiceModal] = useState(false);
   const [tempSelectedServices, setTempSelectedServices] = useState([]);
@@ -50,7 +50,7 @@ export default function ManageCombo() {
     const fetchServices = async () => {
       try {
         const data = await getServices();
-        setAvailableServices(Array.isArray(data) ? data : []);
+        setAllServices(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching services:", error);
       }
@@ -64,7 +64,7 @@ export default function ManageCombo() {
             comboName: data.comboName || "",
             description: data.description || "",
             discountPct: data.discountPct || "",
-            isActive: data.isActive || true,
+            isActive: data.isActive ?? true,
             serviceIds: data.services?.map((s) => s.id) || [],
           });
           if (data.imageUrl) {
@@ -159,7 +159,9 @@ export default function ManageCombo() {
     setOpenServiceModal(false);
   };
 
-  const selectedServiceObjects = availableServices.filter((s) =>
+  const selectableServices = allServices.filter((service) => service.isActive);
+
+  const selectedServiceObjects = allServices.filter((s) =>
     form.serviceIds.includes(s.id),
   );
 
@@ -170,7 +172,7 @@ export default function ManageCombo() {
     }));
   };
 
-  const filteredServices = availableServices.filter((service) => {
+  const filteredServices = selectableServices.filter((service) => {
     const query = serviceFilter.toLowerCase();
     return (
       !query ||
@@ -523,7 +525,7 @@ export default function ManageCombo() {
             {/* Header */}
             <div className="shrink-0 px-6 h-14 border-b flex items-center justify-between">
               <h3 className="text-xl font-bold text-gray-800">
-                Chon dich vu vao combo
+                Chọn dịch vụ vào combo
               </h3>
 
               <button
@@ -547,7 +549,7 @@ export default function ManageCombo() {
 
             {/* Table */}
             <div className="flex-1 overflow-auto">
-              {availableServices.length === 0 ? (
+              {selectableServices.length === 0 ? (
                 <div className="flex items-center justify-center h-full text-gray-400">
                   Khong co dich vu nao
                 </div>
@@ -627,7 +629,7 @@ export default function ManageCombo() {
             {/* Footer */}
             <div className="shrink-0 px-6 h-16 border-t bg-white flex items-center justify-between">
               <p className="text-sm font-semibold text-gray-700">
-                ✓ Da chon {tempSelectedServices.length} dich vu
+               Đã chọn {tempSelectedServices.length} dịch vụ
               </p>
 
               <div className="flex gap-3">
@@ -636,7 +638,7 @@ export default function ManageCombo() {
                   onClick={() => setOpenServiceModal(false)}
                   className="px-5 py-2 border rounded-xl hover:bg-gray-50 text-sm"
                 >
-                  Huy bo
+                  Hủy bỏ
                 </button>
 
                 <button
@@ -644,7 +646,7 @@ export default function ManageCombo() {
                   onClick={handleAddServices}
                   className="px-6 py-2 bg-[#B21B00] text-white rounded-xl hover:bg-[#8e1400] text-sm"
                 >
-                  Them vao combo
+                  Thêm vào combo
                 </button>
               </div>
             </div>

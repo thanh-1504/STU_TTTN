@@ -1,6 +1,4 @@
 import {
-  ChevronLeft,
-  ChevronRight,
   Eye,
   Loader,
   Pencil,
@@ -14,12 +12,13 @@ import {
   publishBlogPost,
 } from "../../api/blogService";
 import { useNotification } from "../../components/Notification";
+import Pagination from "../../components/Pagination";
 
 export default function Blog() {
   const [posts, setPostsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const postsPerPage = 10;
   const { notify, notifications, NotificationContainer, removeNotification } =
     useNotification();
@@ -93,7 +92,7 @@ export default function Blog() {
 
   // Pagination
   const totalPages = Math.ceil(posts.length / postsPerPage);
-  const startIdx = (currentPage - 1) * postsPerPage;
+  const startIdx = currentPage * postsPerPage;
   const paginatedPosts = posts.slice(startIdx, startIdx + postsPerPage);
 
   const getStatusBadge = (status) => {
@@ -186,9 +185,9 @@ export default function Blog() {
           {/* Table */}
           <div className="bg-white border border-zinc-200 rounded shadow-sm overflow-hidden mx-8">
             {loading ? (
-              <div className="p-12 flex items-center justify-center">
-                <Loader className="animate-spin mr-2" size={20} />
-                <p>Đang tải...</p>
+              <div className="p-12 flex items-center justify-center gap-2 text-sm text-stone-500">
+                <Loader className="animate-spin" size={18} />
+                <span>Đang tải dữ liệu...</span>
               </div>
             ) : paginatedPosts.length === 0 ? (
               <div className="p-12 text-center text-zinc-500">
@@ -293,48 +292,20 @@ export default function Blog() {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="p-4 bg-zinc-50 flex items-center justify-between">
+                  <div className="p-4 bg-zinc-50 flex items-center justify-between border-t">
                     <span className="text-sm text-zinc-500">
-                      Hiển thị {startIdx + 1} -{" "}
+                      Hiển thị {startIdx + 1} –{" "}
                       {Math.min(startIdx + postsPerPage, posts.length)} trên
                       tổng số {posts.length} bài viết
                     </span>
 
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() =>
-                          setCurrentPage(Math.max(1, currentPage - 1))
-                        }
-                        disabled={currentPage === 1}
-                        className="p-2 hover:bg-zinc-200 rounded disabled:opacity-50"
-                      >
-                        <ChevronLeft size={16} />
-                      </button>
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                        (page) => (
-                          <button
-                            key={page}
-                            onClick={() => setCurrentPage(page)}
-                            className={`w-8 h-8 rounded text-sm ${
-                              page === currentPage
-                                ? "bg-red-700 text-white"
-                                : "hover:bg-zinc-200"
-                            }`}
-                          >
-                            {page}
-                          </button>
-                        ),
-                      )}
-                      <button
-                        onClick={() =>
-                          setCurrentPage(Math.min(totalPages, currentPage + 1))
-                        }
-                        disabled={currentPage === totalPages}
-                        className="p-2 hover:bg-zinc-200 rounded disabled:opacity-50"
-                      >
-                        <ChevronRight size={16} />
-                      </button>
-                    </div>
+                    <Pagination
+                      pageCount={totalPages}
+                      currentPage={currentPage}
+                      onPageChange={({ selected }) => {
+                        setCurrentPage(selected);
+                      }}
+                    />
                   </div>
                 )}
               </>

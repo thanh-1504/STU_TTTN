@@ -3,6 +3,7 @@ import {
   CheckCircle2,
   Crown,
   Layers,
+  Loader,
   PauseCircle,
   Pencil,
   Sparkles,
@@ -11,17 +12,19 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import { deleteCombo, getCombos } from "../../api/combosService";
 import {
   NotificationContainer,
   useNotification,
 } from "../../components/Notification";
+import Pagination from "../../components/Pagination";
 
 const stats = [
   {
     title: "Tổng số combo",
     value: "0",
-    desc: "+12% so với tháng trước",
+    desc: "Bao gồm cả đang bán và tạm dừng",
     icon: Layers,
     textColor: "group-hover:text-red-600",
   },
@@ -35,7 +38,7 @@ const stats = [
   {
     title: "Combo tạm dừng",
     value: "0",
-    desc: "Cần cập nhật lại giá",
+    desc: "Đang ngừng kinh doanh",
     icon: PauseCircle,
     textColor: "group-hover:text-orange-600",
   },
@@ -49,12 +52,39 @@ const comboColors = [
   "bg-purple-50 text-purple-600",
 ];
 
+function ComboThumbnail({ combo, index }) {
+  const Icon = comboIcons[index % comboIcons.length];
+  const color = comboColors[index % comboColors.length];
+
+  if (combo.imageUrl) {
+    return (
+      <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-stone-200 bg-stone-50">
+        <img
+          src={combo.imageUrl}
+          alt={combo.comboName}
+          className="h-full w-full object-cover"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`h-14 w-14 shrink-0 rounded-xl border border-transparent flex items-center justify-center ${color}`}
+    >
+      <Icon className="h-6 w-6" />
+    </div>
+  );
+}
+
 export default function AdminCombos() {
   const navigate = useNavigate();
   const { notify, notifications } = useNotification();
   const [combos, setCombos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [deleteLoadingId, setDeleteLoadingId] = useState(null);
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 10;
 
   useEffect(() => {
     const fetchCombos = async () => {
@@ -74,21 +104,30 @@ export default function AdminCombos() {
   }, [notify]);
 
   const handleDeleteCombo = async (combo) => {
-    const confirmDelete = window.confirm(
-      `Bạn có chắc chắn muốn xóa combo "${combo.comboName}"?`,
-    );
-    if (!confirmDelete) return;
+    const result = await Swal.fire({
+      title: "Xóa combo?",
+      text: `Bạn có chắc chắn muốn xóa combo "${combo.comboName}"?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Xóa combo",
+      cancelButtonText: "Hủy",
+      confirmButtonColor: "#dc2626",
+      reverseButtons: true,
+    });
+    if (!result.isConfirmed) return;
 
     setDeleteLoadingId(combo.id);
     try {
-      const result = await deleteCombo(combo.id);
-      if (result.success) {
-        notify.success("Xóa combo thành công");
-        // Refresh combos list
-        const data = await getCombos();
-        setCombos(Array.isArray(data) ? data : []);
+      const deleteResult = await deleteCombo(combo.id);
+      if (deleteResult.success) {
+        setCombos((prev) =>
+          prev.map((item) =>
+            item.id === combo.id ? { ...item, isActive: false } : item,
+          ),
+        );
+        notify.success("Đã cập nhật combo sang trạng thái tạm dừng");
       } else {
-        notify.error(result.errors?.general || "Xóa combo thất bại");
+        notify.error(deleteResult.errors?.general || "Xóa combo thất bại");
       }
     } catch (error) {
       console.error("Error deleting combo:", error);
@@ -98,16 +137,19 @@ export default function AdminCombos() {
     }
   };
 
-  const visibleCombos = combos.filter((combo) => combo.isActive);
-  const activeCombos = visibleCombos.length;
-  const inactiveCombos = 0;
-  const totalVisibleCombos = visibleCombos.length;
+  const activeCombos = combos.filter((combo) => combo.isActive).length;
+  const inactiveCombos = combos.filter((combo) => !combo.isActive).length;
+  const totalCombos = combos.length;
 
   const updatedStats = [
-    { ...stats[0], value: totalVisibleCombos.toString() },
+    { ...stats[0], value: totalCombos.toString() },
     { ...stats[1], value: activeCombos.toString() },
     { ...stats[2], value: inactiveCombos.toString() },
   ];
+
+  const totalPages = Math.ceil(combos.length / PAGE_SIZE);
+  const paginatedCombos = combos.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
   return (
     <div className="min-h-screen bg-zinc-50 flex font-sans">
       <NotificationContainer
@@ -115,11 +157,8 @@ export default function AdminCombos() {
         removeNotification={() => {}}
       />
 
-      {/* Main */}
-      <div className="flex-1 ">
-        {/* Content */}
+      <div className="flex-1">
         <main className="p-6 space-y-6">
-          {/* Stats */}
           <section className="grid md:grid-cols-3 gap-6">
             {updatedStats.map((item) => {
               const Icon = item.icon;
@@ -149,7 +188,6 @@ export default function AdminCombos() {
             })}
           </section>
 
-          {/* Table */}
           <section className="bg-white rounded-2xl border overflow-hidden">
             <div className="p-6 border-b flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
@@ -181,14 +219,14 @@ export default function AdminCombos() {
                 <tbody>
                   {loading ? (
                     <tr>
-                      <td
-                        colSpan="5"
-                        className="px-6 py-8 text-center text-sm text-zinc-500"
-                      >
-                        Đang tải dữ liệu...
+                      <td colSpan="5" className="px-6 py-12 text-center">
+                        <div className="inline-flex items-center gap-2 text-sm text-zinc-500">
+                          <Loader className="animate-spin" size={18} />
+                          <span>Đang tải dữ liệu...</span>
+                        </div>
                       </td>
                     </tr>
-                  ) : visibleCombos.length === 0 ? (
+                  ) : combos.length === 0 ? (
                     <tr>
                       <td
                         colSpan="5"
@@ -198,9 +236,7 @@ export default function AdminCombos() {
                       </td>
                     </tr>
                   ) : (
-                    visibleCombos.map((item, index) => {
-                      const Icon = comboIcons[index % comboIcons.length];
-                      const color = comboColors[index % comboColors.length];
+                    paginatedCombos.map((item, index) => {
                       const discountText = item.discountPct
                         ? `Giảm ${item.discountPct}%`
                         : "Không giảm";
@@ -211,17 +247,18 @@ export default function AdminCombos() {
                           className="border-t hover:bg-zinc-50 transition"
                         >
                           <td className="px-6 py-4">
-                            <div className="flex gap-3 items-center">
-                              <div
-                                className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}
-                              >
-                                <Icon className="w-5 h-5" />
-                              </div>
+                            <div className="flex items-center gap-4">
+                              <ComboThumbnail combo={item} index={index} />
 
-                              <div>
-                                <p className="font-semibold">
+                              <div className="min-w-0">
+                                <p className="font-semibold text-zinc-900">
                                   {item.comboName}
                                 </p>
+                                {item.description && (
+                                  <p className="mt-1 text-xs text-zinc-500 line-clamp-2">
+                                    {item.description}
+                                  </p>
+                                )}
                               </div>
                             </div>
                           </td>
@@ -249,13 +286,13 @@ export default function AdminCombos() {
                             {discountText}
                           </td>
 
-                          <td className="py-4">
+                          <td className="px-6 py-4">
                             {item.isActive ? (
-                              <span className=" py-1 rounded-full text-xs bg-green-100 text-green-700 font-semibold">
+                              <span className="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
                                 Đang kinh doanh
                               </span>
                             ) : (
-                              <span className=" py-1 rounded-full text-xs bg-zinc-100 text-zinc-600 font-semibold">
+                              <span className="inline-flex rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-600">
                                 Tạm dừng
                               </span>
                             )}
@@ -268,7 +305,7 @@ export default function AdminCombos() {
                                   navigate(`/admin/combos/edit/${item.id}`)
                                 }
                                 className="p-2 hover:bg-zinc-100 rounded-lg"
-                                title="Chinh sua combo"
+                                title="Chỉnh sửa combo"
                               >
                                 <Pencil className="w-4 h-4 text-zinc-500" />
                               </button>
@@ -276,7 +313,7 @@ export default function AdminCombos() {
                                 onClick={() => handleDeleteCombo(item)}
                                 disabled={deleteLoadingId === item.id}
                                 className="p-2 hover:bg-red-50 rounded-lg disabled:opacity-60"
-                                title="Xoa combo"
+                                title="Xóa combo"
                               >
                                 <Trash2 className="w-4 h-4 text-red-500" />
                               </button>
@@ -288,6 +325,17 @@ export default function AdminCombos() {
                   )}
                 </tbody>
               </table>
+            </div>
+            <div className="flex items-center justify-between border-t px-6 py-3 text-sm">
+              <span className="text-zinc-500">
+                Hiển thị {combos.length === 0 ? 0 : page * PAGE_SIZE + 1}–
+                {Math.min((page + 1) * PAGE_SIZE, combos.length)} trên {combos.length} combo
+              </span>
+              <Pagination
+                pageCount={totalPages}
+                currentPage={page}
+                onPageChange={({ selected }) => setPage(selected)}
+              />
             </div>
           </section>
         </main>
