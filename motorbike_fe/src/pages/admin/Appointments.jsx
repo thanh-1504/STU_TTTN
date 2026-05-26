@@ -72,7 +72,7 @@ const AdminAppointments = () => {
     } finally {
       setLoading(false);
     }
-  }, [appliedStatus, appliedDate, notify]);
+  }, [appliedStatus, appliedDate]);
 
   useEffect(() => {
     fetchAppointments();
@@ -375,9 +375,14 @@ const AdminAppointments = () => {
 
               <div className="flex justify-between items-center p-3 text-sm text-gray-500 border-t">
                 <span>
-                  Hiển thị {filteredAppointments.length === 0 ? 0 : page * PAGE_SIZE + 1}–
-                  {Math.min((page + 1) * PAGE_SIZE, filteredAppointments.length)} trên{" "}
-                  {filteredAppointments.length} lịch hẹn
+                  Hiển thị{" "}
+                  {filteredAppointments.length === 0 ? 0 : page * PAGE_SIZE + 1}
+                  –
+                  {Math.min(
+                    (page + 1) * PAGE_SIZE,
+                    filteredAppointments.length,
+                  )}{" "}
+                  trên {filteredAppointments.length} lịch hẹn
                 </span>
                 <Pagination
                   pageCount={totalPages}
