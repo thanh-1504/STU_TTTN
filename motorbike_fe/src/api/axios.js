@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
-
+//const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_URL || "https://stu-tttn.onrender.com";
 
 const api = axios.create({
   baseURL: API_URL,
@@ -14,7 +14,10 @@ const api = axios.create({
 // Interceptor: tự động gắn token theo loại tài khoản
 api.interceptors.request.use((config) => {
   // Admin routes use the staff token; everything else uses the customer token
-  const isAdminRoute = config.url?.startsWith("/admin") || config.url?.startsWith("/auth/login") || config.url?.startsWith("/auth/me");
+  const isAdminRoute =
+    config.url?.startsWith("/admin") ||
+    config.url?.startsWith("/auth/login") ||
+    config.url?.startsWith("/auth/me");
   const token = isAdminRoute
     ? localStorage.getItem("admin_token")
     : localStorage.getItem("customer_token");
