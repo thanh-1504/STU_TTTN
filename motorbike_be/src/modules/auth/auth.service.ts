@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   Logger,
   UnauthorizedException,
@@ -9,7 +10,13 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { RedisService } from '../../shared/services/redis.service';
 import { CustomerRepository } from './customer.repository';
-import { LoginDto, SendOtpDto, VerifyOtpDto } from './dto/auth.dto';
+import {
+  CustomerLoginDto,
+  CustomerRegisterDto,
+  LoginDto,
+  SendOtpDto,
+  VerifyOtpDto,
+} from './dto/auth.dto';
 import { UserRepository } from './user.repository';
 
 /** OTP TTL: 5 phút (giây) */
@@ -39,12 +46,8 @@ export class AuthService {
    * Verify bcrypt password → sign JWT với payload {sub, role, type:'staff'}
    */
   async login(dto: LoginDto): Promise<{ accessToken: string; user: object }> {
-    // Gọi UserRepository — không gọi Prisma trực tiếp
     const user = await this.userRepository.findByUsernameOrEmail(dto.username);
-    console.log('Login identifier:', dto.username);
-    console.log('Found user:', user);
     if (!user) {
-      console.log('Working');
       throw new UnauthorizedException('Tên đăng nhập hoặc mật khẩu không đúng');
     }
 
@@ -54,7 +57,6 @@ export class AuthService {
 
     const isPasswordValid = await bcrypt.compare(dto.password, user.password);
     if (!isPasswordValid) {
-      console.log('Working');
       throw new UnauthorizedException('Tên đăng nhập hoặc mật khẩu không đúng');
     }
 
@@ -79,20 +81,116 @@ export class AuthService {
   }
 
   // ────────────────────────────────────────────────────────────────────────────
-  // 2. CUSTOMER OTP — SEND
+  // 2. CUSTOMER — REGISTER (email + password)
   // ────────────────────────────────────────────────────────────────────────────
 
   /**
-   * Gửi OTP cho khách hàng.
-   * Tạo mã 6 số, lưu Redis TTL 5 phút, log ra console (mock SMS).
+   * Đăng ký tài khoản khách hàng bằng email + password.
+   * Tự động đăng nhập sau khi đăng ký thành công (trả JWT luôn).
    */
+  async customerRegister(dto: CustomerRegisterDto): Promise<{
+    accessToken: string;
+    customer: object;
+  }> {
+    // Kiểm tra email đã tồn tại chưa
+    const existingEmail = await this.customerRepository.findByEmail(dto.email);
+    if (existingEmail) {
+      throw new ConflictException('Email này đã được sử dụng');
+    }
+
+    // Kiểm tra phone đã tồn tại chưa
+    const existingPhone = await this.customerRepository.findByPhone(dto.phone);
+    if (existingPhone) {
+      throw new ConflictException('Số điện thoại này đã được đăng ký');
+    }
+
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+
+    const customer = await this.customerRepository.createWithEmailPassword({
+      email: dto.email,
+      password: hashedPassword,
+      customerName: dto.customerName,
+      phone: dto.phone,
+    });
+
+    const payload = {
+      sub: customer.id,
+      email: customer.email,
+      type: 'customer',
+    };
+
+    const accessToken = this.jwtService.sign(payload);
+
+    return {
+      accessToken,
+      customer: {
+        id: customer.id,
+        email: customer.email,
+        phone: customer.phone,
+        customerName: customer.customerName,
+      },
+    };
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // 3. CUSTOMER — LOGIN (email + password)
+  // ────────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Đăng nhập khách hàng bằng email + password.
+   * Chỉ cho phép tài khoản Customer (không phải staff).
+   * Tài khoản tạo qua OTP cũ (không có password) sẽ bị từ chối.
+   */
+  async customerLogin(dto: CustomerLoginDto): Promise<{
+    accessToken: string;
+    customer: object;
+  }> {
+    const customer = await this.customerRepository.findByEmail(dto.email);
+
+    if (!customer) {
+      throw new UnauthorizedException('Email hoặc mật khẩu không đúng');
+    }
+
+    // Tài khoản OTP cũ (không có password) → từ chối
+    if (!customer.password) {
+      throw new UnauthorizedException(
+        'Tài khoản này chưa đặt mật khẩu. Vui lòng đăng ký tài khoản mới.',
+      );
+    }
+
+    const isPasswordValid = await bcrypt.compare(dto.password, customer.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Email hoặc mật khẩu không đúng');
+    }
+
+    const payload = {
+      sub: customer.id,
+      email: customer.email,
+      type: 'customer',
+    };
+
+    const accessToken = this.jwtService.sign(payload);
+
+    return {
+      accessToken,
+      customer: {
+        id: customer.id,
+        email: customer.email,
+        phone: customer.phone,
+        customerName: customer.customerName,
+      },
+    };
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // 4. CUSTOMER OTP — SEND (giữ lại backward-compat)
+  // ────────────────────────────────────────────────────────────────────────────
+
   async sendOtp(dto: SendOtpDto): Promise<{ message: string }> {
     const otp = this.generateOtp();
     const redisKey = `${OTP_KEY_PREFIX}${dto.phone}`;
-    console.log(otp)
     await this.redisService.set(redisKey, otp, OTP_TTL_SECONDS);
 
-    // Mock SMS — log ra console thay vì gọi SMS API thật
     this.logger.log(
       `[MOCK SMS] Gửi OTP đến ${dto.phone}: ${otp} (TTL: ${OTP_TTL_SECONDS}s)`,
     );
@@ -103,12 +201,9 @@ export class AuthService {
   }
 
   // ────────────────────────────────────────────────────────────────────────────
-  // 3. CUSTOMER OTP — VERIFY
+  // 5. CUSTOMER OTP — VERIFY (giữ lại backward-compat)
   // ────────────────────────────────────────────────────────────────────────────
 
-  /**
-   * Xác thực OTP, upsert Customer theo phone, trả JWT.
-   */
   async verifyOtp(dto: VerifyOtpDto): Promise<{
     accessToken: string;
     customer: object;
@@ -125,16 +220,11 @@ export class AuthService {
       throw new BadRequestException('Mã OTP không đúng');
     }
 
-    // OTP đúng → xoá khỏi Redis để tránh dùng lại
     await this.redisService.del(redisKey);
 
-    // Kiểm tra khách hàng đã tồn tại chưa
-    const existingCustomer = await this.customerRepository.findByPhone(
-      dto.phone,
-    );
+    const existingCustomer = await this.customerRepository.findByPhone(dto.phone);
     const isNewCustomer = !existingCustomer;
 
-    // Upsert: tạo mới nếu chưa có, cập nhật tên nếu có truyền
     const customer = await this.customerRepository.upsertByPhone(dto.phone);
 
     const payload = {
@@ -160,7 +250,6 @@ export class AuthService {
   // PRIVATE HELPERS
   // ────────────────────────────────────────────────────────────────────────────
 
-  /** Tạo mã OTP 6 chữ số ngẫu nhiên */
   private generateOtp(): string {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }

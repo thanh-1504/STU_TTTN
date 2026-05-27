@@ -4,16 +4,18 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { CustomerRepository } from '../customer.repository';
 
-/** Payload trong JWT của khách hàng (Customer OTP) */
+/** Payload trong JWT của khách hàng */
 export interface CustomerJwtPayload {
   sub: number;         // customerId
-  phone: string;
+  phone?: string;      // OTP flow cũ
+  email?: string;      // Email/password flow mới
   type: 'customer';
 }
 
 /**
- * CustomerJwtStrategy — xác thực JWT của khách hàng (OTP flow).
- * Tên strategy: 'jwt-customer' (dùng cho @UseGuards(CustomerJwtAuthGuard))
+ * CustomerJwtStrategy — xác thực JWT của khách hàng.
+ * Hỗ trợ cả 2 flow: OTP (phone) và Email/Password (email).
+ * Validate bằng customer.id (sub) để nhất quán.
  */
 @Injectable()
 export class CustomerJwtStrategy extends PassportStrategy(Strategy, 'jwt-customer') {
@@ -32,7 +34,7 @@ export class CustomerJwtStrategy extends PassportStrategy(Strategy, 'jwt-custome
     if (payload.type !== 'customer') {
       throw new UnauthorizedException('Bạn không có quyền thực hiện hành động này.');
     }
-    const customer = await this.customerRepository.findByPhone(payload.phone);
+    const customer = await this.customerRepository.findById(payload.sub);
     if (!customer) {
       throw new UnauthorizedException('Khách hàng không tồn tại');
     }

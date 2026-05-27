@@ -8,7 +8,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto, SendOtpDto, VerifyOtpDto } from './dto/auth.dto';
+import {
+  CustomerLoginDto,
+  CustomerRegisterDto,
+  LoginDto,
+  SendOtpDto,
+  VerifyOtpDto,
+} from './dto/auth.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CustomerJwtAuthGuard } from './guards/customer-jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
@@ -60,28 +66,28 @@ export class AuthController {
     return { message: `Xin chào Admin ${user.fullname}` };
   }
 
-  // ── Customer OTP ─────────────────────────────────────────────────────────────
+  // ── Customer Email/Password ───────────────────────────────────────────────────
 
   /**
-   * POST /auth/otp/send
-   * Gửi OTP về số điện thoại khách hàng (mock: log console)
-   * Body: { phone, customerName? }
+   * POST /auth/customer/register
+   * Đăng ký tài khoản khách hàng bằng email + password
+   * Body: { email, password, customerName, phone }
    */
-  @Post('otp/send')
-  @HttpCode(HttpStatus.OK)
-  sendOtp(@Body() dto: SendOtpDto) {
-    return this.authService.sendOtp(dto);
+  @Post('customer/register')
+  @HttpCode(HttpStatus.CREATED)
+  customerRegister(@Body() dto: CustomerRegisterDto) {
+    return this.authService.customerRegister(dto);
   }
 
   /**
-   * POST /auth/otp/verify
-   * Xác thực OTP, upsert Customer, trả JWT
-   * Body: { phone, otp }
+   * POST /auth/customer/login
+   * Đăng nhập khách hàng bằng email + password
+   * Body: { email, password }
    */
-  @Post('otp/verify')
+  @Post('customer/login')
   @HttpCode(HttpStatus.OK)
-  verifyOtp(@Body() dto: VerifyOtpDto) {
-    return this.authService.verifyOtp(dto);
+  customerLogin(@Body() dto: CustomerLoginDto) {
+    return this.authService.customerLogin(dto);
   }
 
   /**
@@ -93,9 +99,30 @@ export class AuthController {
   getCustomerMe(@CurrentUser() customer: any) {
     return {
       id: customer.id,
+      email: customer.email,
       phone: customer.phone,
       customerName: customer.customerName,
       totalSpent: customer.totalSpent,
     };
+  }
+
+  // ── Customer OTP (giữ lại backward-compat) ───────────────────────────────────
+
+  /**
+   * POST /auth/otp/send
+   */
+  @Post('otp/send')
+  @HttpCode(HttpStatus.OK)
+  sendOtp(@Body() dto: SendOtpDto) {
+    return this.authService.sendOtp(dto);
+  }
+
+  /**
+   * POST /auth/otp/verify
+   */
+  @Post('otp/verify')
+  @HttpCode(HttpStatus.OK)
+  verifyOtp(@Body() dto: VerifyOtpDto) {
+    return this.authService.verifyOtp(dto);
   }
 }

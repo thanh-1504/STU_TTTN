@@ -10,6 +10,9 @@ export { CustomerRepository } from './customer.repository';
 export { LoginDto, LoginSchema } from './dto/auth.dto';
 export { SendOtpDto, SendOtpSchema } from './dto/auth.dto';
 export { VerifyOtpDto, VerifyOtpSchema } from './dto/auth.dto';
+export { CustomerRegisterDto, CustomerRegisterSchema } from './dto/auth.dto';
+export { CustomerLoginDto, CustomerLoginSchema } from './dto/auth.dto';
+
 
 // Guards
 export { JwtAuthGuard } from './guards/jwt-auth.guard';

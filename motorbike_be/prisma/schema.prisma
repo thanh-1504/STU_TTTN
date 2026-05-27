@@ -137,6 +137,8 @@ model User {
 model Customer {
   id           Int      @id @default(autoincrement())
   phone        String   @unique @db.VarChar(15)
+  email        String?  @unique @db.VarChar(255)
+  password     String?  @db.VarChar(255)
   customerName String   @map("customer_name") @db.VarChar(100)
   address      String?  @db.Text
   totalSpent   Decimal  @default(0) @map("total_spent") @db.Decimal(15, 2)

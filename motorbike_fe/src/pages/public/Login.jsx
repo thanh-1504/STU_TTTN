@@ -1,40 +1,41 @@
-// LoginPage.jsx
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { NavLink, Navigate, useNavigate } from "react-router-dom";
 import {
+  customerLogin,
+  customerRegister,
   getToken,
   saveAuthData,
-  sendOtp,
-  verifyOtp,
 } from "../../api/authService";
 
 export default function LoginPage() {
   const navigate = useNavigate();
 
   // Redirect nếu đã đăng nhập
-  if (getToken()) {
+  if (getToken("customer")) {
     return <Navigate to="/booking" replace />;
   }
 
-  const [step, setStep] = useState("phone");
-  const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [tab, setTab] = useState("login"); // 'login' | 'register'
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [countdown, setCountdown] = useState(0);
 
-  // Countdown timer cho "Gửi lại mã"
-  useEffect(() => {
-    let interval;
-    if (countdown > 0) {
-      interval = setInterval(() => setCountdown((prev) => prev - 1), 1000);
-    }
-    return () => clearInterval(interval);
-  }, [countdown]);
+  // Login form state
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [showLoginPwd, setShowLoginPwd] = useState(false);
 
-  const handleSendOtp = async () => {
-    if (!phone.trim()) {
-      setError("Vui lòng nhập số điện thoại");
+  // Register form state
+  const [regEmail, setRegEmail] = useState("");
+  const [regPassword, setRegPassword] = useState("");
+  const [regConfirmPassword, setRegConfirmPassword] = useState("");
+  const [regName, setRegName] = useState("");
+  const [regPhone, setRegPhone] = useState("");
+  const [showRegPwd, setShowRegPwd] = useState(false);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    if (!loginEmail.trim() || !loginPassword.trim()) {
+      setError("Vui lòng nhập đầy đủ email và mật khẩu");
       return;
     }
 
@@ -42,82 +43,107 @@ export default function LoginPage() {
     setError("");
 
     try {
-      await sendOtp(phone);
-      setStep("otp");
-      setCountdown(60); // 60 giây countdown
-      setOtp(["", "", "", "", "", ""]);
-    } catch (err) {
-      const message =
-        err.response?.data?.message || err.message || "Gửi OTP thất bại";
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleOtpChange = (value, index) => {
-    if (!/^\d?$/.test(value)) return;
-
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-
-    // Auto focus to next input
-    if (value && index < 5) {
-      const next = document.getElementById(`otp-${index + 1}`);
-      if (next) next.focus();
-    }
-
-    // Clear error when user starts typing
-    if (error) setError("");
-  };
-
-  const handleVerify = async () => {
-    const code = otp.join("");
-    if (code.length !== 6) {
-      setError("Vui lòng nhập đầy đủ mã OTP");
-      return;
-    }
-
-    setLoading(true);
-    setError("");
-
-    try {
-      const data = await verifyOtp(phone, code);
+      const data = await customerLogin(loginEmail.trim(), loginPassword);
       saveAuthData(data.accessToken, "customer", data.customer);
-      navigate("/"); // Redirect to customer portal
+      navigate("/booking");
     } catch (err) {
       const message =
-        err.response?.data?.message || err.message || "Xác thực OTP thất bại";
-      setError(message);
+        err.response?.data?.message || err.message || "Đăng nhập thất bại";
+      setError(Array.isArray(message) ? message[0] : message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleResendOtp = () => {
-    if (countdown === 0) {
-      handleSendOtp();
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    if (
+      !regName.trim() ||
+      !regEmail.trim() ||
+      !regPhone.trim() ||
+      !regPassword
+    ) {
+      setError("Vui lòng điền đầy đủ thông tin");
+      return;
     }
+
+    if (regPassword !== regConfirmPassword) {
+      setError("Mật khẩu xác nhận không khớp");
+      return;
+    }
+
+    if (regPassword.length < 6) {
+      setError("Mật khẩu phải có ít nhất 6 ký tự");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const data = await customerRegister({
+        email: regEmail.trim(),
+        password: regPassword,
+        customerName: regName.trim(),
+        phone: regPhone.trim(),
+      });
+      saveAuthData(data.accessToken, "customer", data.customer);
+      navigate("/booking");
+    } catch (err) {
+      const message =
+        err.response?.data?.message || err.message || "Đăng ký thất bại";
+      setError(Array.isArray(message) ? message[0] : message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const switchTab = (newTab) => {
+    setTab(newTab);
+    setError("");
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Background */}
+      {/* Background decorations */}
       <div className="absolute top-0 left-0 w-72 h-72 bg-red-500/5 rounded-full blur-3xl" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
 
       {/* Card */}
       <div className="relative z-10 w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
         {/* Header */}
-        <div className="border-b px-6 py-4 flex justify-between items-center">
-          <NavLink to="/" className="text-sm text-gray-500 hover:text-red-600">
-            ← Trang chủ
-          </NavLink>
-
-          <h1 className="text-xl font-black uppercase text-red-600">
+        <div className="border-b px-6 py-4 flex justify-between items-center justify-center">
+          <NavLink
+            to={"/"}
+            className="text-xl font-black uppercase text-red-600"
+          >
             Shop2banh
-          </h1>
+          </NavLink>
+        </div>
+
+        {/* Tab switcher */}
+        <div className="flex border-b">
+          <button
+            onClick={() => switchTab("login")}
+            className={`flex-1 py-3 text-sm font-semibold transition ${
+              tab === "login"
+                ? "text-red-600 border-b-2 border-red-600 bg-red-50"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            Đăng nhập
+          </button>
+          <button
+            onClick={() => switchTab("register")}
+            className={`flex-1 py-3 text-sm font-semibold transition ${
+              tab === "register"
+                ? "text-red-600 border-b-2 border-red-600 bg-red-50"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            Đăng ký
+          </button>
         </div>
 
         {/* Content */}
@@ -129,107 +155,211 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* PHONE STEP */}
-          {step === "phone" && (
-            <>
-              <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold">Đăng nhập</h2>
-                <p className="text-gray-500 mt-2">
-                  Nhập số điện thoại để nhận mã OTP
-                </p>
-              </div>
-
-              <div className="space-y-5">
+          {/* ── LOGIN TAB ─────────────────────────────── */}
+          {tab === "login" && (
+            <form onSubmit={handleLogin} noValidate>
+              <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium block mb-2">
-                    Số điện thoại
+                  <label className="text-sm font-medium block mb-1.5">
+                    Email
                   </label>
-
                   <input
-                    type="tel"
-                    placeholder="Nhập số điện thoại của bạn"
-                    value={phone}
+                    id="login-email"
+                    type="email"
+                    placeholder="example@email.com"
+                    value={loginEmail}
                     onChange={(e) => {
-                      setPhone(e.target.value);
+                      setLoginEmail(e.target.value);
                       if (error) setError("");
                     }}
                     disabled={loading}
-                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-red-500 outline-none disabled:bg-gray-100"
+                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-red-500 outline-none disabled:bg-gray-100 text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium block mb-1.5">
+                    Mật khẩu
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="login-password"
+                      type={showLoginPwd ? "text" : "password"}
+                      placeholder="Nhập mật khẩu"
+                      value={loginPassword}
+                      onChange={(e) => {
+                        setLoginPassword(e.target.value);
+                        if (error) setError("");
+                      }}
+                      disabled={loading}
+                      className="w-full border rounded-lg px-4 py-3 pr-11 focus:ring-2 focus:ring-red-500 outline-none disabled:bg-gray-100 text-sm"
+                    />
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      onClick={() => setShowLoginPwd((v) => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs"
+                    >
+                      {showLoginPwd ? "Ẩn" : "Hiện"}
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  id="btn-login"
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white py-3 rounded-lg font-semibold transition mt-2"
+                >
+                  {loading ? "ĐANG ĐĂNG NHẬP..." : "ĐĂNG NHẬP"}
+                </button>
+              </div>
+
+              <p className="text-center text-sm text-gray-500 mt-5">
+                Chưa có tài khoản?{" "}
+                <button
+                  type="button"
+                  onClick={() => switchTab("register")}
+                  className="text-red-600 font-semibold hover:underline"
+                >
+                  Đăng ký ngay
+                </button>
+              </p>
+            </form>
+          )}
+
+          {/* ── REGISTER TAB ──────────────────────────── */}
+          {tab === "register" && (
+            <form onSubmit={handleRegister} noValidate>
+              <div className="text-center mb-7">
+                <h2 className="text-2xl font-bold">Tạo tài khoản</h2>
+                <p className="text-gray-500 mt-1 text-sm">
+                  Đăng ký để sử dụng đầy đủ dịch vụ
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium block mb-1.5">
+                    Họ và tên
+                  </label>
+                  <input
+                    id="reg-name"
+                    type="text"
+                    placeholder="Nguyễn Văn A"
+                    value={regName}
+                    onChange={(e) => {
+                      setRegName(e.target.value);
+                      if (error) setError("");
+                    }}
+                    disabled={loading}
+                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-red-500 outline-none disabled:bg-gray-100 text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium block mb-1.5">
+                    Email
+                  </label>
+                  <input
+                    id="reg-email"
+                    type="email"
+                    placeholder="example@email.com"
+                    value={regEmail}
+                    onChange={(e) => {
+                      setRegEmail(e.target.value);
+                      if (error) setError("");
+                    }}
+                    disabled={loading}
+                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-red-500 outline-none disabled:bg-gray-100 text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium block mb-1.5">
+                    Số điện thoại
+                  </label>
+                  <input
+                    id="reg-phone"
+                    type="tel"
+                    placeholder="0901234567"
+                    value={regPhone}
+                    onChange={(e) => {
+                      setRegPhone(e.target.value);
+                      if (error) setError("");
+                    }}
+                    disabled={loading}
+                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-red-500 outline-none disabled:bg-gray-100 text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium block mb-1.5">
+                    Mật khẩu
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="reg-password"
+                      type={showRegPwd ? "text" : "password"}
+                      placeholder="Ít nhất 6 ký tự"
+                      value={regPassword}
+                      onChange={(e) => {
+                        setRegPassword(e.target.value);
+                        if (error) setError("");
+                      }}
+                      disabled={loading}
+                      className="w-full border rounded-lg px-4 py-3 pr-11 focus:ring-2 focus:ring-red-500 outline-none disabled:bg-gray-100 text-sm"
+                    />
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      onClick={() => setShowRegPwd((v) => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs"
+                    >
+                      {showRegPwd ? "Ẩn" : "Hiện"}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium block mb-1.5">
+                    Xác nhận mật khẩu
+                  </label>
+                  <input
+                    id="reg-confirm-password"
+                    type={showRegPwd ? "text" : "password"}
+                    placeholder="Nhập lại mật khẩu"
+                    value={regConfirmPassword}
+                    onChange={(e) => {
+                      setRegConfirmPassword(e.target.value);
+                      if (error) setError("");
+                    }}
+                    disabled={loading}
+                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-red-500 outline-none disabled:bg-gray-100 text-sm"
                   />
                 </div>
 
                 <button
-                  onClick={handleSendOtp}
+                  id="btn-register"
+                  type="submit"
                   disabled={loading}
-                  className="w-full bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white py-3 rounded-lg font-semibold transition"
+                  className="w-full bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white py-3 rounded-lg font-semibold transition mt-2"
                 >
-                  {loading ? "ĐANG GỬI..." : "GỬI MÃ OTP"}
+                  {loading ? "ĐANG ĐĂNG KÝ..." : "ĐĂNG KÝ"}
                 </button>
               </div>
-            </>
-          )}
 
-          {/* OTP STEP */}
-          {step === "otp" && (
-            <>
-              <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold">Xác thực OTP</h2>
-
-                <p className="text-gray-500 mt-2">
-                  Mã đã gửi đến{" "}
-                  <span className="font-semibold text-black">{phone}</span>
-                </p>
-              </div>
-
-              <div className="flex justify-center gap-3 mb-6">
-                {otp.map((digit, index) => (
-                  <input
-                    key={index}
-                    id={`otp-${index}`}
-                    type="text"
-                    maxLength={1}
-                    value={digit}
-                    onChange={(e) => handleOtpChange(e.target.value, index)}
-                    disabled={loading}
-                    className="w-12 h-12 text-center text-xl font-bold border rounded-lg focus:ring-2 focus:ring-red-500 outline-none disabled:bg-gray-100"
-                  />
-                ))}
-              </div>
-
-              <div className="flex justify-between text-sm mb-6">
+              <p className="text-center text-sm text-gray-500 mt-5">
+                Đã có tài khoản?{" "}
                 <button
-                  onClick={handleResendOtp}
-                  disabled={countdown > 0 || loading}
-                  className="text-blue-600 hover:underline disabled:text-gray-400 disabled:cursor-not-allowed"
+                  type="button"
+                  onClick={() => switchTab("login")}
+                  className="text-red-600 font-semibold hover:underline"
                 >
-                  {countdown > 0 ? `Gửi lại sau ${countdown}s` : "Gửi lại mã"}
+                  Đăng nhập
                 </button>
-                <span className="text-gray-500">
-                  {String(countdown).padStart(2, "0")}:
-                  {String(countdown % 60).padStart(2, "0")}
-                </span>
-              </div>
-
-              <button
-                onClick={handleVerify}
-                disabled={loading}
-                className="w-full bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white py-3 rounded-lg font-semibold transition"
-              >
-                {loading ? "ĐANG KIỂM TRA..." : "XÁC NHẬN"}
-              </button>
-
-              <button
-                onClick={() => {
-                  setStep("phone");
-                  setPhone("");
-                  setOtp(["", "", "", "", "", ""]);
-                  setError("");
-                }}
-                className="w-full mt-3 border border-gray-300 py-3 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition"
-              >
-                Quay lại
-              </button>
-            </>
+              </p>
+            </form>
           )}
         </div>
       </div>

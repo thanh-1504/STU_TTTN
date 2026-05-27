@@ -16,7 +16,7 @@ export const LoginSchema = z.object({
 
 export class LoginDto extends createZodDto(LoginSchema) {}
 
-// ─── Customer OTP ─────────────────────────────────────────────────────────────
+// ─── Customer OTP (giữ lại để backward-compat) ───────────────────────────────
 
 export const SendOtpSchema = z.object({
   phone: z
@@ -42,3 +42,37 @@ export const VerifyOtpSchema = z.object({
 });
 
 export class VerifyOtpDto extends createZodDto(VerifyOtpSchema) {}
+
+// ─── Customer Email / Password ────────────────────────────────────────────────
+
+export const CustomerRegisterSchema = z.object({
+  email: z
+    .string()
+    .email('Email không hợp lệ')
+    .max(255),
+  password: z
+    .string()
+    .min(6, 'Mật khẩu tối thiểu 6 ký tự')
+    .max(255),
+  customerName: z
+    .string()
+    .min(1, 'Họ tên không được để trống')
+    .max(100, 'Họ tên tối đa 100 ký tự'),
+  phone: z
+    .string()
+    .regex(/^(0|\+84)[3-9]\d{8}$/, 'Số điện thoại không hợp lệ'),
+});
+
+export class CustomerRegisterDto extends createZodDto(CustomerRegisterSchema) {}
+
+export const CustomerLoginSchema = z.object({
+  email: z
+    .string()
+    .email('Email không hợp lệ'),
+  password: z
+    .string()
+    .min(1, 'Vui lòng nhập mật khẩu'),
+});
+
+export class CustomerLoginDto extends createZodDto(CustomerLoginSchema) {}
+
