@@ -109,7 +109,7 @@ export class ServicesAdminController {
       throw new BadRequestException('Vui long chon file anh can upload');
     }
 
-    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const baseUrl = process.env.BACKEND_URL ?? `${req.protocol}://${req.get('host')}`;
 
     return {
       imageUrl: `${baseUrl}/uploads/services/${file.filename}`,

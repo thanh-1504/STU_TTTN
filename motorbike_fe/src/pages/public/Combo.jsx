@@ -16,7 +16,6 @@ export default function Combo() {
   const [skip, setSkip] = useState(0);
   const [total, setTotal] = useState(0);
   const take = 6;
-
   const isLoggedIn = !!getToken();
   const navigate = useNavigate();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
