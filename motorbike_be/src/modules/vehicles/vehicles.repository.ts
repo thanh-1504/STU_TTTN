@@ -9,9 +9,7 @@ export class VehiclesRepository extends BaseRepository<Vehicle> {
     super(prisma, 'vehicle');
   }
 
-  // ─── READ ────────────────────────────────────────────────────────────────────
-
-  /** Lấy danh sách xe của một khách hàng */
+  /** Láº¥y danh sÃ¡ch xe cá»§a má»™t khÃ¡ch hÃ ng */
   async findByCustomerId(customerId: number): Promise<Vehicle[]> {
     return this.prisma.vehicle.findMany({
       where: { customerId },
@@ -19,44 +17,47 @@ export class VehiclesRepository extends BaseRepository<Vehicle> {
     });
   }
 
-  /** Tìm xe theo biển số */
+  /** TÃ¬m xe theo biá»ƒn sá»‘ */
   async findByLicensePlate(licensePlate: string): Promise<Vehicle | null> {
     return this.prisma.vehicle.findUnique({ where: { licensePlate } });
   }
 
-  // ─── WRITE ───────────────────────────────────────────────────────────────────
-
-  /** Tạo xe mới */
+  /** Táº¡o xe má»›i */
   async createVehicle(data: {
     licensePlate: string;
     brand: string;
     vehicleType: 'MANUAL' | 'SCOOTER' | 'BIG';
     model?: string;
     currentKm?: number;
+    imageUrl?: string;
     notes?: string;
     customerId: number;
   }): Promise<Vehicle> {
-    return this.prisma.vehicle.create({ data });
+    return this.prisma.vehicle.create({ data: data as any });
   }
 
-  /** Cập nhật số km */
-  async updateKm(id: number, currentKm: number): Promise<Vehicle> {
+  /** Cáº­p nháº­t sá»‘ km vÃ  áº£nh xe náº¿u cÃ³ */
+  async updateKm(
+    id: number,
+    data: { currentKm: number; imageUrl?: string | null },
+  ): Promise<Vehicle> {
     return this.prisma.vehicle.update({
       where: { id },
-      data: { currentKm },
+      data: {
+        currentKm: data.currentKm,
+        ...(data.imageUrl !== undefined ? { imageUrl: data.imageUrl } : {}),
+      } as any,
     });
   }
 
-  /** Xóa xe */
+  /** XÃ³a xe */
   async deleteVehicle(id: number): Promise<void> {
     await this.prisma.vehicle.delete({ where: { id } });
   }
 
-  // ─── HELPER ──────────────────────────────────────────────────────────────────
-
   /**
-   * Đếm số phiếu sửa chữa đang active (RECEIVED / IN_PROGRESS / PENDING)
-   * của xe — dùng để kiểm tra trước khi xóa xe.
+   * Äáº¿m sá»‘ phiáº¿u sá»­a chá»¯a Ä‘ang active (RECEIVED / IN_PROGRESS / PENDING)
+   * cá»§a xe â€” dÃ¹ng Ä‘á»ƒ kiá»ƒm tra trÆ°á»›c khi xÃ³a xe.
    */
   async countActiveRepairOrders(vehicleId: number): Promise<number> {
     return this.prisma.repairOrder.count({

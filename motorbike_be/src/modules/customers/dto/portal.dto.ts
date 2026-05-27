@@ -1,49 +1,60 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 
-/** DTO customer thêm xe — không nhận customerId (lấy từ JWT) */
+/** DTO customer thÃªm xe â€” khÃ´ng nháº­n customerId (láº¥y tá»« JWT) */
 export const PortalCreateVehicleSchema = z.object({
   licensePlate: z
     .string()
-    .min(4, 'Biển số tối thiểu 4 ký tự')
-    .max(20, 'Biển số tối đa 20 ký tự')
-    .regex(/^[A-Z0-9\-\.]+$/i, 'Biển số chỉ gồm chữ, số, dấu gạch ngang'),
+    .min(4, 'Biá»ƒn sá»‘ tá»‘i thiá»ƒu 4 kÃ½ tá»±')
+    .max(20, 'Biá»ƒn sá»‘ tá»‘i Ä‘a 20 kÃ½ tá»±')
+    .regex(
+      /^[A-Z0-9\-\.]+$/i,
+      'Biá»ƒn sá»‘ chá»‰ gá»“m chá»¯, sá»‘, dáº¥u gáº¡ch ngang',
+    ),
   brand: z
     .string()
-    .min(1, 'Tên hãng không được để trống')
-    .max(50, 'Tên hãng tối đa 50 ký tự'),
+    .min(1, 'TÃªn hÃ£ng khÃ´ng Ä‘Æ°á»£c Ä‘á»ƒ trá»‘ng')
+    .max(50, 'TÃªn hÃ£ng tá»‘i Ä‘a 50 kÃ½ tá»±'),
   vehicleType: z.enum(['MANUAL', 'SCOOTER', 'BIG'], {
-    message: 'Loại xe phải là MANUAL, SCOOTER hoặc BIG',
+    message: 'Loáº¡i xe pháº£i lÃ  MANUAL, SCOOTER hoáº·c BIG',
   }),
   model: z.string().max(100).optional(),
-  currentKm: z.number().int().min(0, 'Số KM không được âm').optional(),
+  currentKm: z.number().int().min(0, 'Sá»‘ KM khÃ´ng Ä‘Æ°á»£c Ã¢m').optional(),
+  imageUrl: z.string().url('URL ảnh không hợp lệ').max(500).optional(),
   notes: z.string().max(500).optional(),
 });
 
-export class PortalCreateVehicleDto extends createZodDto(PortalCreateVehicleSchema) {}
+export class PortalCreateVehicleDto extends createZodDto(
+  PortalCreateVehicleSchema,
+) {}
 
-/** DTO cập nhật KM */
+/** DTO cáº­p nháº­t KM */
 export const UpdateKmSchema = z.object({
   currentKm: z
-    .number({ message: 'Số KM phải là số' })
-    .int('Số KM phải là số nguyên')
-    .min(0, 'Số KM không được âm'),
+    .number({ message: 'Sá»‘ KM pháº£i lÃ  sá»‘' })
+    .int('Sá»‘ KM pháº£i lÃ  sá»‘ nguyÃªn')
+    .min(0, 'Sá»‘ KM khÃ´ng Ä‘Æ°á»£c Ã¢m'),
+  imageUrl: z
+    .union([z.string().url('URL ảnh không hợp lệ').max(500), z.null()])
+    .optional(),
 });
 
 export class UpdateKmDto extends createZodDto(UpdateKmSchema) {}
 
-/** DTO đánh giá */
+/** DTO Ä‘Ã¡nh giÃ¡ */
 export const CreatePortalReviewSchema = z.object({
   repairOrderId: z
     .number()
     .int()
-    .positive('ID phiếu sửa chữa phải là số nguyên dương'),
+    .positive('ID phiáº¿u sá»­a chá»¯a pháº£i lÃ  sá»‘ nguyÃªn dÆ°Æ¡ng'),
   rating: z
     .number()
-    .int('Sao phải là số nguyên')
-    .min(1, 'Tối thiểu 1 sao')
-    .max(5, 'Tối đa 5 sao'),
-  comment: z.string().max(1000, 'Bình luận tối đa 1000 ký tự').optional(),
+    .int('Sao pháº£i lÃ  sá»‘ nguyÃªn')
+    .min(1, 'Tá»‘i thiá»ƒu 1 sao')
+    .max(5, 'Tá»‘i Ä‘a 5 sao'),
+  comment: z.string().max(1000, 'BÃ¬nh luáº­n tá»‘i Ä‘a 1000 kÃ½ tá»±').optional(),
 });
 
-export class CreatePortalReviewDto extends createZodDto(CreatePortalReviewSchema) {}
+export class CreatePortalReviewDto extends createZodDto(
+  CreatePortalReviewSchema,
+) {}

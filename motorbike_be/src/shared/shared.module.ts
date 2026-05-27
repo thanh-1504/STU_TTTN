@@ -1,5 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { PrismaService } from './services/prisma.service';
+import { CloudinaryService } from './services/cloudinary.service';
 import { RedisService } from './services/redis.service';
 import { SharedController } from './shared.controller';
 import { SharedService } from './shared.service';
@@ -7,8 +8,8 @@ import { SharedService } from './shared.service';
 @Global()
 @Module({
   controllers: [SharedController],
-  providers: [SharedService, PrismaService, RedisService],
-  exports: [PrismaService, RedisService],
+  providers: [SharedService, PrismaService, RedisService, CloudinaryService],
+  exports: [PrismaService, RedisService, CloudinaryService],
 })
 export class SharedModule {}
 

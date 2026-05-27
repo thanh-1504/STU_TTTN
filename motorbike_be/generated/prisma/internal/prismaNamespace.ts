@@ -2139,6 +2139,7 @@ export const VehicleScalarFieldEnum = {
   vehicleType: 'vehicleType',
   model: 'model',
   currentKm: 'currentKm',
+  imageUrl: 'imageUrl',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',

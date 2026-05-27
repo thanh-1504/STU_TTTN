@@ -12,10 +12,26 @@ export const addVehicle = async (data) => {
   return response.data;
 };
 
+export const uploadVehicleImage = async (file) => {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const response = await axios.post("/portal/vehicles/upload-image", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return response.data;
+};
+
 // Update KM of a vehicle
-export const updateVehicleKm = async (id, currentKm) => {
+export const updateVehicleKm = async (id, data) => {
   const response = await axios.patch(`/portal/vehicles/${id}/km`, {
-    currentKm,
+    currentKm: data.currentKm,
+    ...(Object.prototype.hasOwnProperty.call(data, "imageUrl")
+      ? { imageUrl: data.imageUrl }
+      : {}),
   });
   return response.data;
 };

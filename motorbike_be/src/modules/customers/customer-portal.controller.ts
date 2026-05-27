@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -9,8 +10,11 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CustomerPortalService } from './customer-portal.service';
 import {
   PortalCreateVehicleDto,
@@ -19,34 +23,43 @@ import {
 } from './dto/portal.dto';
 import { CustomerJwtAuthGuard } from '../auth/guards/customer-jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { CloudinaryService } from '../../shared/services/cloudinary.service';
+import { imageUploadInterceptorOptions } from '../../shared/upload/image-upload.util';
 
 /**
- * CustomerPortalController — tất cả route yêu cầu Customer JWT.
- * customerId luôn lấy từ @CurrentUser(), không truyền qua body.
+ * CustomerPortalController â€” táº¥t cáº£ route yÃªu cáº§u Customer JWT.
+ * customerId luÃ´n láº¥y tá»« @CurrentUser(), khÃ´ng truyá»n qua body.
  */
 @Controller('portal')
 @UseGuards(CustomerJwtAuthGuard)
 export class CustomerPortalController {
-  constructor(private readonly portalService: CustomerPortalService) {}
+  constructor(
+    private readonly portalService: CustomerPortalService,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // VEHICLES
-  // ─────────────────────────────────────────────────────────────────────────────
-
-  /**
-   * GET /portal/vehicles
-   * Danh sách xe của customer đang đăng nhập.
-   */
   @Get('vehicles')
   getMyVehicles(@CurrentUser() customer: any) {
     return this.portalService.getMyVehicles(customer.id);
   }
 
-  /**
-   * POST /portal/vehicles
-   * Thêm xe mới. Biển số được normalize (UPPERCASE, bỏ khoảng trắng).
-   * Body: { licensePlate, brand, vehicleType, model?, currentKm?, notes? }
-   */
+  @Post('vehicles/upload-image')
+  @UseInterceptors(FileInterceptor('image', imageUploadInterceptorOptions))
+  uploadVehicleImage(
+    @UploadedFile() file: any,
+    @CurrentUser() customer: any,
+  ) {
+    if (!file) {
+      throw new BadRequestException('Vui long chon file anh can upload');
+    }
+
+    return this.cloudinaryService.uploadImage(
+      file,
+      `shop2banh/vehicles/customer-${customer.id}`,
+      'vehicle-image',
+    );
+  }
+
   @Post('vehicles')
   @HttpCode(HttpStatus.CREATED)
   addVehicle(
@@ -56,11 +69,6 @@ export class CustomerPortalController {
     return this.portalService.addVehicle(dto, customer.id);
   }
 
-  /**
-   * PATCH /portal/vehicles/:id/km
-   * Cập nhật số KM (phải là xe của chính customer).
-   * Body: { currentKm: number }
-   */
   @Patch('vehicles/:id/km')
   updateKm(
     @Param('id', ParseIntPipe) id: number,
@@ -70,10 +78,6 @@ export class CustomerPortalController {
     return this.portalService.updateKm(id, dto, customer.id);
   }
 
-  /**
-   * DELETE /portal/vehicles/:id
-   * Xóa xe (không có phiếu sửa đang active).
-   */
   @Delete('vehicles/:id')
   @HttpCode(HttpStatus.OK)
   deleteVehicle(
@@ -83,23 +87,11 @@ export class CustomerPortalController {
     return this.portalService.deleteVehicle(id, customer.id);
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // APPOINTMENTS
-  // ─────────────────────────────────────────────────────────────────────────────
-
-  /**
-   * GET /portal/appointments
-   * Tất cả lịch hẹn của customer (kèm thông tin xe).
-   */
   @Get('appointments')
   getMyAppointments(@CurrentUser() customer: any) {
     return this.portalService.getMyAppointments(customer.id);
   }
 
-  /**
-   * PATCH /portal/appointments/:id/cancel
-   * Hủy lịch hẹn — chỉ khi status = PENDING.
-   */
   @Patch('appointments/:id/cancel')
   @HttpCode(HttpStatus.OK)
   cancelAppointment(
@@ -109,23 +101,11 @@ export class CustomerPortalController {
     return this.portalService.cancelAppointment(id, customer.id);
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // REPAIR ORDERS
-  // ─────────────────────────────────────────────────────────────────────────────
-
-  /**
-   * GET /portal/repair-orders
-   * Lịch sử phiếu sửa chữa (summary).
-   */
   @Get('repair-orders')
   getMyRepairOrders(@CurrentUser() customer: any) {
     return this.portalService.getMyRepairOrders(customer.id);
   }
 
-  /**
-   * GET /portal/repair-orders/:id
-   * Chi tiết đầy đủ một phiếu (dịch vụ + phụ tùng + KTV + voucher).
-   */
   @Get('repair-orders/:id')
   getRepairOrderDetail(
     @Param('id', ParseIntPipe) id: number,
@@ -134,20 +114,6 @@ export class CustomerPortalController {
     return this.portalService.getRepairOrderDetail(id, customer.id);
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // REVIEWS
-  // ─────────────────────────────────────────────────────────────────────────────
-
-  /**
-   * POST /portal/reviews
-   * Gửi đánh giá cho dịch vụ.
-   * Body: { repairOrderId, rating (1-5), comment? }
-   *
-   * Điều kiện:
-   *  - Phiếu thuộc customer này
-   *  - Phiếu đã thanh toán (status = PAID)
-   *  - Customer chưa đánh giá trước đó
-   */
   @Post('reviews')
   @HttpCode(HttpStatus.CREATED)
   createReview(
