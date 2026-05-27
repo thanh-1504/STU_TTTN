@@ -1,9 +1,4 @@
-import {
-  Eye,
-  Loader,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { Eye, Loader, Pencil, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
@@ -34,7 +29,7 @@ export default function Blog() {
     } finally {
       setLoading(false);
     }
-  }, [statusFilter, notify]);
+  }, [statusFilter]);
 
   // eslint-disable-next-line
   useEffect(() => {
