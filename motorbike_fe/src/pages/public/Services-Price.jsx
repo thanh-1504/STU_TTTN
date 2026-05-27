@@ -8,8 +8,7 @@ import {
 } from "../../api/servicesService";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
-const formatPrice = (value) =>
-  `${Number(value || 0).toLocaleString("vi-VN")}đ`;
+const formatPrice = (value) => `${Number(value || 0).toLocaleString("vi-VN")}đ`;
 
 function shuffle(arr) {
   const a = [...arr];
@@ -134,10 +133,9 @@ const ServicesPrice = () => {
   const othersShuffled = useMemo(() => {
     return shuffle(allServices.filter((s) => s.id !== Number(id)));
   }, [allServices, id]);
-
   const crossSell = othersShuffled.slice(0, 2);
-  const popular = othersShuffled.slice(2, 8);   // 6 items
-  const similar = othersShuffled.slice(8, 13);  // 5 items
+  const popular = othersShuffled.slice(2, 8); // 6 items
+  const similar = othersShuffled.slice(8, 13); // 5 items
 
   // ── Handlers ───────────────────────────────────────────────────────────────
   const handleBooking = () => navigate(isLoggedIn ? "/booking" : "/login");
@@ -173,13 +171,19 @@ const ServicesPrice = () => {
       {/* ── Header ── */}
       <header className="sticky top-0 z-50 bg-white border-b shadow-sm">
         <div className="max-w-7xl mx-auto px-4 h-16 flex justify-between items-center">
-          <NavLink to="/" className="text-2xl font-black text-red-600 uppercase">
+          <NavLink
+            to="/"
+            className="text-2xl font-black text-red-600 uppercase"
+          >
             Shop2banh
           </NavLink>
 
           <div className="flex items-center gap-5">
             {isLoggedIn && (
-              <a href="#" className="text-gray-700 hover:text-red-600 transition-colors">
+              <a
+                href="#"
+                className="text-gray-700 hover:text-red-600 transition-colors"
+              >
                 <ShoppingCart size={22} strokeWidth={1.5} />
               </a>
             )}
@@ -240,14 +244,18 @@ const ServicesPrice = () => {
         {/* Breadcrumb */}
         <div className="bg-gray-100 py-2">
           <div className="max-w-[1200px] mx-auto px-[15px] text-xs text-gray-500">
-            <NavLink to="/" className="hover:text-[#D73417]">Trang chủ</NavLink>{" "}
+            <NavLink to="/" className="hover:text-[#D73417]">
+              Trang chủ
+            </NavLink>{" "}
             &gt;{" "}
             <NavLink to="/services" className="hover:text-[#D73417]">
               Dịch vụ sửa chữa
             </NavLink>{" "}
             &gt;{" "}
             <span className="text-gray-800">
-              {loading ? "Đang tải..." : (service?.serviceName ?? "Chi tiết dịch vụ")}
+              {loading
+                ? "Đang tải..."
+                : (service?.serviceName ?? "Chi tiết dịch vụ")}
             </span>
           </div>
         </div>
@@ -255,7 +263,9 @@ const ServicesPrice = () => {
         <div className="max-w-[1200px] mx-auto px-[15px] py-8">
           {/* ── Error ── */}
           {error && (
-            <div className="text-center py-16 text-red-500 text-sm">{error}</div>
+            <div className="text-center py-16 text-red-500 text-sm">
+              {error}
+            </div>
           )}
 
           {/* ── Loading skeleton ── */}
@@ -312,9 +322,13 @@ const ServicesPrice = () => {
                     <div className="flex items-center space-x-3 mb-6 text-sm">
                       <span className="text-gray-500">Tình trạng:</span>
                       {inStock ? (
-                        <span className="text-green-600 font-semibold">✔ Còn hàng</span>
+                        <span className="text-green-600 font-semibold">
+                          ✔ Còn hàng
+                        </span>
                       ) : (
-                        <span className="text-red-500 font-semibold">✘ Hết hàng</span>
+                        <span className="text-red-500 font-semibold">
+                          ✘ Hết hàng
+                        </span>
                       )}
                     </div>
 
@@ -403,7 +417,9 @@ const ServicesPrice = () => {
                     {descriptionText ? (
                       <p className="whitespace-pre-line">{descriptionText}</p>
                     ) : (
-                      <p className="text-gray-400 italic">Chưa có mô tả chi tiết.</p>
+                      <p className="text-gray-400 italic">
+                        Chưa có mô tả chi tiết.
+                      </p>
                     )}
                   </div>
                 </div>
@@ -415,7 +431,9 @@ const ServicesPrice = () => {
                   </h2>
 
                   {similar.length === 0 ? (
-                    <p className="text-sm text-gray-400">Không có sản phẩm nào.</p>
+                    <p className="text-sm text-gray-400">
+                      Không có sản phẩm nào.
+                    </p>
                   ) : (
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                       {similar.map((item) => (
@@ -510,39 +528,101 @@ const ServicesPrice = () => {
         <div className="max-w-[1200px] mx-auto px-[15px]">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div data-purpose="footer-col-1">
-              <h4 className="font-bold text-sm mb-4 uppercase">Hỗ trợ khách hàng</h4>
+              <h4 className="font-bold text-sm mb-4 uppercase">
+                Hỗ trợ khách hàng
+              </h4>
               <ul className="text-xs space-y-2 text-gray-600">
-                <li><a className="hover:text-[#D73417]" href="#">Hướng dẫn mua hàng</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Phương thức thanh toán</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Chính sách bảo mật</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Chính sách đổi trả</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Câu hỏi thường gặp</a></li>
+                <li>
+                  <a className="hover:text-[#D73417]" href="#">
+                    Hướng dẫn mua hàng
+                  </a>
+                </li>
+                <li>
+                  <a className="hover:text-[#D73417]" href="#">
+                    Phương thức thanh toán
+                  </a>
+                </li>
+                <li>
+                  <a className="hover:text-[#D73417]" href="#">
+                    Chính sách bảo mật
+                  </a>
+                </li>
+                <li>
+                  <a className="hover:text-[#D73417]" href="#">
+                    Chính sách đổi trả
+                  </a>
+                </li>
+                <li>
+                  <a className="hover:text-[#D73417]" href="#">
+                    Câu hỏi thường gặp
+                  </a>
+                </li>
               </ul>
             </div>
 
             <div data-purpose="footer-col-2">
               <h4 className="font-bold text-sm mb-4 uppercase">Về Shop2banh</h4>
               <ul className="text-xs space-y-2 text-gray-600">
-                <li><a className="hover:text-[#D73417]" href="#">Giới thiệu hệ thống</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Tuyển dụng</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Tin tức xe máy</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Liên hệ quảng cáo</a></li>
+                <li>
+                  <a className="hover:text-[#D73417]" href="#">
+                    Giới thiệu hệ thống
+                  </a>
+                </li>
+                <li>
+                  <a className="hover:text-[#D73417]" href="#">
+                    Tuyển dụng
+                  </a>
+                </li>
+                <li>
+                  <a className="hover:text-[#D73417]" href="#">
+                    Tin tức xe máy
+                  </a>
+                </li>
+                <li>
+                  <a className="hover:text-[#D73417]" href="#">
+                    Liên hệ quảng cáo
+                  </a>
+                </li>
               </ul>
             </div>
 
             <div data-purpose="footer-col-3">
-              <h4 className="font-bold text-sm mb-4 uppercase">Sản phẩm nổi bật</h4>
+              <h4 className="font-bold text-sm mb-4 uppercase">
+                Sản phẩm nổi bật
+              </h4>
               <ul className="text-xs space-y-2 text-gray-600">
-                <li><a className="hover:text-[#D73417]" href="#">Đồ chơi xe Exciter</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Đồ chơi xe Winner</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Đồ chơi xe Vario/Click</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Phụ tùng xe Honda</a></li>
-                <li><a className="hover:text-[#D73417]" href="#">Phụ tùng xe Yamaha</a></li>
+                <li>
+                  <a className="hover:text-[#D73417]" href="#">
+                    Đồ chơi xe Exciter
+                  </a>
+                </li>
+                <li>
+                  <a className="hover:text-[#D73417]" href="#">
+                    Đồ chơi xe Winner
+                  </a>
+                </li>
+                <li>
+                  <a className="hover:text-[#D73417]" href="#">
+                    Đồ chơi xe Vario/Click
+                  </a>
+                </li>
+                <li>
+                  <a className="hover:text-[#D73417]" href="#">
+                    Phụ tùng xe Honda
+                  </a>
+                </li>
+                <li>
+                  <a className="hover:text-[#D73417]" href="#">
+                    Phụ tùng xe Yamaha
+                  </a>
+                </li>
               </ul>
             </div>
 
             <div data-purpose="footer-col-4">
-              <h4 className="font-bold text-sm mb-4 uppercase">Kết nối với chúng tôi</h4>
+              <h4 className="font-bold text-sm mb-4 uppercase">
+                Kết nối với chúng tôi
+              </h4>
               <div className="flex space-x-4 mb-4">
                 <a className="bg-blue-600 text-white p-2 rounded-full" href="#">
                   <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -557,7 +637,9 @@ const ServicesPrice = () => {
               </div>
               <div className="text-xs text-gray-600">
                 <p className="font-bold">CÔNG TY TNHH TRUYỀN THÔNG SỐ</p>
-                <p>📍 Trụ sở: 309 Vườn Lài, P. Phú Thọ Hòa, Q. Tân Phú, TP.HCM</p>
+                <p>
+                  📍 Trụ sở: 309 Vườn Lài, P. Phú Thọ Hòa, Q. Tân Phú, TP.HCM
+                </p>
                 <p>📞 Điện thoại: 0938.82.02.02</p>
                 <p>📧 Email: info@shop2banh.vn</p>
               </div>

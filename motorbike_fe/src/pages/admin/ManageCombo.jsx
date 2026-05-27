@@ -83,7 +83,7 @@ export default function ManageCombo() {
     }
 
     fetchServices();
-  }, [id, isEditMode, navigate, notify]);
+  }, [id, isEditMode, navigate]);
 
   useEffect(() => {
     return () => {
@@ -492,7 +492,7 @@ export default function ManageCombo() {
               onClick={() => navigate("/admin/combos")}
               className="px-6 py-2 border rounded-lg hover:bg-gray-50"
             >
-             Hủy bỏ
+              Hủy bỏ
             </button>
 
             <button
@@ -629,7 +629,7 @@ export default function ManageCombo() {
             {/* Footer */}
             <div className="shrink-0 px-6 h-16 border-t bg-white flex items-center justify-between">
               <p className="text-sm font-semibold text-gray-700">
-               Đã chọn {tempSelectedServices.length} dịch vụ
+                Đã chọn {tempSelectedServices.length} dịch vụ
               </p>
 
               <div className="flex gap-3">
