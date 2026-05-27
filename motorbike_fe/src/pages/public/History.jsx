@@ -670,12 +670,7 @@ export default function History() {
               </button>
             </nav>
 
-            <div className="mt-auto flex-shrink-0 border-t p-4">
-              <button className="flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50">
-                <LogOut size={18} />
-                Đăng xuất
-              </button>
-            </div>
+           
           </div>
         </aside>
 

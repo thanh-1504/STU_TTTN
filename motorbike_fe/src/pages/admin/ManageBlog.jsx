@@ -2,8 +2,8 @@ import { ImagePlus, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
-import slugify from "slugify";
 import { useNavigate, useParams } from "react-router-dom";
+import slugify from "slugify";
 import {
   createBlogPost,
   getAdminBlogPostDetail,
@@ -53,7 +53,7 @@ export default function ManageBlog() {
       console.error(error);
       notify.error("Lỗi tải danh mục blog");
     }
-  }, [notify]);
+  }, []);
 
   const fetchPostDetail = useCallback(
     async (postId) => {
@@ -74,7 +74,7 @@ export default function ManageBlog() {
         setLoading(false);
       }
     },
-    [notify],
+    [],
   );
 
   useEffect(() => {
@@ -127,7 +127,7 @@ export default function ManageBlog() {
         setUploadingImage(false);
       }
     },
-    [notify],
+    [],
   );
 
   const handleThumbnailInputChange = async (event) => {
@@ -258,7 +258,9 @@ export default function ManageBlog() {
       notify.success("Bài viết đã được xuất bản");
       setTimeout(() => navigate("/admin/blog"), 1500);
     } catch (error) {
-      notify.error(error.response?.data?.message || "Lỗi khi xuất bản bài viết");
+      notify.error(
+        error.response?.data?.message || "Lỗi khi xuất bản bài viết",
+      );
       console.error(error);
     } finally {
       setLoading(false);
@@ -358,7 +360,9 @@ export default function ManageBlog() {
                 value={categoryId || ""}
                 onChange={(event) =>
                   setCategoryId(
-                    event.target.value ? parseInt(event.target.value, 10) : null,
+                    event.target.value
+                      ? parseInt(event.target.value, 10)
+                      : null,
                   )
                 }
                 className="w-full rounded-lg border border-zinc-200 p-3 text-sm"
@@ -408,7 +412,10 @@ export default function ManageBlog() {
                 />
               </div>
 
-              <label htmlFor="blog-thumbnail-upload" className="block cursor-pointer">
+              <label
+                htmlFor="blog-thumbnail-upload"
+                className="block cursor-pointer"
+              >
                 <input
                   id="blog-thumbnail-upload"
                   type="file"
@@ -436,9 +443,13 @@ export default function ManageBlog() {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-zinc-700">
-                          {uploadingImage ? "Đang tải ảnh..." : "Chọn ảnh đại diện"}
+                          {uploadingImage
+                            ? "Đang tải ảnh..."
+                            : "Chọn ảnh đại diện"}
                         </p>
-                        <p className="mt-1 text-xs">JPG, PNG, WEBP tối đa 5MB</p>
+                        <p className="mt-1 text-xs">
+                          JPG, PNG, WEBP tối đa 5MB
+                        </p>
                       </div>
                     </div>
                   )}
