@@ -79,7 +79,7 @@ const ManageAppointment = () => {
         console.error(error);
       }
     },
-    [notify],
+    [],
   );
 
   useEffect(() => {
@@ -107,7 +107,7 @@ const ManageAppointment = () => {
     };
 
     fetchServices();
-  }, [notify]);
+  }, []);
 
   useEffect(() => {
     if (!isEditMode || !id) return;
@@ -145,7 +145,7 @@ const ManageAppointment = () => {
     };
 
     fetchAppointmentDetail();
-  }, [id, isEditMode, notify]);
+  }, [id, isEditMode]);
 
   const handleSubmit = async () => {
     if (!form.name.trim()) {

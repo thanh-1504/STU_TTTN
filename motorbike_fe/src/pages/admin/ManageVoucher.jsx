@@ -79,7 +79,7 @@ export default function ManageVoucher() {
     };
 
     fetchVoucher();
-  }, [id, isEditMode, navigate, notify]);
+  }, [id, isEditMode, navigate]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
