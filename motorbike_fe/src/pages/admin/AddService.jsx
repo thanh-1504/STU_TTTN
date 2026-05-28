@@ -68,7 +68,7 @@ export default function AddService() {
       };
       fetchServiceData();
     }
-  }, [id, isEditMode, navigate, notify]);
+  }, [id, isEditMode, navigate]);
 
   useEffect(() => {
     return () => {
