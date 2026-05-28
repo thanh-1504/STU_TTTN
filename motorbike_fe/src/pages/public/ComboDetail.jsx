@@ -1,11 +1,14 @@
-import { CircleUser, ShoppingCart } from "lucide-react";
-import { useEffect, useState } from "react";
+import { CircleUser } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { getToken, logout } from "../../api/authService";
 import {
   getComboByIdForCustomer,
   getCombosForCustomer,
 } from "../../api/combosService";
+import CartBadge from "../../components/CartBadge";
+import { useCart } from "../../contexts/CartContext";
 
 const formatPrice = (value) => `${Number(value || 0).toLocaleString("vi-VN")}đ`;
 
@@ -27,6 +30,7 @@ const ComboDetail = () => {
   const [combo, setCombo] = useState(null);
   const [popularCombos, setPopularCombos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { addItem, items } = useCart();
 
   useEffect(() => {
     fetchData();
@@ -62,6 +66,36 @@ const ComboDetail = () => {
     window.location.reload(); // reload để reset isLoggedIn state
   };
 
+  const isInCart = useMemo(() => {
+    if (!combo?.id) return false;
+    return items.some((item) => item.key === `combo-${combo.id}`);
+  }, [items, combo?.id]);
+
+  const handleAddToCart = () => {
+    if (!combo?.isActive) return;
+    if (isInCart) {
+      toast("Combo đã có trong giỏ hàng.");
+      return;
+    }
+    addItem({
+      key: `combo-${combo.id}`,
+      type: "combo",
+      id: combo.id,
+      name: combo.comboName,
+      discountPct: combo.discountPct,
+      imageUrl: combo.imageUrl,
+      services: Array.isArray(combo.services)
+        ? combo.services.map((service) => ({
+            id: service.id,
+            name: service.serviceName,
+            priceManual: service.priceManual,
+            durationMinutes: service.durationMinutes,
+          }))
+        : [],
+    });
+    toast.success("Đã thêm combo vào giỏ hàng.");
+  };
+
   return (
     <div className="bg-white font-sans">
       {/* Header */}
@@ -76,15 +110,7 @@ const ComboDetail = () => {
 
           {/* Wrapper chứa Icons và Nút đặt lịch */}
           <div className="flex items-center gap-5">
-            {/* Icon Giỏ hàng - chỉ hiện khi đã login */}
-            {isLoggedIn && (
-              <a
-                href="#"
-                className="text-gray-700 hover:text-red-600 transition-colors"
-              >
-                <ShoppingCart size={22} strokeWidth={1.5} />
-              </a>
-            )}
+            <CartBadge />
 
             {/* Icon User với Dropdown - chỉ hiện khi đã login */}
             {isLoggedIn && (
@@ -235,9 +261,21 @@ const ComboDetail = () => {
                     </div>
 
                     {combo?.isActive ? (
-                      <button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 rounded text-xl uppercase shadow-md transition-colors">
-                        MUA NGAY
-                      </button>
+                      <div className="space-y-3">
+                        <button
+                          onClick={handleAddToCart}
+                          disabled={isInCart}
+                          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 rounded text-base uppercase shadow-md transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        >
+                          {isInCart ? "ĐÃ CÓ TRONG GIỎ" : "THÊM VÀO GIỎ"}
+                        </button>
+                        <button
+                          onClick={handleBooking}
+                          className="w-full bg-[#D73417] hover:bg-red-700 text-white font-bold py-3 rounded text-sm uppercase shadow-md transition-colors"
+                        >
+                          ĐẶT LỊCH NGAY
+                        </button>
+                      </div>
                     ) : (
                       <button
                         disabled

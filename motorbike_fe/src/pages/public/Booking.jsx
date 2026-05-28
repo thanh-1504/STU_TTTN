@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
@@ -7,6 +7,7 @@ import {
 } from "../../api/appointmentsService";
 import { getServicesForCustomer } from "../../api/servicesService";
 import { getPublicTechnicians } from "../../api/usersService";
+import { useCart } from "../../contexts/CartContext";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 const formatPrice = (v) => Number(v || 0).toLocaleString("vi-VN");
@@ -70,6 +71,8 @@ function SuccessModal({ onNavigate }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function Booking() {
   const navigate = useNavigate();
+  const { items: cartItems, serviceIdsFromCart, clearCart } = useCart();
+  const hasPrefilledFromCart = useRef(false);
 
   // ── Form fields ──────────────────────────────────────────────────────────────
   const [name, setName] = useState("");
@@ -126,6 +129,13 @@ export default function Booking() {
       .then((data) => setTechnicians(Array.isArray(data) ? data : []))
       .catch(console.error);
   }, []);
+
+  useEffect(() => {
+    if (hasPrefilledFromCart.current) return;
+    if (serviceIdsFromCart.length === 0) return;
+    setServiceRows(serviceIdsFromCart.map((id) => String(id)));
+    hasPrefilledFromCart.current = true;
+  }, [serviceIdsFromCart]);
 
   // ─── Load slots when date changes ────────────────────────────────────────────
   useEffect(() => {
@@ -210,6 +220,10 @@ export default function Booking() {
         serviceIds: chosenServiceIds.map(Number),
         technicianId: selectedTechnicianId ?? undefined,
       });
+
+      if (cartItems.length > 0) {
+        clearCart();
+      }
 
       setShowSuccess(true);
     } catch (err) {
@@ -334,6 +348,24 @@ export default function Booking() {
               <label className="block font-bold text-gray-700">
                 Chọn dịch vụ <span className="text-red-600">*</span>
               </label>
+
+              {cartItems.length > 0 && (
+                <div className="bg-red-50 border border-red-100 rounded-lg p-3 text-xs text-gray-600">
+                  <p className="font-semibold text-red-600">
+                    Dịch vụ từ giỏ hàng:
+                  </p>
+                  <p className="mt-1 leading-relaxed">
+                    {cartItems
+                      .map((item) =>
+                        item.type === "combo"
+                          ? `Combo: ${item.name}`
+                          : item.name,
+                      )
+                      .filter(Boolean)
+                      .join(" • ")}
+                  </p>
+                </div>
+              )}
 
               {servicesLoading ? (
                 <div className="text-sm text-gray-400 animate-pulse py-3">

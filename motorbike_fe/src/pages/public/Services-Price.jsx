@@ -1,11 +1,14 @@
-import { CircleUser, ShoppingCart } from "lucide-react";
+import { CircleUser } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { getToken, logout } from "../../api/authService";
 import {
   getServiceByIdForCustomer,
   getServicesForCustomer,
 } from "../../api/servicesService";
+import CartBadge from "../../components/CartBadge";
+import { useCart } from "../../contexts/CartContext";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 const formatPrice = (value) => `${Number(value || 0).toLocaleString("vi-VN")}đ`;
@@ -102,6 +105,7 @@ const ServicesPrice = () => {
   const [allServices, setAllServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const { addItem, items } = useCart();
 
   // ── Fetch ──────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -137,6 +141,11 @@ const ServicesPrice = () => {
   const popular = othersShuffled.slice(2, 8); // 6 items
   const similar = othersShuffled.slice(8, 13); // 5 items
 
+  const isInCart = useMemo(() => {
+    if (!service?.id) return false;
+    return items.some((item) => item.key === `service-${service.id}`);
+  }, [items, service?.id]);
+
   // ── Handlers ───────────────────────────────────────────────────────────────
   const handleBooking = () => navigate(isLoggedIn ? "/booking" : "/login");
   const handleLogout = () => {
@@ -145,6 +154,24 @@ const ServicesPrice = () => {
     window.location.reload();
   };
   const handleServiceClick = (s) => navigate(`/services-price/${s.id}`);
+
+  const handleAddToCart = () => {
+    if (!service || !inStock) return;
+    if (isInCart) {
+      toast("Dịch vụ đã có trong giỏ hàng.");
+      return;
+    }
+    addItem({
+      key: `service-${service.id}`,
+      type: "service",
+      id: service.id,
+      name: service.serviceName,
+      priceManual: service.priceManual,
+      durationMinutes: service.durationMinutes,
+      imageUrl: service.imageUrl,
+    });
+    toast.success("Đã thêm vào giỏ hàng.");
+  };
 
   // ── Availability ───────────────────────────────────────────────────────────
   const inStock = service?.isActive ?? false;
@@ -179,14 +206,7 @@ const ServicesPrice = () => {
           </NavLink>
 
           <div className="flex items-center gap-5">
-            {isLoggedIn && (
-              <a
-                href="#"
-                className="text-gray-700 hover:text-red-600 transition-colors"
-              >
-                <ShoppingCart size={22} strokeWidth={1.5} />
-              </a>
-            )}
+            <CartBadge />
 
             {isLoggedIn && (
               <div className="relative">
@@ -334,12 +354,21 @@ const ServicesPrice = () => {
 
                     {/* CTA Button */}
                     {inStock ? (
-                      <button
-                        onClick={handleBooking}
-                        className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 rounded text-xl uppercase shadow-md transition-colors"
-                      >
-                        MUA NGAY
-                      </button>
+                      <div className="space-y-3">
+                        <button
+                          onClick={handleAddToCart}
+                          disabled={isInCart}
+                          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 rounded text-base uppercase shadow-md transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        >
+                          {isInCart ? "ĐÃ CÓ TRONG GIỎ" : "THÊM VÀO GIỎ"}
+                        </button>
+                        <button
+                          onClick={handleBooking}
+                          className="w-full bg-[#D73417] hover:bg-red-700 text-white font-bold py-3 rounded text-sm uppercase shadow-md transition-colors"
+                        >
+                          ĐẶT LỊCH NGAY
+                        </button>
+                      </div>
                     ) : (
                       <button
                         disabled

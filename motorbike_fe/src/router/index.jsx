@@ -12,6 +12,7 @@ import Blog from "../pages/public/Blog";
 import BlogDetail from "../pages/public/BlogDetail";
 import Booking from "../pages/public/Booking";
 import BookingHistory from "../pages/public/BookingHistory";
+import Cart from "../pages/public/Cart";
 import CustomerPortal from "../pages/public/CustomerPortal";
 import Home from "../pages/public/Home";
 import Services from "../pages/public/Services";
@@ -76,6 +77,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "services", element: <Services /> },
+      { path: "cart", element: <Cart /> },
       { path: "services-price/:id", element: <ServicesPrice /> },
       { path: "combo/:id", element: <ComboDetail /> },
       { path: "blog", element: <Blog /> },
