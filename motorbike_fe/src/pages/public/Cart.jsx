@@ -33,7 +33,7 @@ export default function Cart() {
 
   const handleBooking = () => {
     if (items.length === 0) return;
-    navigate("/booking");
+    navigate(isLoggedIn ? "/booking" : "/login");
   };
 
   const handleLogout = () => {
