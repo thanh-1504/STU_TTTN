@@ -50,6 +50,16 @@ export const cancelMyAppointment = async (id) => {
   }
 };
 
+export const rescheduleMyAppointment = async (id, data) => {
+  try {
+    const response = await api.patch(`/appointments/${id}/reschedule`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error rescheduling appointment:", error);
+    throw error;
+  }
+};
+
 export const getAdminAppointments = async (status = null, date = null) => {
   try {
     const params = new URLSearchParams();

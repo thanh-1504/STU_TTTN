@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../../shared/services/prisma.service';
+import { AppointmentsRepository } from '../appointments/appointments.repository';
 import {
   AppointmentStatus,
   NotificationType,
@@ -19,7 +20,10 @@ import { CreateAppointmentByStaffDto } from './dto/create-appointment-staff.dto'
 export class ReceptionistService {
   private readonly logger = new Logger(ReceptionistService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly appointmentsRepository: AppointmentsRepository,
+  ) {}
 
   // ─── DASHBOARD ───────────────────────────────────────────────────────────────
   async getDashboard() {
@@ -183,11 +187,47 @@ export class ReceptionistService {
     });
   }
 
-  async rescheduleAppointment(id: number, newTime: Date) {
-    await this.ensureAppointmentExists(id);
+  async rescheduleAppointment(
+    id: number,
+    dto: { appointmentTime: Date; technicianId?: number | null },
+  ) {
+    const appt = await this.ensureAppointmentExists(id);
+
+    if (
+      appt.status === AppointmentStatus.CANCELLED ||
+      appt.status === AppointmentStatus.COMPLETED
+    ) {
+      throw new BadRequestException(
+        `Không thể đổi lịch ở trạng thái ${appt.status}`,
+      );
+    }
+
+    const newTime = new Date(dto.appointmentTime);
+    const sameSlot = this.isSameSlot(appt.appointmentTime, newTime);
+    if (!sameSlot) {
+      await this.ensureSlotAvailable(newTime);
+    }
+
+    const updateData: Prisma.AppointmentUpdateInput = {
+      appointmentTime: newTime,
+    };
+
+    if (dto.technicianId !== undefined) {
+      if (dto.technicianId !== null) {
+        const tech = await this.prisma.user.findUnique({
+          where: { id: dto.technicianId },
+          include: { role: true },
+        });
+        if (!tech || tech.role.roleName !== 'TECHNICIAN') {
+          throw new BadRequestException('Kỹ thuật viên không hợp lệ');
+        }
+      }
+      updateData.technicianId = dto.technicianId;
+    }
+
     return this.prisma.appointment.update({
       where: { id },
-      data: { appointmentTime: newTime },
+      data: updateData,
     });
   }
 
@@ -195,6 +235,33 @@ export class ReceptionistService {
     const a = await this.prisma.appointment.findUnique({ where: { id } });
     if (!a) throw new NotFoundException(`Không tìm thấy lịch hẹn #${id}`);
     return a;
+  }
+
+  private async ensureSlotAvailable(appointmentDate: Date) {
+    const hour = appointmentDate.getHours();
+    const booked = await this.appointmentsRepository.countByTimeSlot(
+      appointmentDate,
+      hour,
+    );
+    const available =
+      await this.appointmentsRepository.getAvailableSlots(appointmentDate);
+    const slotLabel = `${String(hour).padStart(2, '0')}:00`;
+
+    if (!available.includes(slotLabel)) {
+      throw new BadRequestException(
+        `Khung giờ ${slotLabel} đã đầy hoặc nằm ngoài giờ làm việc. ` +
+          `Hiện tại đã có ${booked} xe đặt trong giờ này.`,
+      );
+    }
+  }
+
+  private isSameSlot(current: Date, next: Date) {
+    return (
+      current.getFullYear() === next.getFullYear() &&
+      current.getMonth() === next.getMonth() &&
+      current.getDate() === next.getDate() &&
+      current.getHours() === next.getHours()
+    );
   }
 
   // ─── REPAIR ORDERS — RECEPTION ──────────────────────────────────────────────

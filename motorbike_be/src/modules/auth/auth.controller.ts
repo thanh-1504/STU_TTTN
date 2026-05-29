@@ -102,6 +102,7 @@ export class AuthController {
       email: customer.email,
       phone: customer.phone,
       customerName: customer.customerName,
+      avatarUrl: customer.avatarUrl ?? null,
       totalSpent: customer.totalSpent,
     };
   }

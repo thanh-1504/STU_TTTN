@@ -20,6 +20,7 @@ import {
   PortalCreateVehicleDto,
   UpdateKmDto,
   CreatePortalReviewDto,
+  UpdateProfileDto,
 } from './dto/portal.dto';
 import { CustomerJwtAuthGuard } from '../auth/guards/customer-jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -41,6 +42,33 @@ export class CustomerPortalController {
   @Get('vehicles')
   getMyVehicles(@CurrentUser() customer: any) {
     return this.portalService.getMyVehicles(customer.id);
+  }
+
+  @Get('profile')
+  getMyProfile(@CurrentUser() customer: any) {
+    return this.portalService.getProfile(customer.id);
+  }
+
+  @Post('profile/upload-avatar')
+  @UseInterceptors(FileInterceptor('image', imageUploadInterceptorOptions))
+  uploadAvatar(@UploadedFile() file: any, @CurrentUser() customer: any) {
+    if (!file) {
+      throw new BadRequestException('Vui long chon file anh can upload');
+    }
+
+    return this.cloudinaryService.uploadImage(
+      file,
+      `shop2banh/customers/customer-${customer.id}`,
+      'customer-avatar',
+    );
+  }
+
+  @Patch('profile')
+  updateProfile(
+    @Body() dto: UpdateProfileDto,
+    @CurrentUser() customer: any,
+  ) {
+    return this.portalService.updateProfile(dto, customer.id);
   }
 
   @Post('vehicles/upload-image')

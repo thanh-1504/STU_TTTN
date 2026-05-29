@@ -152,7 +152,10 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
   async findByCustomerId(customerId: number): Promise<Appointment[]> {
     return this.prisma.appointment.findMany({
       where: { customerId },
-      include: { vehicle: true },
+      include: {
+        vehicle: true,
+        technician: { select: { id: true, fullname: true, username: true } },
+      },
       orderBy: { appointmentTime: 'desc' },
     });
   }

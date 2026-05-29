@@ -6,7 +6,6 @@ import {
   Car,
   CheckCircle2,
   Home,
-  LogOut,
   MessageSquare,
   ShieldCheck,
   ShoppingBag,
@@ -15,15 +14,23 @@ import {
   UserCircle,
   Wrench,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { getMyAppointments } from "../../api/appointmentsService";
+import {
+  getAvailableSlots,
+  getMyAppointments,
+  rescheduleMyAppointment,
+} from "../../api/appointmentsService";
 import {
   createReview,
+  getMyProfile,
   getMyRepairOrders,
   getRepairOrderDetail,
+  updateMyProfile,
+  uploadCustomerAvatar,
 } from "../../api/portalService";
+import { getPublicTechnicians } from "../../api/usersService";
 import CustomerPortal from "./CustomerPortal";
 
 const repairStatusMap = {
@@ -137,6 +144,9 @@ const getRepairDisplayData = (order) => {
   };
 };
 
+const getDisplayNameFromInfo = (info = {}) =>
+  info.customerName || info.fullname || info.name || info.username || "";
+
 export default function History() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -146,11 +156,53 @@ export default function History() {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
+  const [storedUserInfo, setStoredUserInfo] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("user_info") || "{}");
+    } catch {
+      return {};
+    }
+  });
+  const [profileForm, setProfileForm] = useState(() => ({
+    customerName: getDisplayNameFromInfo(storedUserInfo) || "",
+    avatarUrl: storedUserInfo.avatarUrl || "",
+  }));
+  const [profileTouched, setProfileTouched] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState("");
+  const [avatarFileName, setAvatarFileName] = useState("");
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [removeAvatar, setRemoveAvatar] = useState(false);
+  const [profileMessage, setProfileMessage] = useState({
+    text: "",
+    type: "info",
+  });
+  const [rescheduleTarget, setRescheduleTarget] = useState(null);
+  const [rescheduleDate, setRescheduleDate] = useState("");
+  const [rescheduleTime, setRescheduleTime] = useState("");
+  const [rescheduleTechnicianId, setRescheduleTechnicianId] = useState("");
+  const [rescheduleError, setRescheduleError] = useState("");
 
   const { data: appointments = [], isLoading: isLoadingAppointments } = useQuery({
     queryKey: ["myAppointments"],
     queryFn: getMyAppointments,
     enabled: activeTab === "booking-history",
+  });
+
+  const { data: profile } = useQuery({
+    queryKey: ["myProfile"],
+    queryFn: getMyProfile,
+  });
+
+  const { data: technicians = [] } = useQuery({
+    queryKey: ["publicTechnicians"],
+    queryFn: getPublicTechnicians,
+    enabled: Boolean(rescheduleTarget),
+  });
+
+  const { data: slotData, isLoading: isLoadingSlots } = useQuery({
+    queryKey: ["availableSlots", rescheduleDate],
+    queryFn: () => getAvailableSlots(rescheduleDate),
+    enabled: Boolean(rescheduleTarget && rescheduleDate),
   });
 
   const { data: repairOrders = [], isLoading: isLoadingOrders } = useQuery({
@@ -178,6 +230,114 @@ export default function History() {
     },
   });
 
+  useEffect(() => {
+    if (!profile || profileTouched) return;
+    const storedName = getDisplayNameFromInfo(storedUserInfo);
+    setProfileForm({
+      customerName: profile.customerName || storedName || "",
+      avatarUrl: profile.avatarUrl || storedUserInfo.avatarUrl || "",
+    });
+    setRemoveAvatar(false);
+    setAvatarPreview("");
+    setAvatarFileName("");
+  }, [profile, profileTouched, storedUserInfo]);
+
+  useEffect(() => {
+    return () => {
+      if (avatarPreview) URL.revokeObjectURL(avatarPreview);
+    };
+  }, [avatarPreview]);
+
+  const profileMutation = useMutation({
+    mutationFn: updateMyProfile,
+    onMutate: () => {
+      setProfileMessage({ text: "", type: "info" });
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(["myProfile"], data);
+      const stored = JSON.parse(localStorage.getItem("user_info") || "{}");
+      const nextStored = {
+        ...stored,
+        customerName: data.customerName || stored.customerName,
+        avatarUrl: data.avatarUrl ?? stored.avatarUrl,
+      };
+      localStorage.setItem("user_info", JSON.stringify(nextStored));
+      setStoredUserInfo(nextStored);
+      setProfileTouched(false);
+      setProfileMessage({
+        text: "Đã cập nhật thông tin cá nhân.",
+        type: "success",
+      });
+    },
+    onError: (err) => {
+      setProfileMessage({
+        text: err.response?.data?.message || "Cập nhật thông tin thất bại.",
+        type: "error",
+      });
+    },
+  });
+
+  const avatarMutation = useMutation({
+    mutationFn: uploadCustomerAvatar,
+    onMutate: () => {
+      setIsUploadingAvatar(true);
+      setProfileMessage({ text: "", type: "info" });
+    },
+    onSuccess: (data) => {
+      setProfileForm((prev) => ({
+        ...prev,
+        avatarUrl: data.imageUrl || prev.avatarUrl,
+      }));
+      setRemoveAvatar(false);
+    },
+    onError: (err) => {
+      setProfileMessage({
+        text: err.response?.data?.message || "Upload ảnh thất bại.",
+        type: "error",
+      });
+    },
+    onSettled: () => {
+      setIsUploadingAvatar(false);
+    },
+  });
+
+  const rescheduleMutation = useMutation({
+    mutationFn: ({ id, payload }) => rescheduleMyAppointment(id, payload),
+    onSuccess: () => {
+      setRescheduleTarget(null);
+      setRescheduleError("");
+      queryClient.invalidateQueries({ queryKey: ["myAppointments"] });
+      alert("Đã cập nhật lịch hẹn.");
+    },
+    onError: (err) => {
+      setRescheduleError(
+        err.response?.data?.message || "Không thể đổi lịch hẹn.",
+      );
+    },
+  });
+
+  const availableSlots = slotData?.availableSlots || [];
+  const slotOptions =
+    rescheduleTime && !availableSlots.includes(rescheduleTime)
+      ? [rescheduleTime, ...availableSlots]
+      : availableSlots;
+  const storedName = getDisplayNameFromInfo(storedUserInfo);
+  const profileName = getDisplayNameFromInfo(profile);
+  const displayName =
+    profileForm.customerName?.trim() ||
+    profileName ||
+    storedName ||
+    "Khách hàng";
+  const displayAvatar = removeAvatar
+    ? ""
+    : avatarPreview ||
+      profileForm.avatarUrl ||
+      profile?.avatarUrl ||
+      storedUserInfo.avatarUrl ||
+      "";
+  const phoneValue = profile?.phone || storedUserInfo.phone || "";
+  const emailValue = profile?.email || storedUserInfo.email || "";
+
   const handleSubmitReview = () => {
     if (rating === 0) {
       alert("Vui lòng chọn số sao!");
@@ -189,6 +349,230 @@ export default function History() {
       rating,
       comment,
     });
+  };
+
+  const openReschedule = (appointment) => {
+    const apptDate = new Date(appointment.appointmentTime);
+    const dateValue = apptDate.toISOString().slice(0, 10);
+    const slotValue = `${String(apptDate.getHours()).padStart(2, "0")}:00`;
+
+    setRescheduleTarget(appointment);
+    setRescheduleDate(dateValue);
+    setRescheduleTime(slotValue);
+    setRescheduleTechnicianId(
+      appointment.technician?.id ? String(appointment.technician.id) : "",
+    );
+    setRescheduleError("");
+  };
+
+  const submitReschedule = () => {
+    if (!rescheduleTarget) return;
+    if (!rescheduleDate || !rescheduleTime) {
+      setRescheduleError("Vui lòng chọn ngày và giờ hẹn.");
+      return;
+    }
+
+    const originalSlot = rescheduleTarget
+      ? `${String(new Date(rescheduleTarget.appointmentTime).getHours()).padStart(2, "0")}:00`
+      : "";
+
+    if (
+      availableSlots.length > 0 &&
+      rescheduleTime !== originalSlot &&
+      !availableSlots.includes(rescheduleTime)
+    ) {
+      setRescheduleError("Vui lòng chọn khung giờ hợp lệ.");
+      return;
+    }
+
+    const appointmentTime = new Date(
+      `${rescheduleDate}T${rescheduleTime}:00`,
+    );
+
+    const payload = {
+      appointmentTime: appointmentTime.toISOString(),
+      technicianId: rescheduleTechnicianId
+        ? Number(rescheduleTechnicianId)
+        : null,
+    };
+
+    rescheduleMutation.mutate({ id: rescheduleTarget.id, payload });
+  };
+
+  const handleAvatarChange = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setProfileTouched(true);
+    setProfileMessage({ text: "", type: "info" });
+    setAvatarFileName(file.name);
+    const previewUrl = URL.createObjectURL(file);
+    setAvatarPreview(previewUrl);
+    setRemoveAvatar(false);
+    avatarMutation.mutate(file);
+  };
+
+  const handleRemoveAvatar = () => {
+    setProfileTouched(true);
+    setRemoveAvatar(true);
+    setAvatarPreview("");
+    setAvatarFileName("");
+    setProfileForm((prev) => ({ ...prev, avatarUrl: "" }));
+  };
+
+  const renderProfileTab = () => {
+    const isSaveDisabled =
+      profileMutation.isPending ||
+      isUploadingAvatar ||
+      !profileForm.customerName.trim();
+
+    return (
+      <div className="animate-in fade-in rounded-2xl border border-gray-200 bg-white p-6 shadow-sm duration-300">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-600">
+            <UserCircle size={20} />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-gray-800">
+              Thông tin cá nhân
+            </h2>
+            <p className="text-xs text-gray-500">
+              Cập nhật ảnh đại diện và tên hiển thị của bạn.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-[240px_1fr]">
+          <div className="flex flex-col items-center gap-3 rounded-xl border bg-gray-50 p-4">
+            <div className="relative h-24 w-24 overflow-hidden rounded-full border bg-white">
+              {displayAvatar ? (
+                <img
+                  src={displayAvatar}
+                  alt={displayName}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-gray-300">
+                  <UserCircle size={40} />
+                </div>
+              )}
+
+              {isUploadingAvatar && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white/70 text-xs font-semibold text-gray-600">
+                  Đang tải...
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-col items-center gap-2">
+              <input
+                id="avatar-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
+                className="sr-only"
+              />
+              <label
+                htmlFor="avatar-upload"
+                className="cursor-pointer rounded-full bg-red-600 px-4 py-2 text-xs font-semibold text-white hover:bg-red-700"
+              >
+                Chọn ảnh
+              </label>
+              {(displayAvatar || profileForm.avatarUrl) && (
+                <button
+                  type="button"
+                  onClick={handleRemoveAvatar}
+                  className="text-xs text-gray-500 hover:text-red-600"
+                >
+                  Xóa ảnh
+                </button>
+              )}
+            </div>
+
+            <p className="text-[11px] text-center text-gray-500">
+              {avatarFileName
+                ? `Đã chọn: ${avatarFileName}`
+                : "JPG/PNG/WEBP tối đa 5MB"}
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700">
+                Tên hiển thị
+              </label>
+              <input
+                value={profileForm.customerName}
+                onChange={(e) => {
+                  setProfileTouched(true);
+                  setProfileMessage({ text: "", type: "info" });
+                  setProfileForm((prev) => ({
+                    ...prev,
+                    customerName: e.target.value,
+                  }));
+                }}
+                placeholder="Nhập tên hiển thị"
+                className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700">
+                  Số điện thoại
+                </label>
+                <input
+                  value={phoneValue || "Chưa cập nhật"}
+                  readOnly
+                  className="mt-1 w-full rounded-lg border bg-gray-50 px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700">
+                  Email
+                </label>
+                <input
+                  value={emailValue || "Chưa cập nhật"}
+                  readOnly
+                  className="mt-1 w-full rounded-lg border bg-gray-50 px-3 py-2 text-sm"
+                />
+              </div>
+            </div>
+
+            {profileMessage.text && (
+              <p
+                className={`text-sm ${
+                  profileMessage.type === "error"
+                    ? "text-red-600"
+                    : "text-emerald-600"
+                }`}
+              >
+                {profileMessage.text}
+              </p>
+            )}
+
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                onClick={() =>
+                  profileMutation.mutate({
+                    customerName: profileForm.customerName.trim(),
+                    avatarUrl: removeAvatar ? null : profileForm.avatarUrl || null,
+                  })
+                }
+                disabled={isSaveDisabled}
+                className="rounded-lg bg-red-600 px-6 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-60"
+              >
+                {profileMutation.isPending ? "Đang lưu..." : "Lưu thay đổi"}
+              </button>
+              {isUploadingAvatar && (
+                <span className="text-xs text-gray-500">
+                  Đang tải ảnh...
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const renderBookingHistory = () => {
@@ -221,6 +605,8 @@ export default function History() {
         {appointments.map((apt) => {
           const appointmentMoment =
             apt.appointmentTime || apt.appointmentDate || apt.createdAt;
+          const canReschedule =
+            apt.status === "PENDING" || apt.status === "CONFIRMED";
 
           return (
             <div
@@ -255,6 +641,17 @@ export default function History() {
                   </div>
                 </div>
               </div>
+
+              {canReschedule && (
+                <div className="mt-4 flex justify-end">
+                  <button
+                    onClick={() => openReschedule(apt)}
+                    className="rounded-lg border px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
+                  >
+                    Đổi lịch
+                  </button>
+                </div>
+              )}
             </div>
           );
         })}
@@ -568,6 +965,9 @@ export default function History() {
           </div>
         );
 
+      case "personal-info":
+        return renderProfileTab();
+
       case "repair-history":
       default:
         return (
@@ -603,12 +1003,20 @@ export default function History() {
             </button>
 
             <div className="flex-shrink-0 border-b bg-[#0f172a] p-6 text-center text-white">
-              <UserCircle
-                size={64}
-                className="mx-auto mb-3 text-gray-300"
-                strokeWidth={1}
-              />
-              <h3 className="text-lg font-bold">Khách hàng</h3>
+              {displayAvatar ? (
+                <img
+                  src={displayAvatar}
+                  alt={displayName}
+                  className="mx-auto mb-3 h-16 w-16 rounded-full object-cover"
+                />
+              ) : (
+                <UserCircle
+                  size={64}
+                  className="mx-auto mb-3 text-gray-300"
+                  strokeWidth={1}
+                />
+              )}
+              <h3 className="text-lg font-bold">{displayName}</h3>
             </div>
 
             <nav className="mt-2 flex-1 space-y-1 overflow-y-auto p-2">
@@ -668,6 +1076,21 @@ export default function History() {
                 <ToolCase size={18} />
                 Lịch sử sửa chữa
               </button>
+
+              <button
+                onClick={() => {
+                  setActiveTab("personal-info");
+                  setSelectedOrderId(null);
+                }}
+                className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                  activeTab === "personal-info"
+                    ? "bg-red-50 text-red-600"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`}
+              >
+                <UserCircle size={18} />
+                Thông tin cá nhân
+              </button>
             </nav>
 
            
@@ -676,6 +1099,104 @@ export default function History() {
 
         <main className="w-full flex-1 overflow-hidden">{renderActiveTabContent()}</main>
       </div>
+
+                {rescheduleTarget && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+                    <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
+                      <div className="mb-4 flex items-center justify-between">
+                        <h3 className="text-lg font-bold">
+                          Đổi lịch hẹn #{rescheduleTarget.id}
+                        </h3>
+                        <button
+                          onClick={() => setRescheduleTarget(null)}
+                          className="text-gray-500 hover:text-gray-700"
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700">
+                            Ngày hẹn
+                          </label>
+                          <input
+                            type="date"
+                            value={rescheduleDate}
+                            onChange={(e) => setRescheduleDate(e.target.value)}
+                            className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700">
+                            Khung giờ
+                          </label>
+                          {isLoadingSlots ? (
+                            <p className="mt-2 text-sm text-gray-500">
+                              Đang tải khung giờ...
+                            </p>
+                          ) : availableSlots.length === 0 ? (
+                            <p className="mt-2 text-sm text-gray-500">
+                              Không còn khung giờ phù hợp.
+                            </p>
+                          ) : (
+                            <select
+                              value={rescheduleTime}
+                              onChange={(e) => setRescheduleTime(e.target.value)}
+                              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+                            >
+                              <option value="">-- Chọn khung giờ --</option>
+                              {slotOptions.map((slot) => (
+                                <option key={slot} value={slot}>
+                                  {slot}
+                                </option>
+                              ))}
+                            </select>
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700">
+                            Kỹ thuật viên
+                          </label>
+                          <select
+                            value={rescheduleTechnicianId}
+                            onChange={(e) => setRescheduleTechnicianId(e.target.value)}
+                            className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+                          >
+                            <option value="">-- Chọn KTV --</option>
+                            {technicians.map((tech) => (
+                              <option key={tech.id} value={tech.id}>
+                                {tech.fullname || tech.username}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {rescheduleError && (
+                          <p className="text-sm text-red-600">{rescheduleError}</p>
+                        )}
+                      </div>
+
+                      <div className="mt-6 flex justify-end gap-3">
+                        <button
+                          onClick={() => setRescheduleTarget(null)}
+                          className="rounded-lg border px-4 py-2 text-sm"
+                        >
+                          Hủy
+                        </button>
+                        <button
+                          onClick={submitReschedule}
+                          disabled={rescheduleMutation.isPending}
+                          className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-60"
+                        >
+                          {rescheduleMutation.isPending ? "Đang lưu..." : "Xác nhận"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
     </div>
   );
 }

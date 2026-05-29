@@ -109,8 +109,9 @@ export default function Booking() {
     // Pre-fill from localStorage
     try {
       const userInfo = JSON.parse(localStorage.getItem("user_info") || "{}");
-      if (userInfo.fullname || userInfo.name)
-        setName(userInfo.fullname || userInfo.name);
+      const displayName =
+        userInfo.customerName || userInfo.fullname || userInfo.name || "";
+      if (displayName) setName(displayName);
       if (userInfo.phone) setPhone(userInfo.phone);
     } catch (_) {}
 

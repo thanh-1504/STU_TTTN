@@ -7,6 +7,9 @@ import {
   saveAuthData,
 } from "../../api/authService";
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_REGEX = /^(0|\+84)[3-9]\d{8}$/;
+
 export default function LoginPage() {
   const navigate = useNavigate();
 
@@ -43,7 +46,8 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const data = await customerLogin(loginEmail.trim(), loginPassword);
+      const email = loginEmail.trim().toLowerCase();
+      const data = await customerLogin(email, loginPassword);
       saveAuthData(data.accessToken, "customer", data.customer);
       navigate("/booking");
     } catch (err) {
@@ -55,26 +59,46 @@ export default function LoginPage() {
     }
   };
 
+  const validateRegister = () => {
+    const errors = [];
+
+    if (!regName.trim()) {
+      errors.push("Vui lòng nhập họ và tên");
+    }
+
+    if (!regEmail.trim()) {
+      errors.push("Vui lòng nhập email");
+    } else if (!EMAIL_REGEX.test(regEmail.trim())) {
+      errors.push("Email không hợp lệ");
+    }
+
+    if (!regPhone.trim()) {
+      errors.push("Vui lòng nhập số điện thoại");
+    } else if (!PHONE_REGEX.test(regPhone.trim())) {
+      errors.push("Số điện thoại không hợp lệ (VD: 0901234567 hoặc +84901234567)");
+    }
+
+    if (!regPassword) {
+      errors.push("Vui lòng nhập mật khẩu");
+    } else if (regPassword.length < 6) {
+      errors.push("Mật khẩu phải có ít nhất 6 ký tự");
+    }
+
+    if (!regConfirmPassword) {
+      errors.push("Vui lòng nhập xác nhận mật khẩu");
+    } else if (regPassword !== regConfirmPassword) {
+      errors.push("Mật khẩu xác nhận không khớp");
+    }
+
+    return errors;
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    if (
-      !regName.trim() ||
-      !regEmail.trim() ||
-      !regPhone.trim() ||
-      !regPassword
-    ) {
-      setError("Vui lòng điền đầy đủ thông tin");
-      return;
-    }
-
-    if (regPassword !== regConfirmPassword) {
-      setError("Mật khẩu xác nhận không khớp");
-      return;
-    }
-
-    if (regPassword.length < 6) {
-      setError("Mật khẩu phải có ít nhất 6 ký tự");
+    const errors = validateRegister();
+    if (errors.length > 0) {
+      setError(errors);
       return;
     }
 
@@ -83,7 +107,7 @@ export default function LoginPage() {
 
     try {
       const data = await customerRegister({
-        email: regEmail.trim(),
+        email: regEmail.trim().toLowerCase(),
         password: regPassword,
         customerName: regName.trim(),
         phone: regPhone.trim(),
@@ -93,7 +117,7 @@ export default function LoginPage() {
     } catch (err) {
       const message =
         err.response?.data?.message || err.message || "Đăng ký thất bại";
-      setError(Array.isArray(message) ? message[0] : message);
+      setError(Array.isArray(message) ? message : message);
     } finally {
       setLoading(false);
     }
@@ -151,7 +175,15 @@ export default function LoginPage() {
           {/* Error Message */}
           {error && (
             <div className="mb-5 p-3 bg-red-100 border border-red-300 rounded-lg text-sm text-red-700">
-              {error}
+              {Array.isArray(error) ? (
+                <ul className="list-disc pl-5 space-y-1">
+                  {error.map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
+                </ul>
+              ) : (
+                error
+              )}
             </div>
           )}
 

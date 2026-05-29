@@ -19,7 +19,10 @@ export class CustomerRepository extends BaseRepository<Customer> {
 
   /** Tìm khách hàng theo email */
   async findByEmail(email: string): Promise<Customer | null> {
-    return this.prisma.customer.findUnique({ where: { email } });
+    const normalized = email.trim().toLowerCase();
+    return this.prisma.customer.findFirst({
+      where: { email: { equals: normalized, mode: 'insensitive' } },
+    });
   }
 
   /** Tìm khách hàng theo ID */
