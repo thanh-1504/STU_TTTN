@@ -5,6 +5,7 @@ import {
   createAppointment,
   getAvailableSlots,
 } from "../../api/appointmentsService";
+import { getMyVehicles } from "../../api/portalService";
 import { getServicesForCustomer } from "../../api/servicesService";
 import { getPublicTechnicians } from "../../api/usersService";
 import { useCart } from "../../contexts/CartContext";
@@ -98,13 +99,18 @@ export default function Booking() {
   const [technicians, setTechnicians] = useState([]);
   const [selectedTechnicianId, setSelectedTechnicianId] = useState(null);
 
+  // ── My vehicles (garage) ─────────────────────────────────────────────────────
+  const [myVehicles, setMyVehicles] = useState([]);
+  const [vehiclesLoading, setVehiclesLoading] = useState(true);
+  const [selectedVehicleId, setSelectedVehicleId] = useState(null);
+
   // ── Success modal ─────────────────────────────────────────────────────────────
   const [showSuccess, setShowSuccess] = useState(false);
 
   // ── Submitting ────────────────────────────────────────────────────────────────
   const [submitting, setSubmitting] = useState(false);
 
-  // ─── Load services & technicians ──────────────────────────────────────────────
+  // ─── Load services, technicians & my vehicles ─────────────────────────────────
   useEffect(() => {
     // Pre-fill from localStorage
     try {
@@ -129,6 +135,12 @@ export default function Booking() {
     getPublicTechnicians()
       .then((data) => setTechnicians(Array.isArray(data) ? data : []))
       .catch(console.error);
+
+    // My Vehicles (garage)
+    getMyVehicles()
+      .then((data) => setMyVehicles(Array.isArray(data) ? data : []))
+      .catch(() => setMyVehicles([]))
+      .finally(() => setVehiclesLoading(false));
   }, []);
 
   useEffect(() => {
@@ -189,6 +201,7 @@ export default function Booking() {
     const newErrors = {};
     if (!name.trim()) newErrors.name = "Vui lòng nhập họ và tên.";
     if (!phone.trim()) newErrors.phone = "Vui lòng nhập số điện thoại.";
+    if (!selectedVehicleId) newErrors.vehicle = "Vui lòng chọn xe của bạn.";
     const chosenServiceIds = serviceRows.filter(Boolean);
     if (chosenServiceIds.length === 0)
       newErrors.services = "Vui lòng chọn ít nhất một dịch vụ.";
@@ -223,6 +236,7 @@ export default function Booking() {
         symptoms: symptoms || "Không có mô tả thêm",
         notes,
         serviceIds: chosenServiceIds.map(Number),
+        vehicleId: selectedVehicleId ?? undefined,
         technicianId: selectedTechnicianId ?? undefined,
       });
 
@@ -239,11 +253,12 @@ export default function Booking() {
       } else {
         const data = err.response?.data;
         // Ưu tiên errors[] (Zod validation) → message string (BadRequestException) → fallback
-        const raw = Array.isArray(data?.errors) && data.errors.length > 0
-          ? data.errors.map((e) => e.message).join("\n")
-          : typeof data?.message === "string"
-            ? data.message
-            : err.message || "Đã xảy ra lỗi không xác định.";
+        const raw =
+          Array.isArray(data?.errors) && data.errors.length > 0
+            ? data.errors.map((e) => e.message).join("\n")
+            : typeof data?.message === "string"
+              ? data.message
+              : err.message || "Đã xảy ra lỗi không xác định.";
         toast.error(raw, { style: { whiteSpace: "pre-line" } });
       }
     } finally {
@@ -307,23 +322,116 @@ export default function Booking() {
           </div>
 
           <form className="space-y-8" onSubmit={handleSubmit} noValidate>
+            {/* ── Vehicle Selection (My Garage) ── */}
+            <div className="space-y-3">
+              <label className="block font-bold text-gray-700">
+                Chọn xe của bạn <span className="text-red-600">*</span>
+              </label>
+
+              {vehiclesLoading ? (
+                <div className="text-sm text-gray-400 animate-pulse py-3">
+                  Đang tải danh sách xe...
+                </div>
+              ) : myVehicles.length === 0 ? (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+                  <span className="text-2xl">🏍️</span>
+                  <div>
+                    <p className="font-semibold text-amber-800 text-sm">
+                      Bạn chưa có xe nào trong gara
+                    </p>
+                    <p className="text-xs text-amber-600 mt-1">
+                      Vui lòng{" "}
+                      <NavLink
+                        to="/portal/create"
+                        className="underline font-bold hover:text-amber-800"
+                      >
+                        thêm xe
+                      </NavLink>{" "}
+                      vào Gara của tôi trước khi đặt lịch.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {myVehicles.map((v) => {
+                    const isActive = selectedVehicleId === v.id;
+                    return (
+                      <button
+                        key={v.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedVehicleId(v.id);
+                          if (errors.vehicle)
+                            setErrors((p) => ({ ...p, vehicle: "" }));
+                        }}
+                        className={`flex items-center gap-3 p-4 rounded-xl border-2 text-left transition-all ${
+                          isActive
+                            ? "border-[#d7000e] bg-red-50 shadow-md scale-[1.02]"
+                            : "border-gray-200 hover:border-gray-400 bg-white"
+                        }`}
+                      >
+                        {/* Thumbnail */}
+                        {v.imageUrl ? (
+                          <img
+                            src={v.imageUrl}
+                            alt={v.licensePlate}
+                            className="w-14 h-14 rounded-lg object-cover flex-shrink-0 border border-gray-200"
+                          />
+                        ) : (
+                          <div className="w-14 h-14 rounded-lg bg-red-100 flex items-center justify-center flex-shrink-0">
+                            <span className="text-2xl">🏍️</span>
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-gray-800 text-sm truncate">
+                            {v.licensePlate}
+                          </p>
+                          <p className="text-xs text-gray-500 truncate">
+                            {[v.brand, v.model].filter(Boolean).join(" ")}
+                          </p>
+                          {v.currentKm != null && (
+                            <p className="text-xs text-gray-400 mt-0.5">
+                              {Number(v.currentKm).toLocaleString("vi-VN")} km
+                            </p>
+                          )}
+                        </div>
+                        {isActive && (
+                          <span className="text-[#d7000e] text-lg flex-shrink-0">
+                            ✔
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {errors.vehicle && (
+                <p className="text-red-500 text-xs">{errors.vehicle}</p>
+              )}
+            </div>
+
             {/* ── Personal Info ── */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Name */}
               <div>
-                <div className="relative">
-                  <input
-                    value={name}
-                    onChange={(e) => {
-                      setName(e.target.value);
-                      if (errors.name) setErrors((p) => ({ ...p, name: "" }));
-                    }}
-                    className={`w-full border rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-[#d7000e] ${errors.name ? "border-red-400" : "border-gray-300"}`}
-                    placeholder="Họ Và Tên"
-                    type="text"
-                  />
-                  <span className="absolute right-3 top-3 text-red-600">*</span>
-                </div>
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Họ và tên <span className="text-red-600">*</span>
+                </label>
+
+                <input
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (errors.name) setErrors((p) => ({ ...p, name: "" }));
+                  }}
+                  className={`w-full border rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-[#d7000e] ${
+                    errors.name ? "border-red-400" : "border-gray-300"
+                  }`}
+                  placeholder="Nhập họ và tên"
+                  type="text"
+                />
+
                 {errors.name && (
                   <p className="text-red-500 text-xs mt-1">{errors.name}</p>
                 )}
@@ -331,19 +439,23 @@ export default function Booking() {
 
               {/* Phone */}
               <div>
-                <div className="relative">
-                  <input
-                    value={phone}
-                    onChange={(e) => {
-                      setPhone(e.target.value);
-                      if (errors.phone) setErrors((p) => ({ ...p, phone: "" }));
-                    }}
-                    className={`w-full border rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-[#d7000e] ${errors.phone ? "border-red-400" : "border-gray-300"}`}
-                    placeholder="Số Điện Thoại"
-                    type="tel"
-                  />
-                  <span className="absolute right-3 top-3 text-red-600">*</span>
-                </div>
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Số điện thoại <span className="text-red-600">*</span>
+                </label>
+
+                <input
+                  value={phone}
+                  onChange={(e) => {
+                    setPhone(e.target.value);
+                    if (errors.phone) setErrors((p) => ({ ...p, phone: "" }));
+                  }}
+                  className={`w-full border rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-[#d7000e] ${
+                    errors.phone ? "border-red-400" : "border-gray-300"
+                  }`}
+                  placeholder="Nhập số điện thoại"
+                  type="tel"
+                />
+
                 {errors.phone && (
                   <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
                 )}
