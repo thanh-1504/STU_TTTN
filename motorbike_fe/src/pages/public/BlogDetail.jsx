@@ -51,80 +51,37 @@ export default function BlogDetail() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#faf9f7",
-        color: "#1a1a1a",
-      }}
-    >
+    <div className="min-h-screen bg-[#faf9f7] text-[#1a1a1a] font-['Work_Sans',_sans-serif]">
       {/* Header */}
-      <header
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 50,
-          background: "rgba(255,255,255,0.95)",
-          backdropFilter: "blur(8px)",
-          borderBottom: "1px solid #e8e0d8",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: 1200,
-            margin: "0 auto",
-            padding: "0 24px",
-            height: 64,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
+      <header className="sticky top-0 z-50 border-b border-[#e8e0d8] bg-white/95 shadow-sm backdrop-blur-sm">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <NavLink
             to="/"
-            className="text-2xl font-black text-red-600 uppercase tracking-tight"
+            className="text-2xl font-black tracking-tight text-red-600 uppercase"
           >
             Shop2banh
           </NavLink>
 
-          <nav style={{ display: "flex", alignItems: "center", gap: 24 }}>
+          <nav className="flex items-center gap-6">
             {isLoggedIn && (
-              <a href="#" style={{ color: "#555" }}>
-                <ShoppingCart size={20} strokeWidth={1.5} />
+              <a
+                href="#"
+                className="text-gray-600 transition hover:text-red-600"
+              >
+                <ShoppingCart size={22} strokeWidth={1.5} />
               </a>
             )}
 
             {isLoggedIn ? (
-              <div style={{ position: "relative" }}>
+              <div className="relative">
                 <button
                   onClick={() => setIsUserMenuOpen((p) => !p)}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    color: "#555",
-                    display: "flex",
-                    alignItems: "center",
-                  }}
+                  className="flex items-center text-gray-600 transition hover:text-red-600 focus:outline-none"
                 >
-                  <CircleUser size={22} strokeWidth={1.5} />
+                  <CircleUser size={24} strokeWidth={1.5} />
                 </button>
                 {isUserMenuOpen && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      right: 0,
-                      top: "calc(100% + 8px)",
-                      background: "#fff",
-                      border: "1px solid #e8e0d8",
-                      borderRadius: 8,
-                      padding: "6px 0",
-                      minWidth: 180,
-                      boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
-                      fontFamily: "system-ui, sans-serif",
-                    }}
-                  >
+                  <div className="absolute right-0 mt-3 w-48 rounded-lg border border-gray-100 bg-white py-2 shadow-xl">
                     {[
                       { to: "#", label: "Hồ sơ" },
                       { to: "/history", label: "Lịch sử" },
@@ -133,43 +90,15 @@ export default function BlogDetail() {
                       <NavLink
                         key={item.label}
                         to={item.to}
-                        style={{
-                          display: "block",
-                          padding: "8px 16px",
-                          fontSize: 14,
-                          color: "#444",
-                          textDecoration: "none",
-                        }}
-                        onMouseEnter={(e) =>
-                          (e.currentTarget.style.background = "#faf0ee")
-                        }
-                        onMouseLeave={(e) =>
-                          (e.currentTarget.style.background = "none")
-                        }
+                        className="block px-4 py-2 text-sm text-gray-700 transition hover:bg-red-50 hover:text-red-600"
                       >
                         {item.label}
                       </NavLink>
                     ))}
-                    <div
-                      style={{
-                        borderTop: "1px solid #f0ebe7",
-                        margin: "6px 0",
-                      }}
-                    />
+                    <div className="my-1 border-t border-gray-100" />
                     <button
                       onClick={handleLogout}
-                      style={{
-                        display: "block",
-                        width: "100%",
-                        textAlign: "left",
-                        padding: "8px 16px",
-                        fontSize: 14,
-                        color: "#c0392b",
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        fontFamily: "inherit",
-                      }}
+                      className="block w-full px-4 py-2 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
                     >
                       Đăng xuất
                     </button>
@@ -179,12 +108,7 @@ export default function BlogDetail() {
             ) : (
               <NavLink
                 to="/login"
-                style={{
-                  textDecoration: "none",
-                  fontSize: 14,
-                  color: "#555",
-                  fontFamily: "system-ui, sans-serif",
-                }}
+                className="text-sm font-medium text-gray-600 transition hover:text-red-600"
               >
                 Đăng nhập
               </NavLink>
@@ -192,18 +116,7 @@ export default function BlogDetail() {
 
             <button
               onClick={handleBooking}
-              style={{
-                background: "#c0392b",
-                color: "#fff",
-                border: "none",
-                borderRadius: 6,
-                padding: "8px 20px",
-                fontSize: 14,
-                cursor: "pointer",
-                fontFamily: "system-ui, sans-serif",
-                fontWeight: 500,
-                letterSpacing: "0.2px",
-              }}
+              className="rounded-md bg-[#c0392b] px-5 py-2 text-sm font-medium tracking-wide text-white transition hover:bg-red-700 shadow-sm"
             >
               Đặt lịch ngay
             </button>
@@ -211,146 +124,58 @@ export default function BlogDetail() {
         </div>
       </header>
 
-      <main style={{ maxWidth: 1200, margin: "0 auto", padding: "48px 24px" }}>
+      {/* Main Content */}
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
         {isLoading ? (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "80px 0",
-              color: "#999",
-              fontFamily: "system-ui, sans-serif",
-            }}
-          >
-            <div style={{ fontSize: 32, marginBottom: 12, opacity: 0.3 }}>
-              ◌
-            </div>
-            Đang tải bài viết...
+          <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+            <div className="mb-4 animate-spin text-4xl">◌</div>
+            <p>Đang tải bài viết...</p>
           </div>
         ) : !post ? (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "80px 0",
-              color: "#999",
-              fontFamily: "system-ui, sans-serif",
-            }}
-          >
+          <div className="py-20 text-center text-gray-500">
             Không tìm thấy bài viết.
           </div>
         ) : (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 320px",
-              gap: 48,
-              alignItems: "start",
-            }}
-          >
-            {/* Article */}
-            <article>
+          <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-12">
+            {/* Article Section */}
+            <article className="lg:col-span-8 xl:col-span-8 min-w-0 overflow-hidden">
               {/* Breadcrumb */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  marginBottom: 28,
-                  fontFamily: "system-ui, sans-serif",
-                  fontSize: 13,
-                  color: "#999",
-                }}
-              >
-                <NavLink
-                  to="/"
-                  style={{ color: "#999", textDecoration: "none" }}
-                >
+              <div className="mb-6 flex flex-wrap items-center gap-2 text-sm text-gray-500">
+                <NavLink to="/" className="hover:text-red-600 transition">
                   Trang chủ
                 </NavLink>
-                <ChevronRight size={12} />
-                <NavLink
-                  to="/blog"
-                  style={{ color: "#999", textDecoration: "none" }}
-                >
+                <ChevronRight size={14} />
+                <NavLink to="/blog" className="hover:text-red-600 transition">
                   Blog
                 </NavLink>
-                <ChevronRight size={12} />
-                <span style={{ color: "#555" }}>
+                <ChevronRight size={14} />
+                <span className="text-gray-800 font-medium line-clamp-1">
                   {post.category?.categoryName || "Bài viết"}
                 </span>
               </div>
 
               {/* Category badge */}
-              <div style={{ marginBottom: 16 }}>
-                <span
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 5,
-                    background: "#fef0ee",
-                    color: "#c0392b",
-                    padding: "4px 12px",
-                    borderRadius: 20,
-                    fontSize: 12,
-                    fontFamily: "system-ui, sans-serif",
-                    fontWeight: 600,
-                    letterSpacing: "0.5px",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  <Tag size={11} />
+              <div className="mb-4">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#c0392b]">
+                  <Tag size={12} />
                   {post.category?.categoryName || "Blog"}
                 </span>
               </div>
 
               {/* Title */}
-              <h1
-                style={{
-                  fontSize: 36,
-                  lineHeight: 1.25,
-                  fontWeight: 700,
-                  color: "#1a1a1a",
-                  marginBottom: 20,
-                  letterSpacing: "-0.5px",
-                }}
-              >
+              <h1 className="mb-5 text-3xl font-bold leading-tight tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
                 {post.title}
               </h1>
 
               {/* Meta */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 20,
-                  marginBottom: 32,
-                  paddingBottom: 24,
-                  borderBottom: "1px solid #ede8e3",
-                  fontFamily: "system-ui, sans-serif",
-                }}
-              >
-                <span
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    fontSize: 13,
-                    color: "#888",
-                  }}
-                >
-                  <Calendar size={14} />
+              <div className="mb-8 flex flex-wrap items-center gap-6 border-b border-gray-200 pb-6 text-sm text-gray-500">
+                <span className="flex items-center gap-2">
+                  <Calendar size={16} />
                   {formatDate(post.publishedAt || post.createdAt)}
                 </span>
                 {post.readingTime && (
-                  <span
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 6,
-                      fontSize: 13,
-                      color: "#888",
-                    }}
-                  >
-                    <Clock size={14} />
+                  <span className="flex items-center gap-2">
+                    <Clock size={16} />
                     {post.readingTime} phút đọc
                   </span>
                 )}
@@ -358,247 +183,90 @@ export default function BlogDetail() {
 
               {/* Thumbnail */}
               {post.thumbnailUrl && (
-                <figure style={{ margin: "0 0 36px" }}>
+                <figure className="mb-10">
                   <img
                     src={post.thumbnailUrl}
                     alt={post.title}
-                    style={{
-                      width: "100%",
-                      height: 420,
-                      objectFit: "cover",
-                      borderRadius: 12,
-                      display: "block",
-                      border: "1px solid #ede8e3",
-                    }}
+                    className="h-auto w-full max-h-[500px] rounded-xl border border-gray-200 object-cover shadow-sm"
                   />
                 </figure>
               )}
 
               {/* Content */}
               <div
-                style={{
-                  fontSize: 17,
-                  lineHeight: 1.85,
-                  color: "#333",
-                  fontFamily: "'Georgia', serif",
-                }}
-                className="blog-content"
+                className="blog-content font-serif text-lg leading-relaxed text-gray-800"
                 dangerouslySetInnerHTML={{ __html: post.content }}
               />
 
-              {/* Tags / Footer */}
-              <div
-                style={{
-                  marginTop: 48,
-                  paddingTop: 24,
-                  borderTop: "1px solid #ede8e3",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  fontFamily: "system-ui, sans-serif",
-                }}
-              >
+              {/* Tags / Footer CTA */}
+              <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-gray-200 pt-8 sm:flex-row">
                 <NavLink
                   to="/blog"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 6,
-                    color: "#c0392b",
-                    textDecoration: "none",
-                    fontSize: 14,
-                    fontWeight: 500,
-                  }}
+                  className="inline-flex items-center gap-2 text-sm font-medium text-[#c0392b] transition hover:text-red-800"
                 >
                   ← Về danh sách bài viết
                 </NavLink>
                 <button
                   onClick={handleBooking}
-                  style={{
-                    background: "#c0392b",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: 6,
-                    padding: "10px 24px",
-                    fontSize: 14,
-                    cursor: "pointer",
-                    fontWeight: 500,
-                  }}
+                  className="w-full rounded-md bg-[#c0392b] px-6 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-red-700 sm:w-auto"
                 >
                   Đặt lịch bảo dưỡng ngay
                 </button>
               </div>
             </article>
 
-            {/* Sidebar */}
-            <aside style={{ position: "sticky", top: 84 }}>
+            {/* Sidebar Section */}
+            <aside className="space-y-8 lg:col-span-4 lg:sticky lg:top-24 xl:col-span-4">
               {/* CTA Card */}
-              <div
-                style={{
-                  background:
-                    "linear-gradient(135deg, #c0392b 0%, #922b21 100%)",
-                  borderRadius: 12,
-                  padding: 24,
-                  marginBottom: 24,
-                  color: "#fff",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 13,
-                    opacity: 0.85,
-                    marginBottom: 8,
-                    fontFamily: "system-ui, sans-serif",
-                    letterSpacing: "0.3px",
-                    textTransform: "uppercase",
-                    fontWeight: 600,
-                  }}
-                >
+              <div className="rounded-xl bg-gradient-to-br from-[#c0392b] to-[#922b21] p-6 text-white shadow-md">
+                <div className="mb-2 text-xs font-bold uppercase tracking-wider opacity-90">
                   Chăm sóc xe của bạn
                 </div>
-                <div
-                  style={{
-                    fontSize: 20,
-                    fontWeight: 700,
-                    marginBottom: 8,
-                    lineHeight: 1.3,
-                  }}
-                >
+                <h3 className="mb-3 text-2xl font-bold leading-tight">
                   Đặt lịch dịch vụ ngay hôm nay
-                </div>
-                <div
-                  style={{
-                    fontSize: 13,
-                    opacity: 0.8,
-                    marginBottom: 20,
-                    fontFamily: "system-ui, sans-serif",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Đội ngũ kỹ thuật viên chuyên nghiệp luôn sẵn sàng phục vụ.
-                </div>
+                </h3>
+                <p className="mb-6 text-sm leading-relaxed opacity-90">
+                  Đội ngũ kỹ thuật viên chuyên nghiệp luôn sẵn sàng phục vụ và
+                  mang lại trải nghiệm tốt nhất cho xế yêu của bạn.
+                </p>
                 <button
                   onClick={handleBooking}
-                  style={{
-                    width: "100%",
-                    background: "#fff",
-                    color: "#c0392b",
-                    border: "none",
-                    borderRadius: 8,
-                    padding: "10px 0",
-                    fontSize: 14,
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    fontFamily: "system-ui, sans-serif",
-                  }}
+                  className="w-full rounded-lg bg-white py-3 text-sm font-bold text-[#c0392b] transition hover:bg-gray-50 shadow-sm"
                 >
                   Đặt lịch ngay →
                 </button>
               </div>
 
               {/* Latest Posts */}
-              <div
-                style={{
-                  background: "#fff",
-                  borderRadius: 12,
-                  border: "1px solid #ede8e3",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    padding: "16px 20px",
-                    borderBottom: "1px solid #ede8e3",
-                    fontFamily: "system-ui, sans-serif",
-                  }}
-                >
-                  <h4
-                    style={{
-                      margin: 0,
-                      fontSize: 13,
-                      fontWeight: 700,
-                      letterSpacing: "0.8px",
-                      textTransform: "uppercase",
-                      color: "#888",
-                    }}
-                  >
+              <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                <div className="border-b border-gray-100 bg-gray-50 px-5 py-4">
+                  <h4 className="text-sm font-bold uppercase tracking-wide text-gray-700">
                     Bài viết mới nhất
                   </h4>
                 </div>
 
-                <div style={{ padding: "8px 0" }}>
-                  {latestPosts.map((item, idx) => (
+                <div className="divide-y divide-gray-100">
+                  {latestPosts.map((item) => (
                     <Link
                       key={item.id}
                       to={`/blog/${item.slug}`}
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: 12,
-                        padding: "12px 20px",
-                        textDecoration: "none",
-                        borderBottom:
-                          idx < latestPosts.length - 1
-                            ? "1px solid #f5f0eb"
-                            : "none",
-                        transition: "background 0.15s",
-                      }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.background = "#faf8f5")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.background = "none")
-                      }
+                      className="group flex items-start gap-4 p-5 transition hover:bg-gray-50"
                     >
                       {item.thumbnailUrl ? (
                         <img
                           src={item.thumbnailUrl}
                           alt={item.title}
-                          style={{
-                            width: 52,
-                            height: 40,
-                            objectFit: "cover",
-                            borderRadius: 6,
-                            flexShrink: 0,
-                          }}
+                          className="h-16 w-20 flex-shrink-0 rounded-md object-cover shadow-sm"
                         />
                       ) : (
-                        <div
-                          style={{
-                            width: 52,
-                            height: 40,
-                            background: "#f0ebe5",
-                            borderRadius: 6,
-                            flexShrink: 0,
-                          }}
-                        />
+                        <div className="h-16 w-20 flex-shrink-0 rounded-md bg-gray-100" />
                       )}
-                      <div>
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: 14,
-                            fontWeight: 600,
-                            color: "#2c2c2c",
-                            lineHeight: 1.4,
-                            display: "-webkit-box",
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
-                            fontFamily: "system-ui, sans-serif",
-                          }}
-                        >
+                      <div className="flex-1">
+                        <h5 className="mb-1 text-sm font-semibold leading-snug text-gray-900 line-clamp-2 group-hover:text-[#c0392b] transition-colors">
                           {item.title}
-                        </p>
+                        </h5>
                         {item.publishedAt && (
-                          <p
-                            style={{
-                              margin: "4px 0 0",
-                              fontSize: 12,
-                              color: "#aaa",
-                              fontFamily: "system-ui, sans-serif",
-                            }}
-                          >
+                          <p className="text-xs text-gray-500">
                             {formatDate(item.publishedAt)}
                           </p>
                         )}
@@ -612,42 +280,59 @@ export default function BlogDetail() {
         )}
       </main>
 
-      {/* Footer */}
-
+      {/* Global Style for Blog Content parsed from HTML */}
       <style>{`
-        .blog-content h1, .blog-content h2, .blog-content h3 {
-          color: #1a1a1a;
-          margin-top: 2em;
-          margin-bottom: 0.75em;
-          font-family: 'Georgia', serif;
-          letter-spacing: -0.3px;
-        }
-        .blog-content h2 { font-size: 24px; }
-        .blog-content h3 { font-size: 20px; }
-        .blog-content p { margin: 0 0 1.4em; }
-        .blog-content a { color: #c0392b; }
-        .blog-content img { max-width: 100%; border-radius: 8px; margin: 1.5em 0; }
-        .blog-content ul, .blog-content ol { padding-left: 1.5em; margin: 0 0 1.4em; }
-        .blog-content li { margin-bottom: 0.5em; }
-        .blog-content blockquote {
-          border-left: 3px solid #c0392b;
-          margin: 2em 0;
-          padding: 1em 1.5em;
-          background: #fef9f8;
-          border-radius: 0 8px 8px 0;
-          font-style: italic;
-          color: #666;
-        }
-        .blog-content code {
-          background: #f5f0eb;
-          padding: 2px 6px;
-          border-radius: 4px;
-          font-size: 14px;
-        }
-        @media (max-width: 768px) {
-          article h1 { font-size: 26px !important; }
-        }
-      `}</style>
+  /* CÁC RULE CHỐNG TRÀN LAYOUT (QUAN TRỌNG) */
+  .blog-content {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  .blog-content * {
+    max-width: 100% !important;
+  }
+  /* Xử lý riêng cho thẻ table hoặc pre/code nếu có để cuộn ngang bên trong */
+  .blog-content table, .blog-content pre {
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  /* CÁC STYLE TYPOGRAPHY SẴN CÓ CỦA BẠN */
+  .blog-content h1, .blog-content h2, .blog-content h3, .blog-content h4 {
+    color: #111827;
+    margin-top: 1.5em;
+    margin-bottom: 0.75em;
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 700;
+  }
+  .blog-content h2 { font-size: 1.5rem; line-height: 1.3; }
+  .blog-content h3 { font-size: 1.25rem; line-height: 1.3; }
+  .blog-content p { margin-bottom: 1.25em; color: #374151; }
+  .blog-content a { color: #c0392b; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  .blog-content img { width: 100%; height: auto; border-radius: 0.5rem; margin: 2em 0; border: 1px solid #e5e7eb; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+  .blog-content ul, .blog-content ol { padding-left: 1.5em; margin-bottom: 1.25em; }
+  .blog-content ul { list-style-type: disc; }
+  .blog-content ol { list-style-type: decimal; }
+  .blog-content li { margin-bottom: 0.5em; }
+  .blog-content blockquote {
+    border-left: 4px solid #c0392b;
+    margin: 2em 0;
+    padding: 1em 1.5em;
+    background: #fdf2f2;
+    border-radius: 0 0.5rem 0.5rem 0;
+    font-style: italic;
+    color: #4b5563;
+  }
+  .blog-content code {
+    background: #f3f4f6;
+    padding: 0.2em 0.4em;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+    color: #ef4444;
+    font-family: monospace;
+  }
+`}</style>
     </div>
   );
 }

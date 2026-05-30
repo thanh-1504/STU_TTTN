@@ -180,26 +180,29 @@ export default function Blog() {
                   <Link
                     key={post.id}
                     to={`/blog/${post.slug}`}
-                    className="block rounded-lg border border-gray-200 p-4 transition hover:border-[#B21B00] hover:shadow-sm"
+                    className="block rounded-lg border border-gray-200 p-4 transition duration-200 hover:border-[#B21B00] hover:shadow-md bg-white"
                   >
-                    <article className="flex flex-col gap-4 md:flex-row">
+                    <article className="flex flex-col gap-4 md:flex-row md:items-start">
+                      {/* Phần Hình Ảnh */}
                       <div className="w-full flex-shrink-0 md:w-56">
                         {post.thumbnailUrl ? (
                           <img
                             src={post.thumbnailUrl}
                             alt={post.title}
-                            className="h-40 w-full rounded object-cover"
+                            className="h-40 w-full rounded-md object-cover border border-gray-100"
                           />
                         ) : (
-                          <div className="flex h-40 w-full items-center justify-center rounded bg-gray-100 text-xs text-gray-400">
+                          <div className="flex h-40 w-full items-center justify-center rounded-md bg-gray-50 text-xs text-gray-400 border border-gray-100">
                             Không có ảnh
                           </div>
                         )}
                       </div>
 
-                      <div className="flex-1">
+                      {/* Phần Nội Dung - Thêm min-w-0 ở đây */}
+                      <div className="flex-1 min-w-0">
+                        {/* Metadata: Category & Date */}
                         <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-gray-500">
-                          <span className="rounded bg-gray-100 px-2 py-1 font-semibold uppercase">
+                          <span className="rounded bg-gray-100 px-2 py-1 font-semibold uppercase text-gray-600">
                             {post.category?.categoryName || "Blog"}
                           </span>
                           <span>
@@ -207,19 +210,29 @@ export default function Blog() {
                           </span>
                         </div>
 
-                        <h2 className="mb-3 text-xl font-bold leading-tight text-gray-900 transition-colors hover:text-[#B21B00]">
+                        {/* Tiêu đề - Đã thêm line-clamp-2 để tránh tiêu đề quá dài phá layout */}
+                        <h2 className="mb-2 text-lg md:text-xl font-bold leading-tight text-gray-900 transition-colors hover:text-[#B21B00] line-clamp-2">
                           {post.title}
                         </h2>
 
-                        <div className="space-y-2 text-sm leading-6 text-gray-600">
-                          {previewParagraphs.map((paragraph, index) => (
-                            <p
-                              key={`${post.id}-${index}`}
-                              className="line-clamp-2"
-                            >
-                              {paragraph}
+                        {/* Đoạn trích dẫn */}
+                        <div className="text-sm leading-relaxed text-gray-600">
+                          {previewParagraphs.length > 0 ? (
+                            <div className="space-y-1">
+                              {previewParagraphs.map((paragraph, index) => (
+                                <p
+                                  key={`${post.id}-${index}`}
+                                  className="line-clamp-2"
+                                >
+                                  {paragraph}
+                                </p>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="italic text-gray-400">
+                              Đang cập nhật nội dung...
                             </p>
-                          ))}
+                          )}
                         </div>
                       </div>
                     </article>
