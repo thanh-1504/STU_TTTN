@@ -386,10 +386,11 @@ export default function History() {
       return;
     }
 
-    const appointmentTime = new Date(`${rescheduleDate}T${rescheduleTime}:00`);
+    // Gửi kèm offset +07:00 để backend nhận đúng giờ VN
+    const localIso = `${rescheduleDate}T${rescheduleTime}:00+07:00`;
 
     const payload = {
-      appointmentTime: appointmentTime.toISOString(),
+      appointmentTime: localIso,
       technicianId: rescheduleTechnicianId
         ? Number(rescheduleTechnicianId)
         : null,

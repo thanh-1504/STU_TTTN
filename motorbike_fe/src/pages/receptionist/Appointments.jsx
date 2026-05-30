@@ -155,13 +155,9 @@ export default function ReceptionistAppointments() {
       return;
     }
 
-    const appointmentTime = new Date(`${rescheduleDate}T${rescheduleTime}:00`);
-    if (Number.isNaN(appointmentTime.getTime())) {
-      setRescheduleError("Thời gian hẹn không hợp lệ.");
-      return;
-    }
-
-    rescheduleM.mutate({ id: rescheduleTarget.id, time: appointmentTime.toISOString() });
+    // Gửi kèm offset +07:00 để backend nhận đúng giờ VN
+    const localIso = `${rescheduleDate}T${rescheduleTime}:00+07:00`;
+    rescheduleM.mutate({ id: rescheduleTarget.id, time: localIso });
   };
 
   const handleCancel = (id) => {

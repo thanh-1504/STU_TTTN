@@ -214,8 +214,12 @@ export default function Booking() {
         .filter(Boolean)
         .join(", ");
 
+      // Gửi kèm offset +07:00 để backend nhận đúng giờ VN (không bị lệch UTC)
+      const pad = (n) => String(n).padStart(2, "0");
+      const localIso = `${selectedDate}T${selectedTime}:00+07:00`;
+
       await createAppointment({
-        appointmentTime: appointmentTime.toISOString(),
+        appointmentTime: localIso,
         symptoms: symptoms || "Không có mô tả thêm",
         notes,
         serviceIds: chosenServiceIds.map(Number),

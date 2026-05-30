@@ -8,7 +8,18 @@ const WORK_HOURS_START = 7;
 const WORK_HOURS_END = 17;
 
 /** Số xe tối đa mặc định mỗi slot (nếu không có WorkSchedule) */
-const DEFAULT_MAX_PER_SLOT = 10;
+const DEFAULT_MAX_PER_SLOT = 5;
+
+/** Offset múi giờ Việt Nam: UTC+7 */
+const VN_OFFSET_MS = 7 * 60 * 60 * 1000;
+
+/**
+ * Lấy giờ theo múi giờ Việt Nam (UTC+7).
+ * Dùng thay cho date.getHours() để tránh lệch giờ khi server chạy UTC.
+ */
+function getVNHour(date: Date): number {
+  return new Date(date.getTime() + VN_OFFSET_MS).getUTCHours();
+}
 
 @Injectable()
 export class AppointmentsRepository extends BaseRepository<Appointment> {
@@ -26,11 +37,12 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
    * Chỉ tính các lịch PENDING / CONFIRMED (không tính CANCELLED / COMPLETED).
    */
   async countByTimeSlot(date: Date, hour: number): Promise<number> {
+    // hour được truyền vào là giờ VN, cần map về khoảng UTC tương ưởng
     const slotStart = new Date(date);
-    slotStart.setHours(hour, 0, 0, 0);
+    slotStart.setUTCHours(hour - 7, 0, 0, 0); // VN 7h = UTC 0h
 
     const slotEnd = new Date(date);
-    slotEnd.setHours(hour, 59, 59, 999);
+    slotEnd.setUTCHours(hour - 7, 59, 59, 999);
 
     return this.prisma.appointment.count({
       where: {
@@ -53,11 +65,16 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
    * @returns Mảng chuỗi giờ còn trống, dạng "HH:00"
    */
   async getAvailableSlots(date: Date): Promise<string[]> {
-    // Chuẩn hóa ngày: bắt đầu 00:00:00 – kết thúc 23:59:59
-    const dayStart = new Date(date);
-    dayStart.setHours(0, 0, 0, 0);
-    const dayEnd = new Date(date);
-    dayEnd.setHours(23, 59, 59, 999);
+    // date được parse từ local VN, setHours() theo UTC+7
+    // Cần lấy ngày VN (không phải UTC) để xác định dayStart/dayEnd đúng
+    const vnDate = new Date(date.getTime() + VN_OFFSET_MS);
+    const vnYear = vnDate.getUTCFullYear();
+    const vnMonth = vnDate.getUTCMonth();
+    const vnDay = vnDate.getUTCDate();
+
+    // dayStart/dayEnd theo UTC tương ưởng với 00:00–23:59 VN
+    const dayStart = new Date(Date.UTC(vnYear, vnMonth, vnDay, 0, 0, 0, 0) - VN_OFFSET_MS);
+    const dayEnd = new Date(Date.UTC(vnYear, vnMonth, vnDay, 23, 59, 59, 999) - VN_OFFSET_MS);
 
     // Tìm WorkSchedule cho ngày này (lấy ca đầu tiên nếu có nhiều ca)
     const schedule = await this.prisma.workSchedule.findFirst({
@@ -67,13 +84,13 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
       orderBy: { shiftStart: 'asc' },
     });
 
-    // Xác định khung giờ làm việc
+    // Xác định khung giờ làm việc (theo giờ VN)
     const maxPerSlot = schedule?.maxVehicles ?? DEFAULT_MAX_PER_SLOT;
     const startHour = schedule
-      ? new Date(schedule.shiftStart).getHours()
+      ? getVNHour(new Date(schedule.shiftStart))
       : WORK_HOURS_START;
     const endHour = schedule
-      ? new Date(schedule.shiftEnd).getHours()
+      ? getVNHour(new Date(schedule.shiftEnd))
       : WORK_HOURS_END;
 
     // Đếm tất cả lịch hẹn trong ngày một lần (tránh N+1 queries)
@@ -85,10 +102,10 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
       select: { appointmentTime: true },
     });
 
-    // Group theo giờ: { hour → count }
+    // Group theo giờ VN: { vnHour → count }
     const countPerHour = new Map<number, number>();
     for (const appt of existingAppointments) {
-      const h = new Date(appt.appointmentTime).getHours();
+      const h = getVNHour(new Date(appt.appointmentTime));
       countPerHour.set(h, (countPerHour.get(h) ?? 0) + 1);
     }
 
@@ -115,11 +132,13 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
     date: Date,
     excludeId?: number,
   ): Promise<boolean> {
+    const vnHour = getVNHour(date);
+    // Tính slotStart/slotEnd theo UTC tương ưởng với giờ VN
     const slotStart = new Date(date);
-    slotStart.setHours(date.getHours(), 0, 0, 0);
+    slotStart.setUTCHours(vnHour - 7, 0, 0, 0);
 
     const slotEnd = new Date(date);
-    slotEnd.setHours(date.getHours(), 59, 59, 999);
+    slotEnd.setUTCHours(vnHour - 7, 59, 59, 999);
 
     const count = await this.prisma.appointment.count({
       where: {

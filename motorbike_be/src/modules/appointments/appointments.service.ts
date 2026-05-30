@@ -323,19 +323,20 @@ export class AppointmentsService {
   }
 
   private async ensureSlotAvailable(appointmentDate: Date) {
-    const hour = appointmentDate.getHours();
+    // Dùng giờ VN (UTC+7) để tính slot đúng, tránh lệch UTC
+    const vnHour = new Date(appointmentDate.getTime() + 7 * 60 * 60 * 1000).getUTCHours();
     const booked = await this.appointmentsRepository.countByTimeSlot(
       appointmentDate,
-      hour,
+      vnHour,
     );
     const available =
       await this.appointmentsRepository.getAvailableSlots(appointmentDate);
-    const slotLabel = `${String(hour).padStart(2, '0')}:00`;
+    const slotLabel = `${String(vnHour).padStart(2, '0')}:00`;
 
     if (!available.includes(slotLabel)) {
       throw new BadRequestException(
         `Khung giờ ${slotLabel} đã đầy hoặc nằm ngoài giờ làm việc. ` +
-          `Hiện tại đã có ${booked} xe đặt trong giờ này.`,
+          `Hiện tại đã có ${booked} lịch đặt trong giờ này.`,
       );
     }
   }
