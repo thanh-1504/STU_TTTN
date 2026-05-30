@@ -11,6 +11,22 @@ import {
   useNotification,
 } from "../../components/Notification";
 
+// Thêm constant này ở trên component
+const UNIT_OPTIONS = [
+  "Cái",
+  "Bộ",
+  "Chiếc",
+  "Đôi",
+  "Lít",
+  "Ml",
+  "Kg",
+  "Gram",
+  "Cuộn",
+  "Hộp",
+  "Chai",
+  "Tuýp",
+];
+
 export default function ManageSpareParts() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -20,7 +36,7 @@ export default function ManageSpareParts() {
   const [form, setForm] = useState({
     partNumber: "",
     partName: "",
-    unit: "cai",
+    unit: "Cái",
     stockQuantity: "0",
     minStockLevel: "5",
     sellingPrice: "",
@@ -55,7 +71,7 @@ export default function ManageSpareParts() {
     };
 
     fetchSparePart();
-  }, [id, isEditMode, navigate, notify]);
+  }, [id, isEditMode]);
 
   const projectedStatus = useMemo(() => {
     const stockQuantity = Number(form.stockQuantity || 0);
@@ -66,7 +82,9 @@ export default function ManageSpareParts() {
     }
 
     if (stockQuantity <= minStockLevel) {
-      return "Sắp hết";
+      // Nếu tồn kho nhỏ hơn mức cảnh báo → hết hàng
+      // Nếu tồn kho bằng mức cảnh báo → sắp hết
+      return stockQuantity < minStockLevel ? "Hết hàng" : "Sắp hết";
     }
 
     return "Còn hàng";
@@ -75,17 +93,23 @@ export default function ManageSpareParts() {
   const handleChange = (event) => {
     const { name, value } = event.target;
 
+    // 1. Luôn cập nhật giá trị form trước để giao diện thay đổi mượt mà
     setForm((prev) => ({
       ...prev,
       [name]: value,
     }));
 
-    if (fieldErrors[name]) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
-    }
+    // 2. Sửa lại cách xóa lỗi: Chỉ xóa nếu thực sự đang có lỗi ở trường đó
+    // Sử dụng kiểm tra trực tiếp từ state cũ để tránh xung đột render
+    setFieldErrors((prev) => {
+      if (prev[name]) {
+        return {
+          ...prev,
+          [name]: "",
+        };
+      }
+      return prev;
+    });
   };
 
   const validateForm = () => {
@@ -139,7 +163,8 @@ export default function ManageSpareParts() {
         result = await updateSparePart(id, {
           partName: form.partName.trim(),
           unit: form.unit.trim(),
-          minStockLevel: Number(form.minStockLevel),
+          minStockLevel:
+            form.minStockLevel === "" ? 0 : Number(form.minStockLevel),
           sellingPrice: Number(form.sellingPrice),
         });
       } else {
@@ -233,19 +258,39 @@ export default function ManageSpareParts() {
                     name="partNumber"
                     value={form.partNumber}
                     onChange={handleChange}
+                    onBlur={(e) => {
+                      if (e.target.value === "") {
+                        onChange({ target: { name, value: "0" } });
+                      }
+                    }}
                     error={fieldErrors.partNumber}
                     placeholder="PT-001"
                     disabled={isEditMode}
                   />
 
-                  <FormField
-                    label="Đơn vị *"
-                    name="unit"
-                    value={form.unit}
-                    onChange={handleChange}
-                    error={fieldErrors.unit}
-                    placeholder="cái"
-                  />
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-stone-700">
+                      Đơn vị *
+                    </label>
+                    <select
+                      name="unit"
+                      value={form.unit}
+                      onChange={handleChange}
+                      className={`w-full rounded-lg border px-4 py-2.5 outline-none focus:ring-2 focus:ring-red-500 ${
+                        fieldErrors.unit ? "border-red-500" : "border-stone-300"
+                      }`}
+                    >
+                      <option value="">-- Chọn đơn vị --</option>
+                      {UNIT_OPTIONS.map((u) => (
+                        <option key={u} value={u}>
+                          {u}
+                        </option>
+                      ))}
+                    </select>
+                    {fieldErrors.unit && (
+                      <p className="text-xs text-red-600">{fieldErrors.unit}</p>
+                    )}
+                  </div>
 
                   <FormField
                     label="Tên *"

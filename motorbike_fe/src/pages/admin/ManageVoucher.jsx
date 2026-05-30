@@ -387,11 +387,7 @@ export default function ManageVoucher() {
                     value={form.startDate}
                     onChange={handleChange}
                     error={fieldErrors.startDate}
-                    min={
-                      !isEditMode
-                        ? new Date().toISOString().split("T")[0]
-                        : undefined
-                    }
+                    min={new Date().toISOString().split("T")[0]}
                   />
                   <FormField
                     label="Ngày kết thúc *"

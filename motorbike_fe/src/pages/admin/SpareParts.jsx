@@ -1,4 +1,11 @@
-import { AlertTriangle, Loader, Package2, Pencil, Search, Wallet } from "lucide-react";
+import {
+  AlertTriangle,
+  Loader,
+  Package2,
+  Pencil,
+  Search,
+  Wallet,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { getSpareParts } from "../../api/sparePartsService";
@@ -62,7 +69,7 @@ export default function AdminSpareParts() {
 
   const totalParts = displayedParts.length;
   const lowStockParts = displayedParts.filter(
-    (item) => Number(item.stockQuantity) <= Number(item.minStockLevel),
+    (item) => Number(item.stockQuantity) === Number(item.minStockLevel),
   ).length;
   const totalStockValue = displayedParts.reduce(
     (sum, item) => sum + Number(item.sellingPrice) * Number(item.stockQuantity),
@@ -241,7 +248,8 @@ export default function AdminSpareParts() {
           <div className="flex items-center justify-between border-t px-4 py-3 text-sm">
             <span className="text-stone-500">
               Hiển thị {displayedParts.length === 0 ? 0 : page * PAGE_SIZE + 1}–
-              {Math.min((page + 1) * PAGE_SIZE, displayedParts.length)} trên {displayedParts.length} phụ tùng
+              {Math.min((page + 1) * PAGE_SIZE, displayedParts.length)} trên{" "}
+              {displayedParts.length} phụ tùng
             </span>
             <Pagination
               pageCount={totalPages}
@@ -273,15 +281,15 @@ function StatCard({ title, value, icon: Icon, accent = "text-stone-900" }) {
 }
 
 function StatusBadge({ stockQuantity, minStockLevel }) {
-  if (stockQuantity === 0) {
+  if (stockQuantity === 0 || stockQuantity < minStockLevel) {
     return (
       <span className="inline-flex rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700">
-        Het hang
+        Hết hàng
       </span>
     );
   }
 
-  if (stockQuantity <= minStockLevel) {
+  if (stockQuantity === minStockLevel) {
     return (
       <span className="inline-flex rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-700">
         Sắp hết

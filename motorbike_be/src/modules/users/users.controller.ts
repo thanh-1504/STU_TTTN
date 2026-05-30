@@ -1,13 +1,22 @@
 import {
-  Body, Controller, Get, HttpCode, HttpStatus,
-  Param, ParseIntPipe, Patch, Post, Query, UseGuards,
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-users.dto';
+import { RoleName } from 'generated/prisma/client';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { RoleName } from 'generated/prisma/client';
+import { CreateUserDto, UpdateUserDto } from './dto/create-users.dto';
+import { UsersService } from './users.service';
 
 @Controller('admin/users')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -20,10 +29,7 @@ export class UsersController {
    * Danh sách nhân viên, filter theo role và trạng thái hoạt động.
    */
   @Get()
-  findAll(
-    @Query('role') role?: string,
-    @Query('isActive') isActive?: string,
-  ) {
+  findAll(@Query('role') role?: string, @Query('isActive') isActive?: string) {
     return this.usersService.findAll(role, isActive);
   }
 
@@ -64,6 +70,13 @@ export class UsersController {
   toggleActive(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.toggleActive(id);
   }
+
+  /** PATCH /admin/users/:id */
+  @Patch(':id')
+  @HttpCode(HttpStatus.OK)
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateUserDto) {
+    return this.usersService.updateUser(id, dto);
+  }
 }
 
 @Controller('public/technicians')
@@ -75,4 +88,3 @@ export class PublicTechniciansController {
     return this.usersService.findAll('TECHNICIAN', 'true');
   }
 }
-

@@ -1,6 +1,7 @@
-import { Eye, Loader, Pencil, Trash2 } from "lucide-react";
+import { Loader } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import Swal from "sweetalert2";
 import {
   archiveBlogPost,
   getAdminBlogPosts,
@@ -8,13 +9,13 @@ import {
 } from "../../api/blogService";
 import { useNotification } from "../../components/Notification";
 import Pagination from "../../components/Pagination";
-
+import { Pencil, Trash2 } from "lucide-react";
 export default function Blog() {
   const [posts, setPostsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
-  const postsPerPage = 10;
+  const postsPerPage = 5;
   const { notify, notifications, NotificationContainer, removeNotification } =
     useNotification();
 
@@ -36,6 +37,10 @@ export default function Blog() {
     fetchPosts();
   }, [fetchPosts]);
 
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [statusFilter]);
+
   // Publish bài viết
   const handlePublish = async (postId) => {
     try {
@@ -50,7 +55,19 @@ export default function Blog() {
 
   // Archive bài viết
   const handleArchive = async (postId) => {
-    if (!confirm("Bạn có chắc muốn ẩn bài viết này?")) return;
+    const result = await Swal.fire({
+      title: "Ẩn bài viết?",
+      text: "Bài viết sẽ bị ẩn và không hiển thị với người dùng.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#b91c1c",
+      cancelButtonColor: "#78716c",
+      confirmButtonText: "Ẩn bài viết",
+      cancelButtonText: "Hủy",
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
       await archiveBlogPost(postId);
       notify.success("Bài viết đã được ẩn");
@@ -179,17 +196,17 @@ export default function Blog() {
 
           {/* Table */}
           <div className="bg-white border border-zinc-200 rounded shadow-sm overflow-hidden mx-8">
-            {loading ? (
-              <div className="p-12 flex items-center justify-center gap-2 text-sm text-stone-500">
-                <Loader className="animate-spin" size={18} />
-                <span>Đang tải dữ liệu...</span>
-              </div>
-            ) : paginatedPosts.length === 0 ? (
-              <div className="p-12 text-center text-zinc-500">
-                <p>Không có bài viết nào</p>
-              </div>
-            ) : (
-              <>
+            <div className="overflow-x-auto">
+              {loading ? (
+                <div className="p-12 flex items-center justify-center gap-2 text-sm text-stone-500">
+                  <Loader className="animate-spin" size={18} />
+                  <span>Đang tải dữ liệu...</span>
+                </div>
+              ) : paginatedPosts.length === 0 ? (
+                <div className="p-12 text-center text-zinc-500">
+                  <p>Không có bài viết nào</p>
+                </div>
+              ) : (
                 <table className="w-full text-sm">
                   <thead className="bg-zinc-50 border-b">
                     <tr className="text-left text-zinc-500 uppercase text-xs">
@@ -200,7 +217,6 @@ export default function Blog() {
                       <th className="p-4 text-right">Thao tác</th>
                     </tr>
                   </thead>
-
                   <tbody>
                     {paginatedPosts.map((post) => {
                       const { badge, label } = getStatusBadge(post.status);
@@ -246,12 +262,6 @@ export default function Blog() {
 
                           <td className="p-4">
                             <div className="flex justify-end gap-2">
-                              <button
-                                title="Xem"
-                                className="p-2 hover:text-red-700"
-                              >
-                                <Eye size={16} />
-                              </button>
                               <NavLink
                                 to={`/admin/blog/${post.id}/edit`}
                                 title="Sửa"
@@ -284,27 +294,22 @@ export default function Blog() {
                     })}
                   </tbody>
                 </table>
+              )}
+            </div>
 
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="p-4 bg-zinc-50 flex items-center justify-between border-t">
-                    <span className="text-sm text-zinc-500">
-                      Hiển thị {startIdx + 1} –{" "}
-                      {Math.min(startIdx + postsPerPage, posts.length)} trên
-                      tổng số {posts.length} bài viết
-                    </span>
-
-                    <Pagination
-                      pageCount={totalPages}
-                      currentPage={currentPage}
-                      onPageChange={({ selected }) => {
-                        setCurrentPage(selected);
-                      }}
-                    />
-                  </div>
-                )}
-              </>
-            )}
+            {/* Pagination luôn nằm ngoài điều kiện */}
+            <div className="flex items-center justify-between border-t px-4 py-3 text-sm">
+              <span className="text-zinc-500">
+                Hiển thị {posts.length === 0 ? 0 : startIdx + 1}–
+                {Math.min(startIdx + postsPerPage, posts.length)} trên tổng số{" "}
+                {posts.length} bài viết
+              </span>
+              <Pagination
+                pageCount={totalPages}
+                currentPage={currentPage}
+                onPageChange={({ selected }) => setCurrentPage(selected)}
+              />
+            </div>
           </div>
         </main>
       </div>

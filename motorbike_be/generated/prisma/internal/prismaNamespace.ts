@@ -2123,6 +2123,7 @@ export const CustomerScalarFieldEnum = {
   email: 'email',
   password: 'password',
   customerName: 'customerName',
+  avatarUrl: 'avatarUrl',
   address: 'address',
   totalSpent: 'totalSpent',
   createdAt: 'createdAt',

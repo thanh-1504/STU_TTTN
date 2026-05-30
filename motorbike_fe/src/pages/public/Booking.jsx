@@ -233,12 +233,15 @@ export default function Booking() {
         toast.error("Vui lòng đăng nhập để đặt lịch.");
         setTimeout(() => navigate("/login"), 1500);
       } else {
-        // NestJS trả về message dạng mảng (validation) hoặc string
-        const raw = err.response?.data?.errors[0]?.message;
-        const msg = Array.isArray(raw)
-          ? raw.join(" \u2022 ")
-          : raw || err.message || "Đã xảy ra lỗi không xác định.";
-        toast.error(msg);
+        // NestJS có thể trả về: { message: string } hoặc { errors: [{message}] }
+        const data = err.response?.data;
+        const raw =
+          typeof data?.message === "string"
+            ? data.message
+            : Array.isArray(data?.errors)
+              ? data.errors.map((e) => e.message).join(" • ")
+              : err.message || "Đã xảy ra lỗi không xác định.";
+        toast.error(raw);
       }
     } finally {
       setSubmitting(false);
@@ -567,32 +570,7 @@ export default function Booking() {
                 disabled={submitting}
                 className="bg-[#d7000e] text-white font-extrabold py-4 px-16 rounded-full hover:bg-red-700 transition-all hover:scale-105 flex items-center gap-2 shadow-lg disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 cursor-pointer"
               >
-                {submitting ? (
-                  <>
-                    <svg
-                      className="animate-spin w-5 h-5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v8H4z"
-                      />
-                    </svg>
-                    Đang xử lý...
-                  </>
-                ) : (
-                  <>ĐẶT LỊCH</>
-                )}
+                {submitting ? <>Đang xử lý...</> : <>ĐẶT LỊCH</>}
               </button>
             </div>
           </form>

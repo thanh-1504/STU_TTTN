@@ -150,7 +150,7 @@ const getDisplayNameFromInfo = (info = {}) =>
 export default function History() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [activeTab, setActiveTab] = useState("my-gara");
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [rating, setRating] = useState(0);
@@ -182,11 +182,12 @@ export default function History() {
   const [rescheduleTechnicianId, setRescheduleTechnicianId] = useState("");
   const [rescheduleError, setRescheduleError] = useState("");
 
-  const { data: appointments = [], isLoading: isLoadingAppointments } = useQuery({
-    queryKey: ["myAppointments"],
-    queryFn: getMyAppointments,
-    enabled: activeTab === "booking-history",
-  });
+  const { data: appointments = [], isLoading: isLoadingAppointments } =
+    useQuery({
+      queryKey: ["myAppointments"],
+      queryFn: getMyAppointments,
+      enabled: activeTab === "booking-history",
+    });
 
   const { data: profile } = useQuery({
     queryKey: ["myProfile"],
@@ -385,9 +386,7 @@ export default function History() {
       return;
     }
 
-    const appointmentTime = new Date(
-      `${rescheduleDate}T${rescheduleTime}:00`,
-    );
+    const appointmentTime = new Date(`${rescheduleDate}T${rescheduleTime}:00`);
 
     const payload = {
       appointmentTime: appointmentTime.toISOString(),
@@ -424,7 +423,7 @@ export default function History() {
       profileMutation.isPending ||
       isUploadingAvatar ||
       !profileForm.customerName.trim();
-
+   
     return (
       <div className="animate-in fade-in rounded-2xl border border-gray-200 bg-white p-6 shadow-sm duration-300">
         <div className="mb-6 flex items-center gap-3">
@@ -555,7 +554,9 @@ export default function History() {
                 onClick={() =>
                   profileMutation.mutate({
                     customerName: profileForm.customerName.trim(),
-                    avatarUrl: removeAvatar ? null : profileForm.avatarUrl || null,
+                    avatarUrl: removeAvatar
+                      ? null
+                      : profileForm.avatarUrl || null,
                   })
                 }
                 disabled={isSaveDisabled}
@@ -564,9 +565,7 @@ export default function History() {
                 {profileMutation.isPending ? "Đang lưu..." : "Lưu thay đổi"}
               </button>
               {isUploadingAvatar && (
-                <span className="text-xs text-gray-500">
-                  Đang tải ảnh...
-                </span>
+                <span className="text-xs text-gray-500">Đang tải ảnh...</span>
               )}
             </div>
           </div>
@@ -605,28 +604,30 @@ export default function History() {
         {appointments.map((apt) => {
           const appointmentMoment =
             apt.appointmentTime || apt.appointmentDate || apt.createdAt;
-          const canReschedule =
-            apt.status === "PENDING" || apt.status === "CONFIRMED";
-
+          const canReschedule = apt.status === "PENDING";
           return (
             <div
               key={apt.id}
-              className="rounded-xl border bg-white p-5 transition-all hover:shadow-md"
+              onClick={() => setSelectedAppointment(apt)}
+              className="rounded-xl border bg-white p-4 transition-all hover:shadow-md cursor-pointer"
             >
-              <div className="flex items-start justify-between">
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="rounded-lg bg-blue-50 p-3 text-blue-600">
-                    <CalendarClock size={24} />
+                    <CalendarClock size={22} />
                   </div>
+
                   <div>
                     <h4 className="text-lg font-bold text-gray-800">
                       {apt.serviceName || "Hẹn bảo dưỡng xe"}
                     </h4>
+
                     <div className="mt-1 flex items-center gap-4 text-sm text-gray-500">
                       <span className="flex items-center gap-1">
                         <Calendar size={14} />
                         {formatDateTime(appointmentMoment)}
                       </span>
+
                       <span
                         className={`flex items-center gap-1 font-medium ${
                           apt.status === "CONFIRMED"
@@ -641,17 +642,6 @@ export default function History() {
                   </div>
                 </div>
               </div>
-
-              {canReschedule && (
-                <div className="mt-4 flex justify-end">
-                  <button
-                    onClick={() => openReschedule(apt)}
-                    className="rounded-lg border px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
-                  >
-                    Đổi lịch
-                  </button>
-                </div>
-              )}
             </div>
           );
         })}
@@ -661,7 +651,9 @@ export default function History() {
 
   const renderRepairList = () => {
     if (isLoadingOrders) {
-      return <div className="py-10 text-center">Đang tải lịch sử sửa chữa...</div>;
+      return (
+        <div className="py-10 text-center">Đang tải lịch sử sửa chữa...</div>
+      );
     }
 
     if (repairOrders.length === 0) {
@@ -745,7 +737,9 @@ export default function History() {
 
   const renderRepairDetail = () => {
     if (isLoadingDetail) {
-      return <div className="py-10 text-center">Đang tải chi tiết phiếu...</div>;
+      return (
+        <div className="py-10 text-center">Đang tải chi tiết phiếu...</div>
+      );
     }
 
     if (!orderDetail) return null;
@@ -763,7 +757,9 @@ export default function History() {
             <ArrowLeft size={20} />
           </button>
           <div>
-            <h3 className="text-lg font-bold">Chi tiết phiếu #{orderDetail.id}</h3>
+            <h3 className="text-lg font-bold">
+              Chi tiết phiếu #{orderDetail.id}
+            </h3>
             <p className="text-sm text-gray-500">
               Ngày tạo: {formatDate(orderDetail.createdAt)}
             </p>
@@ -800,9 +796,13 @@ export default function History() {
 
                       return (
                         <tr key={index} className="border-b hover:bg-gray-50">
-                          <td className="p-3 font-medium text-gray-800">{name}</td>
+                          <td className="p-3 font-medium text-gray-800">
+                            {name}
+                          </td>
                           <td className="p-3 text-center">{qty}</td>
-                          <td className="p-3 text-right">{formatCurrency(price)}</td>
+                          <td className="p-3 text-right">
+                            {formatCurrency(price)}
+                          </td>
                           <td className="p-3 text-center">
                             <span className="inline-flex items-center gap-1 rounded bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-600">
                               <ShieldCheck size={14} />
@@ -840,7 +840,10 @@ export default function History() {
             <section className="rounded-xl border border-gray-100 bg-gray-50 p-6">
               {isReviewed ? (
                 <div className="py-4 text-center">
-                  <CheckCircle2 size={40} className="mx-auto mb-2 text-green-500" />
+                  <CheckCircle2
+                    size={40}
+                    className="mx-auto mb-2 text-green-500"
+                  />
                   <h4 className="font-bold text-gray-800">
                     Cảm ơn bạn đã đánh giá!
                   </h4>
@@ -871,7 +874,8 @@ export default function History() {
                     Đánh giá dịch vụ
                   </h4>
                   <p className="mb-4 text-sm text-gray-500">
-                    Bạn cảm thấy hài lòng với dịch vụ của phiếu sửa chữa này chứ?
+                    Bạn cảm thấy hài lòng với dịch vụ của phiếu sửa chữa này
+                    chứ?
                   </p>
 
                   <div className="mb-4 flex items-center gap-2">
@@ -1092,111 +1096,244 @@ export default function History() {
                 Thông tin cá nhân
               </button>
             </nav>
-
-           
           </div>
         </aside>
 
-        <main className="w-full flex-1 overflow-hidden">{renderActiveTabContent()}</main>
+        <main className="w-full flex-1 overflow-hidden">
+          {renderActiveTabContent()}
+        </main>
       </div>
 
-                {rescheduleTarget && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-                    <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
-                      <div className="mb-4 flex items-center justify-between">
-                        <h3 className="text-lg font-bold">
-                          Đổi lịch hẹn #{rescheduleTarget.id}
-                        </h3>
-                        <button
-                          onClick={() => setRescheduleTarget(null)}
-                          className="text-gray-500 hover:text-gray-700"
-                        >
-                          ✕
-                        </button>
-                      </div>
+      {rescheduleTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-bold">
+                Đổi lịch hẹn #{rescheduleTarget.id}
+              </h3>
+              <button
+                onClick={() => setRescheduleTarget(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
 
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-semibold text-gray-700">
-                            Ngày hẹn
-                          </label>
-                          <input
-                            type="date"
-                            value={rescheduleDate}
-                            onChange={(e) => setRescheduleDate(e.target.value)}
-                            className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
-                          />
-                        </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700">
+                  Ngày hẹn
+                </label>
+                <input
+                  type="date"
+                  value={rescheduleDate}
+                  onChange={(e) => setRescheduleDate(e.target.value)}
+                  className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+                />
+              </div>
 
-                        <div>
-                          <label className="block text-sm font-semibold text-gray-700">
-                            Khung giờ
-                          </label>
-                          {isLoadingSlots ? (
-                            <p className="mt-2 text-sm text-gray-500">
-                              Đang tải khung giờ...
-                            </p>
-                          ) : availableSlots.length === 0 ? (
-                            <p className="mt-2 text-sm text-gray-500">
-                              Không còn khung giờ phù hợp.
-                            </p>
-                          ) : (
-                            <select
-                              value={rescheduleTime}
-                              onChange={(e) => setRescheduleTime(e.target.value)}
-                              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
-                            >
-                              <option value="">-- Chọn khung giờ --</option>
-                              {slotOptions.map((slot) => (
-                                <option key={slot} value={slot}>
-                                  {slot}
-                                </option>
-                              ))}
-                            </select>
-                          )}
-                        </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700">
+                  Khung giờ
+                </label>
+                {isLoadingSlots ? (
+                  <p className="mt-2 text-sm text-gray-500">
+                    Đang tải khung giờ...
+                  </p>
+                ) : availableSlots.length === 0 ? (
+                  <p className="mt-2 text-sm text-gray-500">
+                    Không còn khung giờ phù hợp.
+                  </p>
+                ) : (
+                  <select
+                    value={rescheduleTime}
+                    onChange={(e) => setRescheduleTime(e.target.value)}
+                    className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+                  >
+                    <option value="">-- Chọn khung giờ --</option>
+                    {slotOptions.map((slot) => (
+                      <option key={slot} value={slot}>
+                        {slot}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
 
-                        <div>
-                          <label className="block text-sm font-semibold text-gray-700">
-                            Kỹ thuật viên
-                          </label>
-                          <select
-                            value={rescheduleTechnicianId}
-                            onChange={(e) => setRescheduleTechnicianId(e.target.value)}
-                            className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
-                          >
-                            <option value="">-- Chọn KTV --</option>
-                            {technicians.map((tech) => (
-                              <option key={tech.id} value={tech.id}>
-                                {tech.fullname || tech.username}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700">
+                  Kỹ thuật viên
+                </label>
+                <select
+                  value={rescheduleTechnicianId}
+                  onChange={(e) => setRescheduleTechnicianId(e.target.value)}
+                  className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+                >
+                  <option value="">-- Chọn KTV --</option>
+                  {technicians.map((tech) => (
+                    <option key={tech.id} value={tech.id}>
+                      {tech.fullname || tech.username}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-                        {rescheduleError && (
-                          <p className="text-sm text-red-600">{rescheduleError}</p>
-                        )}
-                      </div>
+              {rescheduleError && (
+                <p className="text-sm text-red-600">{rescheduleError}</p>
+              )}
+            </div>
 
-                      <div className="mt-6 flex justify-end gap-3">
-                        <button
-                          onClick={() => setRescheduleTarget(null)}
-                          className="rounded-lg border px-4 py-2 text-sm"
-                        >
-                          Hủy
-                        </button>
-                        <button
-                          onClick={submitReschedule}
-                          disabled={rescheduleMutation.isPending}
-                          className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-60"
-                        >
-                          {rescheduleMutation.isPending ? "Đang lưu..." : "Xác nhận"}
-                        </button>
-                      </div>
-                    </div>
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => setRescheduleTarget(null)}
+                className="rounded-lg border px-4 py-2 text-sm"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={submitReschedule}
+                disabled={rescheduleMutation.isPending}
+                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-60"
+              >
+                {rescheduleMutation.isPending ? "Đang lưu..." : "Xác nhận"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {selectedAppointment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-lg rounded-xl bg-white shadow-xl overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between bg-gray-50 border-b px-6 py-4">
+              <h3 className="text-lg font-bold text-gray-800">
+                Chi tiết lịch hẹn #{selectedAppointment.id}
+              </h3>
+              <button
+                onClick={() => setSelectedAppointment(null)}
+                className="text-gray-400 hover:text-gray-600 text-xl leading-none"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 space-y-4">
+              <div className="flex items-center gap-3 p-4 rounded-lg bg-blue-50">
+                <CalendarClock size={28} className="text-blue-600 shrink-0" />
+                <div>
+                  <p className="text-sm text-gray-500">Dịch vụ</p>
+                  <p className="font-bold text-gray-800 text-lg">
+                    {selectedAppointment.serviceName || "Hẹn bảo dưỡng xe"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="rounded-lg border p-3">
+                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+                    Ngày giờ hẹn
+                  </p>
+                  <p className="font-semibold text-gray-800 text-sm">
+                    {formatDateTime(
+                      selectedAppointment.appointmentTime ||
+                        selectedAppointment.appointmentDate ||
+                        selectedAppointment.createdAt,
+                    )}
+                  </p>
+                </div>
+
+                <div className="rounded-lg border p-3">
+                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+                    Trạng thái
+                  </p>
+                  <span
+                    className={`inline-flex items-center gap-1 text-sm font-semibold ${
+                      selectedAppointment.status === "CONFIRMED"
+                        ? "text-green-600"
+                        : selectedAppointment.status === "CANCELLED"
+                          ? "text-gray-500"
+                          : selectedAppointment.status === "COMPLETED"
+                            ? "text-blue-600"
+                            : "text-orange-500"
+                    }`}
+                  >
+                    <CheckCircle2 size={14} />
+                    {appointmentStatusMap[selectedAppointment.status] ||
+                      selectedAppointment.status}
+                  </span>
+                </div>
+
+                {selectedAppointment.technician && (
+                  <div className="rounded-lg border p-3">
+                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+                      Kỹ thuật viên
+                    </p>
+                    <p className="font-semibold text-gray-800 text-sm">
+                      {selectedAppointment.technician.fullname ||
+                        selectedAppointment.technician.username ||
+                        "Chưa phân công"}
+                    </p>
                   </div>
                 )}
+
+                {selectedAppointment.vehicle && (
+                  <div className="rounded-lg border p-3">
+                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+                      Xe
+                    </p>
+                    <p className="font-semibold text-gray-800 text-sm">
+                      {[
+                        selectedAppointment.vehicle.brand,
+                        selectedAppointment.vehicle.model,
+                      ]
+                        .filter(Boolean)
+                        .join(" ") || "Chưa cập nhật"}
+                    </p>
+                    {selectedAppointment.vehicle.licensePlate && (
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        {selectedAppointment.vehicle.licensePlate}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {selectedAppointment.note && (
+                <div className="rounded-lg border p-3">
+                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+                    Ghi chú
+                  </p>
+                  <p className="text-sm text-gray-700">
+                    {selectedAppointment.note}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="flex justify-end gap-3 border-t px-6 py-4">
+              {selectedAppointment.status === "PENDING" && (
+                <button
+                  onClick={() => {
+                    setSelectedAppointment(null);
+                    openReschedule(selectedAppointment);
+                  }}
+                  className="rounded-lg border border-red-500 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
+                >
+                  Đổi lịch
+                </button>
+              )}
+              <button
+                onClick={() => setSelectedAppointment(null)}
+                className="rounded-lg border px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50"
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

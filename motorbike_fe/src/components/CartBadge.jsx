@@ -5,6 +5,13 @@ import { useCart } from "../contexts/CartContext";
 export default function CartBadge({ className = "" }) {
   const { itemsCount } = useCart();
 
+  // Ẩn icon giỏ hàng nếu user chưa đăng nhập
+  const isLoggedIn =
+    !!localStorage.getItem("customer_token") ||
+    !!localStorage.getItem("access_token");
+
+  if (!isLoggedIn) return null;
+
   return (
     <NavLink
       to="/cart"

@@ -64,6 +64,19 @@ export class AppointmentsService {
     const appointmentDate = new Date(dto.appointmentTime);
     await this.ensureSlotAvailable(appointmentDate);
 
+    // Kiểm tra khách hàng đã đặt trong cùng ngày + khung giờ này chưa
+    const isDuplicate =
+      await this.appointmentsRepository.hasCustomerBookingInSlot(
+        customerId,
+        appointmentDate,
+      );
+    if (isDuplicate) {
+      const hour = String(appointmentDate.getHours()).padStart(2, '0');
+      throw new BadRequestException(
+        `Bạn đã có lịch hẹn trong khung giờ ${hour}:00 ngày này. Vui lòng chọn ngày hoặc khung giờ khác.`,
+      );
+    }
+
     return this.appointmentsRepository.createAppointment({
       appointmentTime: appointmentDate,
       customerId,
@@ -255,6 +268,20 @@ export class AppointmentsService {
     const sameSlot = this.isSameSlot(appt.appointmentTime, newTime);
     if (!sameSlot) {
       await this.ensureSlotAvailable(newTime);
+
+      // Kiểm tra khách hàng đã đặt trong khung giờ mới chưa (loại trừ lịch hiện tại)
+      const isDuplicate =
+        await this.appointmentsRepository.hasCustomerBookingInSlot(
+          customerId,
+          newTime,
+          id,
+        );
+      if (isDuplicate) {
+        const hour = String(newTime.getHours()).padStart(2, '0');
+        throw new BadRequestException(
+          `Bạn đã có lịch hẹn trong khung giờ ${hour}:00 ngày này. Vui lòng chọn ngày hoặc khung giờ khác.`,
+        );
+      }
     }
 
     let technicianId = dto.technicianId ?? null;

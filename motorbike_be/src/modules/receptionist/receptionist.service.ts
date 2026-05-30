@@ -4,17 +4,17 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../../shared/services/prisma.service';
-import { AppointmentsRepository } from '../appointments/appointments.repository';
 import {
   AppointmentStatus,
   NotificationType,
-  RepairOrderStatus,
   Prisma,
+  RepairOrderStatus,
 } from 'generated/prisma/client';
+import { PrismaService } from '../../shared/services/prisma.service';
+import { AppointmentsRepository } from '../appointments/appointments.repository';
+import { CreateAppointmentByStaffDto } from './dto/create-appointment-staff.dto';
 import { CreateRepairOrderDto } from './dto/create-repair-order.dto';
 import { PayRepairOrderDto } from './dto/pay-repair-order.dto';
-import { CreateAppointmentByStaffDto } from './dto/create-appointment-staff.dto';
 
 @Injectable()
 export class ReceptionistService {
@@ -105,7 +105,9 @@ export class ReceptionistService {
     if (params.date) {
       const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(params.date);
       if (!m)
-        throw new BadRequestException('Định dạng date không hợp lệ. Dùng YYYY-MM-DD.');
+        throw new BadRequestException(
+          'Định dạng date không hợp lệ. Dùng YYYY-MM-DD.',
+        );
       const start = new Date(+m[1], +m[2] - 1, +m[3], 0, 0, 0, 0);
       const end = new Date(+m[1], +m[2] - 1, +m[3], 23, 59, 59, 999);
       where.appointmentTime = { gte: start, lte: end };
@@ -150,11 +152,15 @@ export class ReceptionistService {
     const booked = await this.prisma.appointment.count({
       where: {
         appointmentTime: { gte: hourStart, lt: hourEnd },
-        status: { in: [AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED] },
+        status: {
+          in: [AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED],
+        },
       },
     });
     if (booked >= max) {
-      throw new BadRequestException('Khung giờ đã đầy. Vui lòng chọn giờ khác.');
+      throw new BadRequestException(
+        'Khung giờ đã đầy. Vui lòng chọn giờ khác.',
+      );
     }
 
     return this.prisma.appointment.create({
@@ -222,7 +228,8 @@ export class ReceptionistService {
           throw new BadRequestException('Kỹ thuật viên không hợp lệ');
         }
       }
-      updateData.technicianId = dto.technicianId;
+      // @ts-ignore
+      updateData.technician = dto.technicianId;
     }
 
     return this.prisma.appointment.update({
@@ -292,7 +299,8 @@ export class ReceptionistService {
         items: { include: { sparePart: true } },
       },
     });
-    if (!order) throw new NotFoundException(`Không tìm thấy phiếu sửa chữa #${id}`);
+    if (!order)
+      throw new NotFoundException(`Không tìm thấy phiếu sửa chữa #${id}`);
     return order;
   }
 
@@ -501,7 +509,12 @@ export class ReceptionistService {
     if (!order) throw new NotFoundException(`Không tìm thấy phiếu #${orderId}`);
     const total = Number(order.totalAmount);
     if (!voucherCode) {
-      return { totalAmount: total, discount: 0, finalTotal: total, voucher: null };
+      return {
+        totalAmount: total,
+        discount: 0,
+        finalTotal: total,
+        voucher: null,
+      };
     }
     const voucher = await this.prisma.voucher.findUnique({
       where: { voucherCode },
@@ -546,105 +559,105 @@ export class ReceptionistService {
   async payRepairOrder(id: number, dto: PayRepairOrderDto) {
     return this.prisma.$transaction(
       async (tx) => {
-      const order = await tx.repairOrder.findUnique({
-        where: { id },
-        include: {
-          services: { include: { service: true } },
-          items: { include: { sparePart: true } },
-          voucher: true,
-          customer: true,
-          vehicle: true,
-          technician: { select: { fullname: true } },
-          receptionist: { select: { fullname: true } },
-        },
-      });
-      if (!order) throw new NotFoundException(`Không tìm thấy phiếu #${id}`);
-      if (order.status === RepairOrderStatus.PAID)
-        throw new BadRequestException('Phiếu đã thanh toán');
-      if (order.status !== RepairOrderStatus.COMPLETED)
-        throw new BadRequestException(
-          'Chỉ có thể thanh toán phiếu đã hoàn thành',
-        );
-
-      // Apply voucher nếu có
-      let voucherId: number | null = order.voucherId ?? null;
-      let discount = 0;
-      const total = Number(order.totalAmount);
-      let finalTotal = total;
-      if (dto.voucherCode) {
-        const voucher = await tx.voucher.findUnique({
-          where: { voucherCode: dto.voucherCode },
+        const order = await tx.repairOrder.findUnique({
+          where: { id },
+          include: {
+            services: { include: { service: true } },
+            items: { include: { sparePart: true } },
+            voucher: true,
+            customer: true,
+            vehicle: true,
+            technician: { select: { fullname: true } },
+            receptionist: { select: { fullname: true } },
+          },
         });
-        if (!voucher) throw new BadRequestException('Voucher không tồn tại');
-        discount = this.computeVoucherDiscount(voucher, total);
-        finalTotal = Math.max(0, total - discount);
-        voucherId = voucher.id;
-      }
+        if (!order) throw new NotFoundException(`Không tìm thấy phiếu #${id}`);
+        if (order.status === RepairOrderStatus.PAID)
+          throw new BadRequestException('Phiếu đã thanh toán');
+        if (order.status !== RepairOrderStatus.COMPLETED)
+          throw new BadRequestException(
+            'Chỉ có thể thanh toán phiếu đã hoàn thành',
+          );
 
-      if (dto.paidAmount < finalTotal) {
-        throw new BadRequestException(
-          `Số tiền thanh toán (${dto.paidAmount.toLocaleString('vi-VN')}đ) nhỏ hơn cần thanh toán (${finalTotal.toLocaleString('vi-VN')}đ)`,
-        );
-      }
+        // Apply voucher nếu có
+        let voucherId: number | null = order.voucherId ?? null;
+        let discount = 0;
+        const total = Number(order.totalAmount);
+        let finalTotal = total;
+        if (dto.voucherCode) {
+          const voucher = await tx.voucher.findUnique({
+            where: { voucherCode: dto.voucherCode },
+          });
+          if (!voucher) throw new BadRequestException('Voucher không tồn tại');
+          discount = this.computeVoucherDiscount(voucher, total);
+          finalTotal = Math.max(0, total - discount);
+          voucherId = voucher.id;
+        }
 
-      const updated = await tx.repairOrder.update({
-        where: { id },
-        data: {
-          paidAmount: dto.paidAmount,
+        if (dto.paidAmount < finalTotal) {
+          throw new BadRequestException(
+            `Số tiền thanh toán (${dto.paidAmount.toLocaleString('vi-VN')}đ) nhỏ hơn cần thanh toán (${finalTotal.toLocaleString('vi-VN')}đ)`,
+          );
+        }
+
+        const updated = await tx.repairOrder.update({
+          where: { id },
+          data: {
+            paidAmount: dto.paidAmount,
+            paymentMethod: dto.paymentMethod,
+            paidAt: new Date(),
+            status: RepairOrderStatus.PAID,
+            voucherId,
+          },
+        });
+
+        // Cập nhật totalSpent của customer
+        await tx.customer.update({
+          where: { id: order.customerId },
+          data: { totalSpent: { increment: finalTotal } },
+        });
+
+        // Notification cảm ơn (extend Use Case "Gửi tin nhắn Zalo cảm ơn")
+        await tx.notification.create({
+          data: {
+            type: NotificationType.REPAIR_COMPLETED,
+            title: 'Cảm ơn quý khách đã sử dụng dịch vụ',
+            message:
+              `Cảm ơn ${order.customer.customerName} đã thanh toán phiếu #${id}. ` +
+              `Phụ tùng có bảo hành theo phiếu kèm theo. ` +
+              `Hẹn gặp lại quý khách!`,
+            customerId: order.customerId,
+            repairOrderId: id,
+          },
+        });
+
+        // Trả về payload đầy đủ phục vụ in hóa đơn + phiếu bảo hành
+        const invoice = {
+          orderId: id,
+          paidAt: updated.paidAt,
           paymentMethod: dto.paymentMethod,
-          paidAt: new Date(),
-          status: RepairOrderStatus.PAID,
-          voucherId,
-        },
-      });
+          customer: order.customer,
+          vehicle: order.vehicle,
+          technician: order.technician,
+          receptionist: order.receptionist,
+          services: order.services,
+          items: order.items,
+          totalAmount: total,
+          discount,
+          finalTotal,
+          paidAmount: dto.paidAmount,
+          change: dto.paidAmount - finalTotal,
+        };
 
-      // Cập nhật totalSpent của customer
-      await tx.customer.update({
-        where: { id: order.customerId },
-        data: { totalSpent: { increment: finalTotal } },
-      });
+        const warrantyItems = order.items
+          .filter((it) => it.warrantyNote)
+          .map((it) => ({
+            partName: it.sparePart?.partName,
+            quantity: it.quantity,
+            warrantyNote: it.warrantyNote,
+          }));
 
-      // Notification cảm ơn (extend Use Case "Gửi tin nhắn Zalo cảm ơn")
-      await tx.notification.create({
-        data: {
-          type: NotificationType.REPAIR_COMPLETED,
-          title: 'Cảm ơn quý khách đã sử dụng dịch vụ',
-          message:
-            `Cảm ơn ${order.customer.customerName} đã thanh toán phiếu #${id}. ` +
-            `Phụ tùng có bảo hành theo phiếu kèm theo. ` +
-            `Hẹn gặp lại quý khách!`,
-          customerId: order.customerId,
-          repairOrderId: id,
-        },
-      });
-
-      // Trả về payload đầy đủ phục vụ in hóa đơn + phiếu bảo hành
-      const invoice = {
-        orderId: id,
-        paidAt: updated.paidAt,
-        paymentMethod: dto.paymentMethod,
-        customer: order.customer,
-        vehicle: order.vehicle,
-        technician: order.technician,
-        receptionist: order.receptionist,
-        services: order.services,
-        items: order.items,
-        totalAmount: total,
-        discount,
-        finalTotal,
-        paidAmount: dto.paidAmount,
-        change: dto.paidAmount - finalTotal,
-      };
-
-      const warrantyItems = order.items
-        .filter((it) => it.warrantyNote)
-        .map((it) => ({
-          partName: it.sparePart?.partName,
-          quantity: it.quantity,
-          warrantyNote: it.warrantyNote,
-        }));
-
-      return { ...updated, discount, finalTotal, invoice, warrantyItems };
+        return { ...updated, discount, finalTotal, invoice, warrantyItems };
       },
       { timeout: 15_000, maxWait: 10_000 },
     );
@@ -716,7 +729,9 @@ export class ReceptionistService {
         repairOrders: {
           orderBy: { createdAt: 'desc' },
           include: {
-            services: { include: { service: { select: { serviceName: true } } } },
+            services: {
+              include: { service: { select: { serviceName: true } } },
+            },
             items: {
               include: { sparePart: { select: { partName: true } } },
             },

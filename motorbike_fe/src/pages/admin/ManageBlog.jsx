@@ -55,27 +55,24 @@ export default function ManageBlog() {
     }
   }, []);
 
-  const fetchPostDetail = useCallback(
-    async (postId) => {
-      try {
-        setLoading(true);
-        const post = await getAdminBlogPostDetail(postId);
-        setTitle(post.title || "");
-        setContent(post.content || "");
-        setSlug(post.slug || "");
-        setThumbnailUrl(post.thumbnailUrl || "");
-        setCategoryId(post.categoryId || null);
-        setCurrentStatus(post.status || null);
-        setSelectedImageName("");
-      } catch (error) {
-        notify.error("Lỗi tải bài viết");
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [],
-  );
+  const fetchPostDetail = useCallback(async (postId) => {
+    try {
+      setLoading(true);
+      const post = await getAdminBlogPostDetail(postId);
+      setTitle(post.title || "");
+      setContent(post.content || "");
+      setSlug(post.slug || "");
+      setThumbnailUrl(post.thumbnailUrl || "");
+      setCategoryId(post.categoryId || null);
+      setCurrentStatus(post.status || null);
+      setSelectedImageName("");
+    } catch (error) {
+      notify.error("Lỗi tải bài viết");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchCategories();
@@ -107,28 +104,25 @@ export default function ManageBlog() {
     return null;
   };
 
-  const uploadImageFile = useCallback(
-    async (file) => {
-      const fileError = validateImageFile(file);
-      if (fileError) {
-        notify.error(fileError);
-        return null;
-      }
+  const uploadImageFile = useCallback(async (file) => {
+    const fileError = validateImageFile(file);
+    if (fileError) {
+      notify.error(fileError);
+      return null;
+    }
 
-      try {
-        setUploadingImage(true);
-        const result = await uploadBlogImage(file);
-        return result.imageUrl || null;
-      } catch (error) {
-        notify.error(error.response?.data?.message || "Không thể tải ảnh lên");
-        console.error(error);
-        return null;
-      } finally {
-        setUploadingImage(false);
-      }
-    },
-    [],
-  );
+    try {
+      setUploadingImage(true);
+      const result = await uploadBlogImage(file);
+      return result.imageUrl || null;
+    } catch (error) {
+      notify.error(error.response?.data?.message || "Không thể tải ảnh lên");
+      console.error(error);
+      return null;
+    } finally {
+      setUploadingImage(false);
+    }
+  }, []);
 
   const handleThumbnailInputChange = async (event) => {
     const file = event.target.files?.[0];
@@ -397,19 +391,6 @@ export default function ManageBlog() {
                     <X size={16} />
                   </button>
                 )}
-              </div>
-
-              <div className="mb-4">
-                <input
-                  type="text"
-                  value={thumbnailUrl}
-                  onChange={(event) => {
-                    setThumbnailUrl(event.target.value);
-                    setSelectedImageName("");
-                  }}
-                  placeholder="Nhập URL ảnh..."
-                  className="w-full rounded-lg border border-zinc-200 p-3 text-sm"
-                />
               </div>
 
               <label

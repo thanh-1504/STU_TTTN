@@ -125,6 +125,7 @@ const router = createBrowserRouter([
       { path: "spare-parts", element: <AdminSpareParts /> },
       { path: "stock", element: <AdminStock /> },
       { path: "staff/create", element: <AddEmployeePage /> },
+      { path: "staff/edit/:id", element: <AddEmployeePage /> },
       { path: "services/create", element: <AddService /> },
       { path: "combos/create", element: <ManageCombo /> },
       { path: "spare-parts/create", element: <ManageSpareParts /> },

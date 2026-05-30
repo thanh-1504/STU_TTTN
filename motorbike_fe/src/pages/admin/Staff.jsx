@@ -4,8 +4,10 @@ import { NavLink } from "react-router-dom";
 import Swal from "sweetalert2";
 import { deleteStaff, getStaffList } from "../../api/usersService";
 import Pagination from "../../components/Pagination";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminStaff() {
+  const navigate = useNavigate();
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -231,6 +233,9 @@ export default function AdminStaff() {
                       <div className="flex justify-end gap-2">
                         <button
                           type="button"
+                          onClick={() =>
+                            navigate(`/admin/staff/edit/${member.id}`)
+                          }
                           className="p-2 hover:cursor-pointer hover:bg-zinc-100 rounded-lg"
                           title="Chỉnh sửa nhân viên"
                         >

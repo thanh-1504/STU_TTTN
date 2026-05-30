@@ -81,6 +81,66 @@ export const getStaffStats = async (id) => {
 };
 
 /**
+ * Lấy thông tin nhân viên theo ID (dùng cho edit form)
+ * @param {number} id - ID nhân viên
+ * @returns {Promise<object>}
+ */
+export const getStaffById = async (id) => {
+  try {
+    console.log(`📖 Fetching staff #${id}`);
+    const response = await api.get(`/admin/users/${id}`);
+    console.log(`✅ Got staff #${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`❌ Error fetching staff #${id}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Cập nhật thông tin nhân viên
+ * @param {number} id - ID nhân viên
+ * @param {object} data - {fullname, phone, email, roleId}
+ * @returns {Promise<{success: boolean, data?: object, errors?: object}>}
+ */
+export const updateStaff = async (id, data) => {
+  try {
+    console.log(`✏️ Updating staff #${id}`);
+    const response = await api.patch(`/admin/users/${id}`, data);
+    console.log(`✅ Staff #${id} updated successfully`);
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error(`❌ Error updating staff #${id}:`, error);
+
+    const errorResponse = error.response?.data;
+    const errors = {};
+
+    if (errorResponse?.message) {
+      if (Array.isArray(errorResponse.message)) {
+        errorResponse.message.forEach((msg) => {
+          const match = msg.match(/^([a-z]+):\s*(.+)$/i);
+          if (match) {
+            errors[match[1]] = match[2];
+          } else {
+            errors.general = msg;
+          }
+        });
+      } else {
+        errors.general = errorResponse.message;
+      }
+    }
+
+    return {
+      success: false,
+      errors:
+        Object.keys(errors).length > 0
+          ? errors
+          : { general: "Cập nhật nhân viên thất bại" },
+    };
+  }
+};
+
+/**
  * Tạo nhân viên mới
  * @param {object} data - {username, fullname, phone, email, roleId}
  * @returns {Promise<{success: boolean, data?: object, errors?: object}>}
@@ -169,4 +229,3 @@ export const getPublicTechnicians = async () => {
     throw error;
   }
 };
-

@@ -253,7 +253,7 @@ export default function ManageCombo() {
       }
 
       notify.success(
-        isEditMode ? "Cap nhat combo thanh cong" : "Tao combo thanh cong",
+        isEditMode ? "Cập nhật thành công" : "Tạo combo thành công",
       );
 
       setTimeout(() => {

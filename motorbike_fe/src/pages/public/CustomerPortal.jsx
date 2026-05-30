@@ -147,8 +147,7 @@ export default function CustomerPortal() {
       <main className="max-w-7xl mx-auto w-full px-4 py-8 flex-1">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-2xl font-bold">Ca nhan (Gara cua toi)</h1>
-            <p className="text-gray-500 mt-1">Quan ly danh sach xe cua ban</p>
+            <h1 className="text-2xl font-bold">Gara của tôi</h1>
           </div>
 
           <NavLink
@@ -175,7 +174,9 @@ export default function CustomerPortal() {
             {vehicles.length === 0 && (
               <div className="col-span-full text-center py-12 bg-white rounded-xl border border-dashed border-gray-300">
                 <Bike size={48} className="mx-auto text-gray-300 mb-4" />
-                <h3 className="text-lg font-bold text-gray-900">Chua co xe nao</h3>
+                <h3 className="text-lg font-bold text-gray-900">
+                  Chua co xe nao
+                </h3>
                 <p className="text-gray-500 mt-1">
                   Hay them xe cua ban vao Gara de theo doi bao duong tot hon.
                 </p>

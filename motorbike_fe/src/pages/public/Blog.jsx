@@ -27,7 +27,10 @@ const extractPreviewParagraphs = (html, maxParagraphs = 3) => {
     return text ? [text] : [];
   }
 
-  const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  const text = html
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
   return text ? [text] : [];
 };
 
@@ -76,12 +79,16 @@ export default function Blog() {
     navigate("/");
     window.location.reload();
   };
+  console.log(paginatedPosts, totalPages);
 
   return (
     <div className="min-h-screen bg-[#f4f4f4] font-['Work_Sans',_sans-serif] text-gray-800">
       <header className="sticky top-0 z-50 border-b bg-white shadow-sm">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-          <NavLink to="/" className="text-2xl font-black uppercase text-red-600">
+          <NavLink
+            to="/"
+            className="text-2xl font-black uppercase text-red-600"
+          >
             Shop2banh
           </NavLink>
 
@@ -152,7 +159,8 @@ export default function Blog() {
             <div>
               <h1 className="text-2xl font-bold text-[#B21B00]">Blog xe máy</h1>
               <p className="mt-2 text-sm text-gray-500">
-                Tổng hợp bài viết mới nhất về bảo dưỡng, kinh nghiệm và phụ tùng xe máy.
+                Tổng hợp bài viết mới nhất về bảo dưỡng, kinh nghiệm và phụ tùng
+                xe máy.
               </p>
             </div>
           </div>
@@ -168,7 +176,10 @@ export default function Blog() {
           ) : (
             <div className="space-y-6">
               {posts.map((post) => {
-                const previewParagraphs = extractPreviewParagraphs(post.content, 3);
+                const previewParagraphs = extractPreviewParagraphs(
+                  post.content,
+                  3,
+                );
 
                 return (
                   <Link
@@ -196,7 +207,9 @@ export default function Blog() {
                           <span className="rounded bg-gray-100 px-2 py-1 font-semibold uppercase">
                             {post.category?.categoryName || "Blog"}
                           </span>
-                          <span>{formatDate(post.publishedAt || post.createdAt)}</span>
+                          <span>
+                            {formatDate(post.publishedAt || post.createdAt)}
+                          </span>
                         </div>
 
                         <h2 className="mb-3 text-xl font-bold leading-tight text-gray-900 transition-colors hover:text-[#B21B00]">
@@ -205,7 +218,10 @@ export default function Blog() {
 
                         <div className="space-y-2 text-sm leading-6 text-gray-600">
                           {previewParagraphs.map((paragraph, index) => (
-                            <p key={`${post.id}-${index}`} className="line-clamp-2">
+                            <p
+                              key={`${post.id}-${index}`}
+                              className="line-clamp-2"
+                            >
                               {paragraph}
                             </p>
                           ))}
