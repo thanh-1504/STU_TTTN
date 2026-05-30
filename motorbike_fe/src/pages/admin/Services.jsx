@@ -15,14 +15,19 @@ import Pagination from "../../components/Pagination";
 const PAGE_SIZE = 5;
 
 const formatPrice = (value) => `${Number(value || 0).toLocaleString("vi-VN")}d`;
-const normalizeText = (text = "") =>
-  text
+const normalizeText = (text) => {
+  // Nếu text là null hoặc undefined, trả về chuỗi rỗng
+  if (!text) return "";
+
+  // Ép kiểu về chuỗi (để phòng trường hợp text là số) trước khi xử lý
+  return String(text)
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/đ/g, "d")
     .replace(/Đ/g, "D")
     .trim();
+};
 
 export default function AdminServices() {
   const navigate = useNavigate();
