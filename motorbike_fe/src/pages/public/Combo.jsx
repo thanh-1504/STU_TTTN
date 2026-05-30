@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { getToken, logout } from "../../api/authService";
 import { getCombosForCustomer } from "../../api/combosService";
-import { useNotification } from "../../components/Notification";
 import CartBadge from "../../components/CartBadge";
+import { useNotification } from "../../components/Notification";
 
 const formatPrice = (value) => `${Number(value || 0).toLocaleString("vi-VN")}đ`;
 
@@ -150,12 +150,7 @@ export default function Combo() {
                     >
                       Lịch sử
                     </NavLink>
-                    <NavLink
-                      to="/maintenance-plan"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-red-600 transition-colors"
-                    >
-                      Theo dõi kế hoạch bảo trì
-                    </NavLink>
+
                     <div className="border-t border-gray-100 my-1"></div>
                     <button
                       onClick={handleLogout}

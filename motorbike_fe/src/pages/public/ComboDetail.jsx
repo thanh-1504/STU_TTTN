@@ -137,12 +137,7 @@ const ComboDetail = () => {
                     >
                       Lịch sử
                     </NavLink>
-                    <NavLink
-                      to="/maintenance-plan"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-red-600 transition-colors"
-                    >
-                      Theo dõi kế hoạch bảo trì
-                    </NavLink>
+
                     <div className="border-t border-gray-100 my-1"></div>
                     <button
                       onClick={handleLogout}

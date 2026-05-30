@@ -46,7 +46,10 @@ export default function Cart() {
     <div className="font-[Tahoma,Arial,sans-serif] text-[14px] text-[#333] bg-[#f4f4f4] min-h-screen">
       <header className="bg-white py-4 shadow-sm">
         <div className="max-w-[1200px] mx-auto px-[15px] flex flex-wrap items-center justify-between">
-          <NavLink to="/" className="text-2xl font-black text-red-600 uppercase">
+          <NavLink
+            to="/"
+            className="text-2xl font-black text-red-600 uppercase"
+          >
             Shop2banh
           </NavLink>
 
@@ -76,12 +79,7 @@ export default function Cart() {
                     >
                       Lịch sử
                     </NavLink>
-                    <NavLink
-                      to="/maintenance-plan"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-red-600 transition-colors"
-                    >
-                      Theo dõi kế hoạch bảo trì
-                    </NavLink>
+
                     <div className="border-t border-gray-100 my-1"></div>
                     <button
                       onClick={handleLogout}

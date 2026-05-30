@@ -125,12 +125,7 @@ export default function Blog() {
                     >
                       Lịch sử
                     </NavLink>
-                    <NavLink
-                      to="/maintenance-plan"
-                      className="block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 hover:text-red-600"
-                    >
-                      Theo dõi kế hoạch bảo trì
-                    </NavLink>
+
                     <div className="my-1 border-t border-gray-100" />
                     <button
                       onClick={handleLogout}

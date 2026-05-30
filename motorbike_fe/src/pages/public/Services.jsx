@@ -8,8 +8,7 @@ import CartBadge from "../../components/CartBadge";
 const PAGE_SIZE = 6;
 const SIDEBAR_COUNT = 5;
 
-const formatPrice = (value) =>
-  `${Number(value || 0).toLocaleString("vi-VN")}đ`;
+const formatPrice = (value) => `${Number(value || 0).toLocaleString("vi-VN")}đ`;
 
 /** Fisher-Yates shuffle — trả về bản sao đã xáo trộn */
 function shuffle(arr) {
@@ -74,9 +73,7 @@ function Services() {
     setError("");
     try {
       const data = await getServicesForCustomer();
-      const active = Array.isArray(data)
-        ? data.filter((s) => s.isActive)
-        : [];
+      const active = Array.isArray(data) ? data.filter((s) => s.isActive) : [];
       setServices(active);
       // Random sidebar
       setSidebarItems(shuffle(active).slice(0, SIDEBAR_COUNT));
@@ -92,9 +89,7 @@ function Services() {
   const filteredServices = useMemo(() => {
     if (!searchQuery.trim()) return services;
     const q = searchQuery.trim().toLowerCase();
-    return services.filter((s) =>
-      s.serviceName?.toLowerCase().includes(q)
-    );
+    return services.filter((s) => s.serviceName?.toLowerCase().includes(q));
   }, [searchQuery, services]);
 
   const displayedServices = filteredServices.slice(0, visibleCount);
@@ -139,7 +134,10 @@ function Services() {
       <header className="bg-white py-4 shadow-sm">
         <div className="max-w-[1200px] mx-auto px-[15px] flex flex-wrap items-center justify-between">
           {/* Logo */}
-          <NavLink to="/" className="text-2xl font-black text-red-600 uppercase">
+          <NavLink
+            to="/"
+            className="text-2xl font-black text-red-600 uppercase"
+          >
             Shop2banh
           </NavLink>
 
@@ -203,12 +201,7 @@ function Services() {
                     >
                       Lịch sử
                     </NavLink>
-                    <NavLink
-                      to="/maintenance-plan"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-red-600 transition-colors"
-                    >
-                      Theo dõi kế hoạch bảo trì
-                    </NavLink>
+
                     <div className="border-t border-gray-100 my-1" />
                     <button
                       onClick={handleLogout}
@@ -236,7 +229,10 @@ function Services() {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* ── Sidebar ── */}
           <aside className="w-full lg:w-1/4 space-y-6">
-            <section className="bg-white border rounded p-4" data-purpose="sidebar-popular">
+            <section
+              className="bg-white border rounded p-4"
+              data-purpose="sidebar-popular"
+            >
               <h2 className="font-bold text-gray-800 uppercase border-b pb-2 mb-3 text-sm">
                 QUAN TÂM NHIỀU
               </h2>
@@ -317,15 +313,25 @@ function Services() {
             )}
 
             {/* Search: no results */}
-            {!loading && !error && searchQuery && filteredServices.length === 0 && (
-              <div className="flex flex-col items-center py-16 text-gray-400">
-                <Search size={48} strokeWidth={1} className="mb-3 text-gray-300" />
-                <p className="text-base font-semibold">Sản phẩm không tồn tại</p>
-                <p className="text-xs mt-1">
-                  Không tìm thấy dịch vụ nào chứa từ khoá &ldquo;{searchQuery}&rdquo;
-                </p>
-              </div>
-            )}
+            {!loading &&
+              !error &&
+              searchQuery &&
+              filteredServices.length === 0 && (
+                <div className="flex flex-col items-center py-16 text-gray-400">
+                  <Search
+                    size={48}
+                    strokeWidth={1}
+                    className="mb-3 text-gray-300"
+                  />
+                  <p className="text-base font-semibold">
+                    Sản phẩm không tồn tại
+                  </p>
+                  <p className="text-xs mt-1">
+                    Không tìm thấy dịch vụ nào chứa từ khoá &ldquo;{searchQuery}
+                    &rdquo;
+                  </p>
+                </div>
+              )}
 
             {/* No services at all (not searching) */}
             {!loading && !error && !searchQuery && services.length === 0 && (
@@ -397,7 +403,7 @@ function Services() {
       </main>
 
       {/* ── Footer ── */}
-     <footer className="bg-gray-900 text-gray-400 pt-12 pb-6">
+      <footer className="bg-gray-900 text-gray-400 pt-12 pb-6">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
             <div>
