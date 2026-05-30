@@ -56,3 +56,31 @@ export const createReview = async (data) => {
   const response = await axios.post("/portal/reviews", data);
   return response.data;
 };
+
+// Profile
+export const getMyProfile = async () => {
+  const response = await axios.get("/portal/profile");
+  return response.data;
+};
+
+export const updateMyProfile = async (data) => {
+  const response = await axios.patch("/portal/profile", data);
+  return response.data;
+};
+
+export const uploadCustomerAvatar = async (file) => {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const response = await axios.post(
+    "/portal/profile/upload-avatar",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    },
+  );
+
+  return response.data;
+};

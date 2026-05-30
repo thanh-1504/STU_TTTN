@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
@@ -7,6 +7,7 @@ import {
 } from "../../api/appointmentsService";
 import { getServicesForCustomer } from "../../api/servicesService";
 import { getPublicTechnicians } from "../../api/usersService";
+import { useCart } from "../../contexts/CartContext";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 const formatPrice = (v) => Number(v || 0).toLocaleString("vi-VN");
@@ -70,6 +71,8 @@ function SuccessModal({ onNavigate }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function Booking() {
   const navigate = useNavigate();
+  const { items: cartItems, serviceIdsFromCart, clearCart } = useCart();
+  const hasPrefilledFromCart = useRef(false);
 
   // ── Form fields ──────────────────────────────────────────────────────────────
   const [name, setName] = useState("");
@@ -106,8 +109,9 @@ export default function Booking() {
     // Pre-fill from localStorage
     try {
       const userInfo = JSON.parse(localStorage.getItem("user_info") || "{}");
-      if (userInfo.fullname || userInfo.name)
-        setName(userInfo.fullname || userInfo.name);
+      const displayName =
+        userInfo.customerName || userInfo.fullname || userInfo.name || "";
+      if (displayName) setName(displayName);
       if (userInfo.phone) setPhone(userInfo.phone);
     } catch (_) {}
 
@@ -126,6 +130,13 @@ export default function Booking() {
       .then((data) => setTechnicians(Array.isArray(data) ? data : []))
       .catch(console.error);
   }, []);
+
+  useEffect(() => {
+    if (hasPrefilledFromCart.current) return;
+    if (serviceIdsFromCart.length === 0) return;
+    setServiceRows(serviceIdsFromCart.map((id) => String(id)));
+    hasPrefilledFromCart.current = true;
+  }, [serviceIdsFromCart]);
 
   // ─── Load slots when date changes ────────────────────────────────────────────
   useEffect(() => {
@@ -211,6 +222,10 @@ export default function Booking() {
         technicianId: selectedTechnicianId ?? undefined,
       });
 
+      if (cartItems.length > 0) {
+        clearCart();
+      }
+
       setShowSuccess(true);
     } catch (err) {
       console.log(err.response?.data);
@@ -218,12 +233,15 @@ export default function Booking() {
         toast.error("Vui lòng đăng nhập để đặt lịch.");
         setTimeout(() => navigate("/login"), 1500);
       } else {
-        // NestJS trả về message dạng mảng (validation) hoặc string
-        const raw = err.response?.data?.errors[0]?.message;
-        const msg = Array.isArray(raw)
-          ? raw.join(" \u2022 ")
-          : raw || err.message || "Đã xảy ra lỗi không xác định.";
-        toast.error(msg);
+        // NestJS có thể trả về: { message: string } hoặc { errors: [{message}] }
+        const data = err.response?.data;
+        const raw =
+          typeof data?.message === "string"
+            ? data.message
+            : Array.isArray(data?.errors)
+              ? data.errors.map((e) => e.message).join(" • ")
+              : err.message || "Đã xảy ra lỗi không xác định.";
+        toast.error(raw);
       }
     } finally {
       setSubmitting(false);
@@ -334,6 +352,24 @@ export default function Booking() {
               <label className="block font-bold text-gray-700">
                 Chọn dịch vụ <span className="text-red-600">*</span>
               </label>
+
+              {cartItems.length > 0 && (
+                <div className="bg-red-50 border border-red-100 rounded-lg p-3 text-xs text-gray-600">
+                  <p className="font-semibold text-red-600">
+                    Dịch vụ từ giỏ hàng:
+                  </p>
+                  <p className="mt-1 leading-relaxed">
+                    {cartItems
+                      .map((item) =>
+                        item.type === "combo"
+                          ? `Combo: ${item.name}`
+                          : item.name,
+                      )
+                      .filter(Boolean)
+                      .join(" • ")}
+                  </p>
+                </div>
+              )}
 
               {servicesLoading ? (
                 <div className="text-sm text-gray-400 animate-pulse py-3">
@@ -534,32 +570,7 @@ export default function Booking() {
                 disabled={submitting}
                 className="bg-[#d7000e] text-white font-extrabold py-4 px-16 rounded-full hover:bg-red-700 transition-all hover:scale-105 flex items-center gap-2 shadow-lg disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 cursor-pointer"
               >
-                {submitting ? (
-                  <>
-                    <svg
-                      className="animate-spin w-5 h-5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v8H4z"
-                      />
-                    </svg>
-                    Đang xử lý...
-                  </>
-                ) : (
-                  <>ĐẶT LỊCH</>
-                )}
+                {submitting ? <>Đang xử lý...</> : <>ĐẶT LỊCH</>}
               </button>
             </div>
           </form>

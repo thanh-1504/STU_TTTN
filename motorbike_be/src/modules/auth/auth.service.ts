@@ -92,14 +92,20 @@ export class AuthService {
     accessToken: string;
     customer: object;
   }> {
+    const normalizedEmail = dto.email.trim().toLowerCase();
+    const normalizedPhone = dto.phone.trim();
+    const normalizedName = dto.customerName.trim();
+
     // Kiểm tra email đã tồn tại chưa
-    const existingEmail = await this.customerRepository.findByEmail(dto.email);
+    const existingEmail =
+      await this.customerRepository.findByEmail(normalizedEmail);
     if (existingEmail) {
       throw new ConflictException('Email này đã được sử dụng');
     }
 
     // Kiểm tra phone đã tồn tại chưa
-    const existingPhone = await this.customerRepository.findByPhone(dto.phone);
+    const existingPhone =
+      await this.customerRepository.findByPhone(normalizedPhone);
     if (existingPhone) {
       throw new ConflictException('Số điện thoại này đã được đăng ký');
     }
@@ -107,10 +113,10 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
     const customer = await this.customerRepository.createWithEmailPassword({
-      email: dto.email,
+      email: normalizedEmail,
       password: hashedPassword,
-      customerName: dto.customerName,
-      phone: dto.phone,
+      customerName: normalizedName,
+      phone: normalizedPhone,
     });
 
     const payload = {
@@ -128,6 +134,7 @@ export class AuthService {
         email: customer.email,
         phone: customer.phone,
         customerName: customer.customerName,
+        avatarUrl: (customer as any).avatarUrl ?? null,
       },
     };
   }
@@ -145,7 +152,8 @@ export class AuthService {
     accessToken: string;
     customer: object;
   }> {
-    const customer = await this.customerRepository.findByEmail(dto.email);
+    const normalizedEmail = dto.email.trim().toLowerCase();
+    const customer = await this.customerRepository.findByEmail(normalizedEmail);
 
     if (!customer) {
       throw new UnauthorizedException('Email hoặc mật khẩu không đúng');
@@ -178,6 +186,7 @@ export class AuthService {
         email: customer.email,
         phone: customer.phone,
         customerName: customer.customerName,
+        avatarUrl: (customer as any).avatarUrl ?? null,
       },
     };
   }

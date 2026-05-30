@@ -15,6 +15,14 @@ import Pagination from "../../components/Pagination";
 const PAGE_SIZE = 5;
 
 const formatPrice = (value) => `${Number(value || 0).toLocaleString("vi-VN")}d`;
+const normalizeText = (text = "") =>
+  text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .trim();
 
 export default function AdminServices() {
   const navigate = useNavigate();
@@ -51,13 +59,16 @@ export default function AdminServices() {
   }, []);
 
   const filteredServices = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
+    const query = normalizeText(searchQuery);
 
     return services.filter((service) => {
+      const serviceName = normalizeText(service.serviceName);
+      const description = normalizeText(service.description);
+
       const matchesSearch =
         !query ||
-        service.serviceName?.toLowerCase().includes(query) ||
-        service.description?.toLowerCase().includes(query) ||
+        serviceName.includes(query) ||
+        description.includes(query) ||
         String(service.id).includes(query);
 
       const matchesStatus =
@@ -68,15 +79,14 @@ export default function AdminServices() {
       return matchesSearch && matchesStatus;
     });
   }, [searchQuery, services, statusFilter]);
-
   const totalPages = Math.max(
     1,
     Math.ceil(filteredServices.length / PAGE_SIZE),
   );
 
   useEffect(() => {
-    setPage((prev) => Math.min(prev, totalPages - 1));
-  }, [totalPages]);
+    setPage(0);
+  }, [searchQuery, statusFilter]);
 
   const paginatedServices = useMemo(() => {
     const start = page * PAGE_SIZE;
@@ -188,7 +198,7 @@ export default function AdminServices() {
               value={searchQuery}
               onChange={(event) => {
                 setSearchQuery(event.target.value);
-                setPage(1);
+                setPage(0);
               }}
               placeholder="Tìm tên dịch vụ, mô tả, ID..."
               className="w-full rounded-lg border border-stone-300 py-2.5 px-4 text-sm outline-none focus:ring-2 focus:ring-red-500"

@@ -1,12 +1,12 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
-  BadRequestException,
 } from '@nestjs/common';
 import { Service } from 'generated/prisma/client';
-import { ServicesRepository } from './services.repository';
 import { CreateServiceDto } from './dto/create-services.dto';
 import { UpdateServiceDto } from './dto/update-services.dto';
+import { ServicesRepository } from './services.repository';
 
 @Injectable()
 export class ServicesService {
@@ -24,7 +24,7 @@ export class ServicesService {
   /** GET /services/:id — Chi tiết dịch vụ (public, chỉ active) */
   async findOnePublic(id: number): Promise<Service> {
     const service = await this.servicesRepository.findByIdService(id);
-    if (!service || !service.isActive) {
+    if (!service) {
       throw new NotFoundException(`Không tìm thấy dịch vụ #${id}`);
     }
     return service;
@@ -75,8 +75,7 @@ export class ServicesService {
     }
 
     // Rule 2: đã tồn tại trong lịch sử phiếu sửa chữa
-    const usageCount =
-      await this.servicesRepository.countUsageByServiceId(id);
+    const usageCount = await this.servicesRepository.countUsageByServiceId(id);
     if (usageCount > 0) {
       const service = await this.servicesRepository.updateService(id, {
         isActive: false,

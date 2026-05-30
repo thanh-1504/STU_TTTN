@@ -15,6 +15,7 @@ import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointments.dto';
 import { UpdateAppointmentDto } from './dto/update-appointments.dto';
 import { AdminCreateAppointmentDto } from './dto/admin-create-appointment.dto';
+import { RescheduleAppointmentDto } from './dto/reschedule-appointment.dto';
 import { CustomerJwtAuthGuard } from '../auth/guards/customer-jwt-auth.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -69,6 +70,20 @@ export class AppointmentsCustomerController {
   @HttpCode(HttpStatus.OK)
   cancel(@Param('id', ParseIntPipe) id: number) {
     return this.appointmentsService.cancel(id);
+  }
+
+  @Patch(':id/reschedule')
+  @HttpCode(HttpStatus.OK)
+  reschedule(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: RescheduleAppointmentDto,
+    @CurrentUser() customer: any,
+  ) {
+    return this.appointmentsService.rescheduleByCustomer(
+      id,
+      customer.id,
+      dto,
+    );
   }
 }
 

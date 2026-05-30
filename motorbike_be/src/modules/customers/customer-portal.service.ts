@@ -7,10 +7,12 @@ import { VehiclesRepository } from '../vehicles/vehicles.repository';
 import { RepairOrderRepository } from './repair-order.repository';
 import { ReviewsRepository } from '../reviews/reviews.repository';
 import { AppointmentsRepository } from '../appointments/appointments.repository';
+import { CustomersRepository } from './customers.repository';
 import {
   PortalCreateVehicleDto,
   UpdateKmDto,
   CreatePortalReviewDto,
+  UpdateProfileDto,
 } from './dto/portal.dto';
 import { AppointmentStatus, RepairOrderStatus } from 'generated/prisma/client';
 
@@ -21,7 +23,63 @@ export class CustomerPortalService {
     private readonly repairOrderRepo: RepairOrderRepository,
     private readonly reviewsRepo: ReviewsRepository,
     private readonly appointmentsRepo: AppointmentsRepository,
+    private readonly customersRepo: CustomersRepository,
   ) {}
+
+  /** GET /portal/profile — Thông tin cá nhân */
+  async getProfile(customerId: number) {
+    const customer = await this.customersRepo.findById(customerId);
+    if (!customer) {
+      throw new NotFoundException('Khong tim thay thong tin khach hang');
+    }
+
+    return {
+      id: customer.id,
+      customerName: customer.customerName,
+      phone: customer.phone,
+      email: customer.email,
+      avatarUrl: (customer as any).avatarUrl ?? null,
+      address: customer.address,
+    };
+  }
+
+  /** PATCH /portal/profile — Cập nhật tên hiển thị / avatar */
+  async updateProfile(dto: UpdateProfileDto, customerId: number) {
+    const hasName = dto.customerName !== undefined;
+    const hasAvatar = dto.avatarUrl !== undefined;
+
+    if (!hasName && !hasAvatar) {
+      throw new BadRequestException('Khong co du lieu de cap nhat');
+    }
+
+    const updatePayload: Record<string, unknown> = {};
+
+    if (hasName) {
+      const trimmedName = dto.customerName?.trim();
+      if (!trimmedName) {
+        throw new BadRequestException('Ho ten khong duoc de trong');
+      }
+      updatePayload.customerName = trimmedName;
+    }
+
+    if (hasAvatar) {
+      updatePayload.avatarUrl = dto.avatarUrl === null ? null : dto.avatarUrl;
+    }
+
+    const updated = await this.customersRepo.update(
+      customerId,
+      updatePayload as any,
+    );
+
+    return {
+      id: updated.id,
+      customerName: updated.customerName,
+      phone: updated.phone,
+      email: updated.email,
+      avatarUrl: (updated as any).avatarUrl ?? null,
+      address: updated.address,
+    };
+  }
 
   /** GET /portal/vehicles â€” Danh sÃ¡ch xe cá»§a customer */
   async getMyVehicles(customerId: number) {

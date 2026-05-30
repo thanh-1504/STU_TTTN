@@ -1,4 +1,11 @@
-import { CheckCircle2, Clock3, Loader, Pencil, Trash2, XCircle } from "lucide-react";
+import {
+  CheckCircle2,
+  Clock3,
+  Loader,
+  Pencil,
+  Trash2,
+  XCircle,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
@@ -11,6 +18,7 @@ import {
   useNotification,
 } from "../../components/Notification";
 import Pagination from "../../components/Pagination";
+import Swal from "sweetalert2";
 
 const formatCurrency = (value) =>
   `${Number(value || 0).toLocaleString("vi-VN")}d`;
@@ -128,13 +136,18 @@ export default function AdminVouchers() {
   }, [vouchers]);
 
   const handleRevokeVoucher = async (voucher) => {
-    const confirmed = window.confirm(
-      `Ban co chac chan muon huy voucher "${voucher.voucherCode}"?`,
-    );
+    const result = await Swal.fire({
+      title: "Hủy khuyến mãi?",
+      text: `Voucher "${voucher.voucherCode}" sẽ bị hủy và không thể sử dụng nữa.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#b91c1c",
+      cancelButtonColor: "#78716c",
+      confirmButtonText: "Hủy voucher",
+      cancelButtonText: "Không",
+    });
 
-    if (!confirmed) {
-      return;
-    }
+    if (!result.isConfirmed) return;
 
     setRevokeLoadingId(voucher.id);
 
@@ -325,8 +338,10 @@ export default function AdminVouchers() {
           </div>
           <div className="flex items-center justify-between border-t px-4 py-3 text-sm">
             <span className="text-stone-500">
-              Hiển thị {displayedVouchers.length === 0 ? 0 : page * PAGE_SIZE + 1}–
-              {Math.min((page + 1) * PAGE_SIZE, displayedVouchers.length)} trên {displayedVouchers.length} khuyến mãi
+              Hiển thị{" "}
+              {displayedVouchers.length === 0 ? 0 : page * PAGE_SIZE + 1}–
+              {Math.min((page + 1) * PAGE_SIZE, displayedVouchers.length)} trên{" "}
+              {displayedVouchers.length} khuyến mãi
             </span>
             <Pagination
               pageCount={totalPages}

@@ -140,6 +140,7 @@ model Customer {
   email        String?  @unique @db.VarChar(255)
   password     String?  @db.VarChar(255)
   customerName String   @map("customer_name") @db.VarChar(100)
+  avatarUrl    String?  @map("avatar_url") @db.VarChar(500)
   address      String?  @db.Text
   totalSpent   Decimal  @default(0) @map("total_spent") @db.Decimal(15, 2)
   createdAt    DateTime @default(now()) @map("created_at")

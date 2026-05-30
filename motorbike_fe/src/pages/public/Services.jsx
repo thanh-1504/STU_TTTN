@@ -1,8 +1,9 @@
-import { CircleUser, Search, ShoppingCart } from "lucide-react";
+import { CircleUser, Search } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { getToken, logout } from "../../api/authService";
 import { getServicesForCustomer } from "../../api/servicesService";
+import CartBadge from "../../components/CartBadge";
 
 const PAGE_SIZE = 6;
 const SIDEBAR_COUNT = 5;
@@ -177,11 +178,7 @@ function Services() {
 
           {/* Icons + Booking */}
           <div className="flex items-center gap-5">
-            {isLoggedIn && (
-              <a href="#" className="text-gray-700 hover:text-red-600 transition-colors">
-                <ShoppingCart size={22} strokeWidth={1.5} />
-              </a>
-            )}
+            <CartBadge />
 
             {isLoggedIn && (
               <div className="relative">

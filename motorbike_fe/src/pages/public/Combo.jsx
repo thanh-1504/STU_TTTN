@@ -1,9 +1,10 @@
-import { CircleUser, ShoppingCart } from "lucide-react";
+import { CircleUser } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { getToken, logout } from "../../api/authService";
 import { getCombosForCustomer } from "../../api/combosService";
 import { useNotification } from "../../components/Notification";
+import CartBadge from "../../components/CartBadge";
 
 const formatPrice = (value) => `${Number(value || 0).toLocaleString("vi-VN")}đ`;
 
@@ -122,15 +123,7 @@ export default function Combo() {
           </div>
           {/* Store & Cart */}
           <div className="flex items-center gap-5">
-            {/* Icon Giỏ hàng - chỉ hiện khi chưa login */}
-            {isLoggedIn && (
-              <a
-                href="#"
-                className="text-gray-700 hover:text-red-600 transition-colors"
-              >
-                <ShoppingCart size={22} strokeWidth={1.5} />
-              </a>
-            )}
+            <CartBadge />
 
             {/* Icon User với Dropdown - chỉ hiện khi chưa login */}
             {isLoggedIn && (

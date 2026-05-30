@@ -58,3 +58,17 @@ export const CreatePortalReviewSchema = z.object({
 export class CreatePortalReviewDto extends createZodDto(
   CreatePortalReviewSchema,
 ) {}
+
+/** DTO cập nhật thông tin cá nhân */
+export const UpdateProfileSchema = z.object({
+  customerName: z
+    .string()
+    .min(1, 'Ho ten khong duoc de trong')
+    .max(100, 'Ho ten toi da 100 ky tu')
+    .optional(),
+  avatarUrl: z
+    .union([z.string().url('URL anh khong hop le').max(500), z.null()])
+    .optional(),
+});
+
+export class UpdateProfileDto extends createZodDto(UpdateProfileSchema) {}

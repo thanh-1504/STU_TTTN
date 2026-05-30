@@ -7,8 +7,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { RoleName } from 'generated/prisma/client';
 import { PrismaService } from '../../shared/services/prisma.service';
-import { CreateUserDto } from './dto/create-users.dto';
-import { UpdateUserDto } from './dto/update-users.dto';
+import { CreateUserDto, UpdateUserDto } from './dto/create-users.dto';
 import { UsersRepository } from './users.repository';
 
 /** Các role được phép tạo tài khoản nhân viên */
@@ -100,6 +99,18 @@ export class UsersService {
   async update(id: number, dto: UpdateUserDto) {
     await this.findOne(id);
     return this.usersRepo.update(id, dto);
+  }
+
+  async updateUser(id: number, dto: UpdateUserDto) {
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        fullname: dto.fullname,
+        phone: dto.phone,
+        email: dto.email,
+        roleId: dto.roleId,
+      },
+    });
   }
 
   async remove(id: number) {

@@ -29,7 +29,12 @@ const AssignTechSchema = z.object({
 class AssignTechDto extends createZodDto(AssignTechSchema) {}
 
 const RescheduleSchema = z.object({
-  appointmentTime: z.coerce.date(),
+  appointmentTime: z.coerce
+    .date()
+    .refine((d) => d > new Date(), {
+      message: 'Thoi gian hen phai la thoi diem trong tuong lai',
+    }),
+  technicianId: z.number().int().positive().optional().nullable(),
 });
 class RescheduleDto extends createZodDto(RescheduleSchema) {}
 
@@ -84,7 +89,7 @@ export class ReceptionistController {
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: RescheduleDto,
   ) {
-    return this.service.rescheduleAppointment(id, new Date(dto.appointmentTime));
+    return this.service.rescheduleAppointment(id, dto);
   }
 
   // ── Repair Orders ──────────────────────────────────────────

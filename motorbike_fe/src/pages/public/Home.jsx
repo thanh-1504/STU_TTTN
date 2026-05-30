@@ -10,6 +10,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { getToken, logout } from "../../api/authService";
 import { getCombosForCustomer } from "../../api/combosService";
 import { getServicesForCustomer } from "../../api/servicesService";
+import CartBadge from "../../components/CartBadge";
 
 // ─── Banner slides data ────────────────────────────────────────────────────────
 const banners = [
@@ -76,7 +77,7 @@ function SectionTitle({ label, title, desc }) {
   );
 }
 
-function ServiceCard({ service }) {
+function ServiceCard({ service, onOpenDetail, onBook }) {
   const formatServicePrice = () => {
     const prices = [
       service.priceManual,
@@ -92,7 +93,10 @@ function ServiceCard({ service }) {
   };
 
   return (
-    <div className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+    <div
+      className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+      onClick={() => onOpenDetail?.(service)}
+    >
       <div className="relative h-44 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
         {service.imageUrl ? (
           <img
@@ -122,7 +126,10 @@ function ServiceCard({ service }) {
             {formatServicePrice()}
           </span>
           <button
-            onClick={() => (window.location.href = "/booking")}
+            onClick={(event) => {
+              event.stopPropagation();
+              onBook?.();
+            }}
             className="text-xs bg-red-50 text-red-600 font-semibold px-3 py-1.5 rounded-full hover:bg-red-600 hover:text-white transition-colors"
           >
             Đặt lịch
@@ -220,6 +227,8 @@ export default function Home() {
   const [loadingCombos, setLoadingCombos] = useState(true);
 
   const handleBooking = () => navigate(isLoggedIn ? "/booking" : "/login");
+  const handleServiceDetail = (service) =>
+    navigate(`/services-price/${service.id}`);
   const handleLogout = () => {
     logout();
     navigate("/");
@@ -283,6 +292,7 @@ export default function Home() {
           </nav>
 
           <div className="flex items-center gap-4">
+            <CartBadge />
             {isLoggedIn && (
               <div className="relative">
                 <button
@@ -418,7 +428,12 @@ export default function Home() {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {services.map((service) => (
-              <ServiceCard key={service.id} service={service} />
+              <ServiceCard
+                key={service.id}
+                service={service}
+                onOpenDetail={handleServiceDetail}
+                onBook={handleBooking}
+              />
             ))}
           </div>
         )}

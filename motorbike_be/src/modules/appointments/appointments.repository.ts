@@ -104,6 +104,35 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
     return available;
   }
 
+  /**
+   * Kiểm tra xem customer đã có lịch hẹn PENDING/CONFIRMED trong cùng ngày + giờ chưa.
+   * @param customerId - ID khách hàng
+   * @param date - Thời gian hẹn
+   * @param excludeId - (optional) Loại trừ appointmentId này (dùng khi reschedule)
+   */
+  async hasCustomerBookingInSlot(
+    customerId: number,
+    date: Date,
+    excludeId?: number,
+  ): Promise<boolean> {
+    const slotStart = new Date(date);
+    slotStart.setHours(date.getHours(), 0, 0, 0);
+
+    const slotEnd = new Date(date);
+    slotEnd.setHours(date.getHours(), 59, 59, 999);
+
+    const count = await this.prisma.appointment.count({
+      where: {
+        customerId,
+        appointmentTime: { gte: slotStart, lte: slotEnd },
+        status: { in: [AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED] },
+        ...(excludeId ? { id: { not: excludeId } } : {}),
+      },
+    });
+
+    return count > 0;
+  }
+
   // ─────────────────────────────────────────────────────────────────────────────
   // CREATE
   // ─────────────────────────────────────────────────────────────────────────────
@@ -152,7 +181,10 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
   async findByCustomerId(customerId: number): Promise<Appointment[]> {
     return this.prisma.appointment.findMany({
       where: { customerId },
-      include: { vehicle: true },
+      include: {
+        vehicle: true,
+        technician: { select: { id: true, fullname: true, username: true } },
+      },
       orderBy: { appointmentTime: 'desc' },
     });
   }

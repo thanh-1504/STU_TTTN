@@ -9,6 +9,7 @@ import { AppointmentsRepository } from './appointments.repository';
 import { AdminCreateAppointmentDto } from './dto/admin-create-appointment.dto';
 import { CreateAppointmentDto } from './dto/create-appointments.dto';
 import { UpdateAppointmentDto } from './dto/update-appointments.dto';
+import { RescheduleAppointmentDto } from './dto/reschedule-appointment.dto';
 import {
   Appointment,
   AppointmentStatus,
@@ -62,6 +63,19 @@ export class AppointmentsService {
   ): Promise<Appointment> {
     const appointmentDate = new Date(dto.appointmentTime);
     await this.ensureSlotAvailable(appointmentDate);
+
+    // Kiểm tra khách hàng đã đặt trong cùng ngày + khung giờ này chưa
+    const isDuplicate =
+      await this.appointmentsRepository.hasCustomerBookingInSlot(
+        customerId,
+        appointmentDate,
+      );
+    if (isDuplicate) {
+      const hour = String(appointmentDate.getHours()).padStart(2, '0');
+      throw new BadRequestException(
+        `Bạn đã có lịch hẹn trong khung giờ ${hour}:00 ngày này. Vui lòng chọn ngày hoặc khung giờ khác.`,
+      );
+    }
 
     return this.appointmentsRepository.createAppointment({
       appointmentTime: appointmentDate,
@@ -231,6 +245,62 @@ export class AppointmentsService {
     return this.appointmentsRepository.cancel(id);
   }
 
+  async rescheduleByCustomer(
+    id: number,
+    customerId: number,
+    dto: RescheduleAppointmentDto,
+  ): Promise<Appointment> {
+    const appt = await this.appointmentsRepository.findById(id);
+    if (!appt || appt.customerId !== customerId) {
+      throw new NotFoundException(`Không tìm thấy lịch hẹn #${id}`);
+    }
+
+    if (
+      appt.status === AppointmentStatus.CANCELLED ||
+      appt.status === AppointmentStatus.COMPLETED
+    ) {
+      throw new BadRequestException(
+        `Không thể đổi lịch ở trạng thái ${appt.status}`,
+      );
+    }
+
+    const newTime = new Date(dto.appointmentTime);
+    const sameSlot = this.isSameSlot(appt.appointmentTime, newTime);
+    if (!sameSlot) {
+      await this.ensureSlotAvailable(newTime);
+
+      // Kiểm tra khách hàng đã đặt trong khung giờ mới chưa (loại trừ lịch hiện tại)
+      const isDuplicate =
+        await this.appointmentsRepository.hasCustomerBookingInSlot(
+          customerId,
+          newTime,
+          id,
+        );
+      if (isDuplicate) {
+        const hour = String(newTime.getHours()).padStart(2, '0');
+        throw new BadRequestException(
+          `Bạn đã có lịch hẹn trong khung giờ ${hour}:00 ngày này. Vui lòng chọn ngày hoặc khung giờ khác.`,
+        );
+      }
+    }
+
+    let technicianId = dto.technicianId ?? null;
+    if (technicianId) {
+      const tech = await this.prisma.user.findUnique({
+        where: { id: technicianId },
+        include: { role: true },
+      });
+      if (!tech || tech.role?.roleName !== 'TECHNICIAN') {
+        throw new BadRequestException('Kỹ thuật viên không hợp lệ');
+      }
+    }
+
+    return this.appointmentsRepository.update(id, {
+      appointmentTime: newTime,
+      technicianId,
+    } as any);
+  }
+
   async update(id: number, dto: UpdateAppointmentDto): Promise<Appointment> {
     await this.findOne(id);
     return this.appointmentsRepository.update(id, dto as any);
@@ -268,5 +338,14 @@ export class AppointmentsService {
           `Hiện tại đã có ${booked} xe đặt trong giờ này.`,
       );
     }
+  }
+
+  private isSameSlot(current: Date, next: Date) {
+    return (
+      current.getFullYear() === next.getFullYear() &&
+      current.getMonth() === next.getMonth() &&
+      current.getDate() === next.getDate() &&
+      current.getHours() === next.getHours()
+    );
   }
 }

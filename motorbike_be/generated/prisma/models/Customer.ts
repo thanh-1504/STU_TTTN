@@ -42,6 +42,7 @@ export type CustomerMinAggregateOutputType = {
   email: string | null
   password: string | null
   customerName: string | null
+  avatarUrl: string | null
   address: string | null
   totalSpent: runtime.Decimal | null
   createdAt: Date | null
@@ -54,6 +55,7 @@ export type CustomerMaxAggregateOutputType = {
   email: string | null
   password: string | null
   customerName: string | null
+  avatarUrl: string | null
   address: string | null
   totalSpent: runtime.Decimal | null
   createdAt: Date | null
@@ -66,6 +68,7 @@ export type CustomerCountAggregateOutputType = {
   email: number
   password: number
   customerName: number
+  avatarUrl: number
   address: number
   totalSpent: number
   createdAt: number
@@ -90,6 +93,7 @@ export type CustomerMinAggregateInputType = {
   email?: true
   password?: true
   customerName?: true
+  avatarUrl?: true
   address?: true
   totalSpent?: true
   createdAt?: true
@@ -102,6 +106,7 @@ export type CustomerMaxAggregateInputType = {
   email?: true
   password?: true
   customerName?: true
+  avatarUrl?: true
   address?: true
   totalSpent?: true
   createdAt?: true
@@ -114,6 +119,7 @@ export type CustomerCountAggregateInputType = {
   email?: true
   password?: true
   customerName?: true
+  avatarUrl?: true
   address?: true
   totalSpent?: true
   createdAt?: true
@@ -213,6 +219,7 @@ export type CustomerGroupByOutputType = {
   email: string | null
   password: string | null
   customerName: string
+  avatarUrl: string | null
   address: string | null
   totalSpent: runtime.Decimal
   createdAt: Date
@@ -248,6 +255,7 @@ export type CustomerWhereInput = {
   email?: Prisma.StringNullableFilter<"Customer"> | string | null
   password?: Prisma.StringNullableFilter<"Customer"> | string | null
   customerName?: Prisma.StringFilter<"Customer"> | string
+  avatarUrl?: Prisma.StringNullableFilter<"Customer"> | string | null
   address?: Prisma.StringNullableFilter<"Customer"> | string | null
   totalSpent?: Prisma.DecimalFilter<"Customer"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
@@ -265,6 +273,7 @@ export type CustomerOrderByWithRelationInput = {
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   password?: Prisma.SortOrderInput | Prisma.SortOrder
   customerName?: Prisma.SortOrder
+  avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   totalSpent?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -285,6 +294,7 @@ export type CustomerWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.CustomerWhereInput | Prisma.CustomerWhereInput[]
   password?: Prisma.StringNullableFilter<"Customer"> | string | null
   customerName?: Prisma.StringFilter<"Customer"> | string
+  avatarUrl?: Prisma.StringNullableFilter<"Customer"> | string | null
   address?: Prisma.StringNullableFilter<"Customer"> | string | null
   totalSpent?: Prisma.DecimalFilter<"Customer"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
@@ -302,6 +312,7 @@ export type CustomerOrderByWithAggregationInput = {
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   password?: Prisma.SortOrderInput | Prisma.SortOrder
   customerName?: Prisma.SortOrder
+  avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   totalSpent?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -322,6 +333,7 @@ export type CustomerScalarWhereWithAggregatesInput = {
   email?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
   password?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
   customerName?: Prisma.StringWithAggregatesFilter<"Customer"> | string
+  avatarUrl?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
   address?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
   totalSpent?: Prisma.DecimalWithAggregatesFilter<"Customer"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Customer"> | Date | string
@@ -333,6 +345,7 @@ export type CustomerCreateInput = {
   email?: string | null
   password?: string | null
   customerName: string
+  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -350,6 +363,7 @@ export type CustomerUncheckedCreateInput = {
   email?: string | null
   password?: string | null
   customerName: string
+  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -366,6 +380,7 @@ export type CustomerUpdateInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -383,6 +398,7 @@ export type CustomerUncheckedUpdateInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -400,6 +416,7 @@ export type CustomerCreateManyInput = {
   email?: string | null
   password?: string | null
   customerName: string
+  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -411,6 +428,7 @@ export type CustomerUpdateManyMutationInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -423,6 +441,7 @@ export type CustomerUncheckedUpdateManyInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -435,6 +454,7 @@ export type CustomerCountOrderByAggregateInput = {
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
   customerName?: Prisma.SortOrder
+  avatarUrl?: Prisma.SortOrder
   address?: Prisma.SortOrder
   totalSpent?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -452,6 +472,7 @@ export type CustomerMaxOrderByAggregateInput = {
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
   customerName?: Prisma.SortOrder
+  avatarUrl?: Prisma.SortOrder
   address?: Prisma.SortOrder
   totalSpent?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -464,6 +485,7 @@ export type CustomerMinOrderByAggregateInput = {
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
   customerName?: Prisma.SortOrder
+  avatarUrl?: Prisma.SortOrder
   address?: Prisma.SortOrder
   totalSpent?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -574,6 +596,7 @@ export type CustomerCreateWithoutVehiclesInput = {
   email?: string | null
   password?: string | null
   customerName: string
+  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -590,6 +613,7 @@ export type CustomerUncheckedCreateWithoutVehiclesInput = {
   email?: string | null
   password?: string | null
   customerName: string
+  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -621,6 +645,7 @@ export type CustomerUpdateWithoutVehiclesInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -637,6 +662,7 @@ export type CustomerUncheckedUpdateWithoutVehiclesInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -652,6 +678,7 @@ export type CustomerCreateWithoutAppointmentsInput = {
   email?: string | null
   password?: string | null
   customerName: string
+  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -668,6 +695,7 @@ export type CustomerUncheckedCreateWithoutAppointmentsInput = {
   email?: string | null
   password?: string | null
   customerName: string
+  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -699,6 +727,7 @@ export type CustomerUpdateWithoutAppointmentsInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -715,6 +744,7 @@ export type CustomerUncheckedUpdateWithoutAppointmentsInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -730,6 +760,7 @@ export type CustomerCreateWithoutRepairOrdersInput = {
   email?: string | null
   password?: string | null
   customerName: string
+  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -746,6 +777,7 @@ export type CustomerUncheckedCreateWithoutRepairOrdersInput = {
   email?: string | null
   password?: string | null
   customerName: string
+  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -777,6 +809,7 @@ export type CustomerUpdateWithoutRepairOrdersInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -793,6 +826,7 @@ export type CustomerUncheckedUpdateWithoutRepairOrdersInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -808,6 +842,7 @@ export type CustomerCreateWithoutReviewsInput = {
   email?: string | null
   password?: string | null
   customerName: string
+  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -824,6 +859,7 @@ export type CustomerUncheckedCreateWithoutReviewsInput = {
   email?: string | null
   password?: string | null
   customerName: string
+  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -855,6 +891,7 @@ export type CustomerUpdateWithoutReviewsInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -871,6 +908,7 @@ export type CustomerUncheckedUpdateWithoutReviewsInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -886,6 +924,7 @@ export type CustomerCreateWithoutNotificationsInput = {
   email?: string | null
   password?: string | null
   customerName: string
+  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -902,6 +941,7 @@ export type CustomerUncheckedCreateWithoutNotificationsInput = {
   email?: string | null
   password?: string | null
   customerName: string
+  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
@@ -933,6 +973,7 @@ export type CustomerUpdateWithoutNotificationsInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -949,6 +990,7 @@ export type CustomerUncheckedUpdateWithoutNotificationsInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1032,6 +1074,7 @@ export type CustomerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   email?: boolean
   password?: boolean
   customerName?: boolean
+  avatarUrl?: boolean
   address?: boolean
   totalSpent?: boolean
   createdAt?: boolean
@@ -1050,6 +1093,7 @@ export type CustomerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   email?: boolean
   password?: boolean
   customerName?: boolean
+  avatarUrl?: boolean
   address?: boolean
   totalSpent?: boolean
   createdAt?: boolean
@@ -1062,6 +1106,7 @@ export type CustomerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   email?: boolean
   password?: boolean
   customerName?: boolean
+  avatarUrl?: boolean
   address?: boolean
   totalSpent?: boolean
   createdAt?: boolean
@@ -1074,13 +1119,14 @@ export type CustomerSelectScalar = {
   email?: boolean
   password?: boolean
   customerName?: boolean
+  avatarUrl?: boolean
   address?: boolean
   totalSpent?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "phone" | "email" | "password" | "customerName" | "address" | "totalSpent" | "createdAt" | "updatedAt", ExtArgs["result"]["customer"]>
+export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "phone" | "email" | "password" | "customerName" | "avatarUrl" | "address" | "totalSpent" | "createdAt" | "updatedAt", ExtArgs["result"]["customer"]>
 export type CustomerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   vehicles?: boolean | Prisma.Customer$vehiclesArgs<ExtArgs>
   appointments?: boolean | Prisma.Customer$appointmentsArgs<ExtArgs>
@@ -1107,6 +1153,7 @@ export type $CustomerPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     email: string | null
     password: string | null
     customerName: string
+    avatarUrl: string | null
     address: string | null
     totalSpent: runtime.Decimal
     createdAt: Date
@@ -1544,6 +1591,7 @@ export interface CustomerFieldRefs {
   readonly email: Prisma.FieldRef<"Customer", 'String'>
   readonly password: Prisma.FieldRef<"Customer", 'String'>
   readonly customerName: Prisma.FieldRef<"Customer", 'String'>
+  readonly avatarUrl: Prisma.FieldRef<"Customer", 'String'>
   readonly address: Prisma.FieldRef<"Customer", 'String'>
   readonly totalSpent: Prisma.FieldRef<"Customer", 'Decimal'>
   readonly createdAt: Prisma.FieldRef<"Customer", 'DateTime'>
