@@ -73,7 +73,7 @@ export class AppointmentsService {
     if (isDuplicate) {
       const hour = String(appointmentDate.getHours()).padStart(2, '0');
       throw new BadRequestException(
-        `Bạn đã có lịch hẹn trong khung giờ ${hour}:00 ngày này. Vui lòng chọn ngày hoặc khung giờ khác.`,
+        `Bạn đã có lịch hẹn trong khung giờ này. Vui lòng chọn ngày hoặc khung giờ khác.`,
       );
     }
 

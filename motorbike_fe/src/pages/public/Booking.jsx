@@ -233,15 +233,14 @@ export default function Booking() {
         toast.error("Vui lòng đăng nhập để đặt lịch.");
         setTimeout(() => navigate("/login"), 1500);
       } else {
-        // NestJS có thể trả về: { message: string } hoặc { errors: [{message}] }
         const data = err.response?.data;
-        const raw =
-          typeof data?.message === "string"
+        // Ưu tiên errors[] (Zod validation) → message string (BadRequestException) → fallback
+        const raw = Array.isArray(data?.errors) && data.errors.length > 0
+          ? data.errors.map((e) => e.message).join("\n")
+          : typeof data?.message === "string"
             ? data.message
-            : Array.isArray(data?.errors)
-              ? data.errors.map((e) => e.message).join(" • ")
-              : err.message || "Đã xảy ra lỗi không xác định.";
-        toast.error(raw);
+            : err.message || "Đã xảy ra lỗi không xác định.";
+        toast.error(raw, { style: { whiteSpace: "pre-line" } });
       }
     } finally {
       setSubmitting(false);
