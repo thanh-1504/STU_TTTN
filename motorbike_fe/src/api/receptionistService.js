@@ -18,12 +18,16 @@ export const getReceptionistAppointments = (params = {}) => {
   if (params.status) q.append("status", params.status);
   if (params.date) q.append("date", params.date);
   if (params.technicianId) q.append("technicianId", params.technicianId);
+  if (params.search) q.append("search", params.search);
   const s = q.toString();
   return api
     .get(`/receptionist/appointments${s ? `?${s}` : ""}`)
     .then((r) => r.data)
     .catch(handleErr);
 };
+
+export const getReceptionistAppointmentDetail = (id) =>
+  api.get(`/receptionist/appointments/${id}`).then((r) => r.data).catch(handleErr);
 
 export const createReceptionistAppointment = (payload) =>
   api.post("/receptionist/appointments", payload).then((r) => r.data);

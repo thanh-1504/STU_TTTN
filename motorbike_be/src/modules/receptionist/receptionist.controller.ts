@@ -62,12 +62,19 @@ export class ReceptionistController {
     @Query('status') status?: string,
     @Query('date') date?: string,
     @Query('technicianId') technicianId?: string,
+    @Query('search') search?: string,
   ) {
     return this.service.listAppointments({
       status,
       date,
       technicianId: technicianId ? Number(technicianId) : undefined,
+      search,
     });
+  }
+
+  @Get('appointments/:id')
+  getAppointment(@Param('id', ParseIntPipe) id: number) {
+    return this.service.getAppointmentDetail(id);
   }
 
   @Post('appointments')

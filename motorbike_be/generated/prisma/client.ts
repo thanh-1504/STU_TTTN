@@ -85,6 +85,11 @@ export type Combo = Prisma.ComboModel
  */
 export type ComboService = Prisma.ComboServiceModel
 /**
+ * Model AppointmentService
+ * 
+ */
+export type AppointmentService = Prisma.AppointmentServiceModel
+/**
  * Model RepairOrderService
  * 
  */

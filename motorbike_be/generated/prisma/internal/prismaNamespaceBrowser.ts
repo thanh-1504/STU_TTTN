@@ -60,6 +60,7 @@ export const ModelName = {
   Service: 'Service',
   Combo: 'Combo',
   ComboService: 'ComboService',
+  AppointmentService: 'AppointmentService',
   RepairOrderService: 'RepairOrderService',
   SparePart: 'SparePart',
   RepairOrderItem: 'RepairOrderItem',
@@ -226,6 +227,14 @@ export const ComboServiceScalarFieldEnum = {
 } as const
 
 export type ComboServiceScalarFieldEnum = (typeof ComboServiceScalarFieldEnum)[keyof typeof ComboServiceScalarFieldEnum]
+
+
+export const AppointmentServiceScalarFieldEnum = {
+  appointmentId: 'appointmentId',
+  serviceId: 'serviceId'
+} as const
+
+export type AppointmentServiceScalarFieldEnum = (typeof AppointmentServiceScalarFieldEnum)[keyof typeof AppointmentServiceScalarFieldEnum]
 
 
 export const RepairOrderServiceScalarFieldEnum = {

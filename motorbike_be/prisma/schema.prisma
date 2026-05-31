@@ -205,6 +205,8 @@ model Appointment {
   // Phiếu sửa chữa được tạo từ lịch hẹn này
   repairOrder RepairOrder?
 
+  services AppointmentService[]
+
   @@map("appointments")
 }
 
@@ -277,6 +279,7 @@ model Service {
 
   repairOrderServices RepairOrderService[]
   comboServices       ComboService[]
+  appointmentServices AppointmentService[]
 
   @@map("services")
 }
@@ -309,6 +312,17 @@ model ComboService {
 
   @@id([comboId, serviceId])
   @@map("combo_services")
+}
+
+model AppointmentService {
+  appointmentId Int @map("appointment_id")
+  serviceId     Int @map("service_id")
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id])
+  service     Service     @relation(fields: [serviceId], references: [id])
+
+  @@id([appointmentId, serviceId])
+  @@map("appointment_services")
 }
 
 // ============================================================

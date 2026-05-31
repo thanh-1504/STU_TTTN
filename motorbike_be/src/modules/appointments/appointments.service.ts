@@ -77,12 +77,31 @@ export class AppointmentsService {
       );
     }
 
+    const serviceIds = Array.isArray(dto.serviceIds)
+      ? Array.from(new Set(dto.serviceIds))
+      : [];
+
+    if (serviceIds.length > 0) {
+      const existing = await this.prisma.service.findMany({
+        where: { id: { in: serviceIds } },
+        select: { id: true },
+      });
+      const existingIds = new Set(existing.map((s) => s.id));
+      const missing = serviceIds.filter((id) => !existingIds.has(id));
+      if (missing.length > 0) {
+        throw new BadRequestException(
+          `Dịch vụ không tồn tại: ID ${missing.join(', ')}`,
+        );
+      }
+    }
+
     return this.appointmentsRepository.createAppointment({
       appointmentTime: appointmentDate,
       customerId,
       vehicleId: dto.vehicleId,
       symptoms: dto.symptoms,
       notes: dto.notes,
+      serviceIds,
     });
   }
 

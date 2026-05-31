@@ -22,6 +22,10 @@ export const CreateAppointmentSchema = z.object({
     .max(500, 'Ghi chú tối đa 500 ký tự')
     .optional()
     .describe('Ghi chú thêm'),
+  serviceIds: z
+    .array(z.number().int().positive('ID dịch vụ phải là số nguyên dương'))
+    .optional()
+    .describe('Danh sách ID dịch vụ từ giỏ hàng'),
   vehicleId: z
     .number()
     .int()
