@@ -4,22 +4,30 @@ import * as nodemailer from 'nodemailer';
 @Injectable()
 export class MailService {
   private transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
       user: process.env.MAIL_USER,
       pass: process.env.MAIL_PASS,
     },
   });
 
-  async sendAppointmentConfirmation(to: string, data: {
-    customerName: string;
-    appointmentTime: Date;
-    serviceName?: string;
-    symptoms?: string;
-  }) {
+  async sendAppointmentConfirmation(
+    to: string,
+    data: {
+      customerName: string;
+      appointmentTime: Date;
+      serviceName?: string;
+      symptoms?: string;
+    },
+  ) {
     const dateStr = new Date(data.appointmentTime).toLocaleString('vi-VN', {
-      day: '2-digit', month: '2-digit', year: 'numeric',
-      hour: '2-digit', minute: '2-digit',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
 
     await this.transporter.sendMail({
