@@ -60,7 +60,6 @@ export const ModelName = {
   Service: 'Service',
   Combo: 'Combo',
   ComboService: 'ComboService',
-  AppointmentService: 'AppointmentService',
   RepairOrderService: 'RepairOrderService',
   SparePart: 'SparePart',
   RepairOrderItem: 'RepairOrderItem',
@@ -73,7 +72,8 @@ export const ModelName = {
   Review: 'Review',
   Notification: 'Notification',
   WorkSchedule: 'WorkSchedule',
-  SystemConfig: 'SystemConfig'
+  SystemConfig: 'SystemConfig',
+  appointment_services: 'appointment_services'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -120,14 +120,15 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 export const CustomerScalarFieldEnum = {
   id: 'id',
   phone: 'phone',
-  email: 'email',
-  password: 'password',
   customerName: 'customerName',
-  avatarUrl: 'avatarUrl',
   address: 'address',
   totalSpent: 'totalSpent',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  email: 'email',
+  notificationEmail: 'notificationEmail',
+  password: 'password',
+  avatarUrl: 'avatarUrl'
 } as const
 
 export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
@@ -140,11 +141,11 @@ export const VehicleScalarFieldEnum = {
   vehicleType: 'vehicleType',
   model: 'model',
   currentKm: 'currentKm',
-  imageUrl: 'imageUrl',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  customerId: 'customerId'
+  customerId: 'customerId',
+  imageUrl: 'imageUrl'
 } as const
 
 export type VehicleScalarFieldEnum = (typeof VehicleScalarFieldEnum)[keyof typeof VehicleScalarFieldEnum]
@@ -227,14 +228,6 @@ export const ComboServiceScalarFieldEnum = {
 } as const
 
 export type ComboServiceScalarFieldEnum = (typeof ComboServiceScalarFieldEnum)[keyof typeof ComboServiceScalarFieldEnum]
-
-
-export const AppointmentServiceScalarFieldEnum = {
-  appointmentId: 'appointmentId',
-  serviceId: 'serviceId'
-} as const
-
-export type AppointmentServiceScalarFieldEnum = (typeof AppointmentServiceScalarFieldEnum)[keyof typeof AppointmentServiceScalarFieldEnum]
 
 
 export const RepairOrderServiceScalarFieldEnum = {
@@ -407,6 +400,14 @@ export const SystemConfigScalarFieldEnum = {
 } as const
 
 export type SystemConfigScalarFieldEnum = (typeof SystemConfigScalarFieldEnum)[keyof typeof SystemConfigScalarFieldEnum]
+
+
+export const Appointment_servicesScalarFieldEnum = {
+  appointment_id: 'appointment_id',
+  service_id: 'service_id'
+} as const
+
+export type Appointment_servicesScalarFieldEnum = (typeof Appointment_servicesScalarFieldEnum)[keyof typeof Appointment_servicesScalarFieldEnum]
 
 
 export const SortOrder = {

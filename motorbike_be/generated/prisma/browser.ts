@@ -63,11 +63,6 @@ export type Combo = Prisma.ComboModel
  */
 export type ComboService = Prisma.ComboServiceModel
 /**
- * Model AppointmentService
- * 
- */
-export type AppointmentService = Prisma.AppointmentServiceModel
-/**
  * Model RepairOrderService
  * 
  */
@@ -132,3 +127,8 @@ export type WorkSchedule = Prisma.WorkScheduleModel
  * 
  */
 export type SystemConfig = Prisma.SystemConfigModel
+/**
+ * Model appointment_services
+ * 
+ */
+export type appointment_services = Prisma.appointment_servicesModel

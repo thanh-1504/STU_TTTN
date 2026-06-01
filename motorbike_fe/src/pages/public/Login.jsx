@@ -33,6 +33,7 @@ export default function LoginPage() {
   const [regConfirmPassword, setRegConfirmPassword] = useState("");
   const [regName, setRegName] = useState("");
   const [regPhone, setRegPhone] = useState("");
+  const [regNotificationEmail, setRegNotificationEmail] = useState("");
   const [showRegPwd, setShowRegPwd] = useState(false);
 
   const handleLogin = async (e) => {
@@ -75,7 +76,9 @@ export default function LoginPage() {
     if (!regPhone.trim()) {
       errors.push("Vui lòng nhập số điện thoại");
     } else if (!PHONE_REGEX.test(regPhone.trim())) {
-      errors.push("Số điện thoại không hợp lệ (VD: 0901234567 hoặc +84901234567)");
+      errors.push(
+        "Số điện thoại không hợp lệ (VD: 0901234567 hoặc +84901234567)",
+      );
     }
 
     if (!regPassword) {
@@ -88,6 +91,13 @@ export default function LoginPage() {
       errors.push("Vui lòng nhập xác nhận mật khẩu");
     } else if (regPassword !== regConfirmPassword) {
       errors.push("Mật khẩu xác nhận không khớp");
+    }
+
+    if (
+      regNotificationEmail.trim() &&
+      !EMAIL_REGEX.test(regNotificationEmail.trim())
+    ) {
+      errors.push("Email nhận thông báo không hợp lệ");
     }
 
     return errors;
@@ -111,6 +121,8 @@ export default function LoginPage() {
         password: regPassword,
         customerName: regName.trim(),
         phone: regPhone.trim(),
+        notificationEmail:
+          regNotificationEmail.trim().toLowerCase() || undefined,
       });
       saveAuthData(data.accessToken, "customer", data.customer);
       navigate("/booking");
@@ -364,6 +376,25 @@ export default function LoginPage() {
                     value={regConfirmPassword}
                     onChange={(e) => {
                       setRegConfirmPassword(e.target.value);
+                      if (error) setError("");
+                    }}
+                    disabled={loading}
+                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-red-500 outline-none disabled:bg-gray-100 text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium block mb-1.5">
+                    Email nhận thông báo (Google)
+                  </label>
+                  <input
+                    id="reg-notification-email"
+                    type="email"
+                    required
+                    placeholder="gmail@gmail.com"
+                    value={regNotificationEmail}
+                    onChange={(e) => {
+                      setRegNotificationEmail(e.target.value);
                       if (error) setError("");
                     }}
                     disabled={loading}

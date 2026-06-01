@@ -117,6 +117,7 @@ export class AuthService {
       password: hashedPassword,
       customerName: normalizedName,
       phone: normalizedPhone,
+      notificationEmail: dto.notificationEmail?.trim().toLowerCase() || undefined,
     });
 
     const payload = {

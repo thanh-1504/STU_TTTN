@@ -352,15 +352,15 @@ export type RepairOrderWhereInput = {
   receptionistId?: Prisma.IntFilter<"RepairOrder"> | number
   technicianId?: Prisma.IntFilter<"RepairOrder"> | number
   voucherId?: Prisma.IntNullableFilter<"RepairOrder"> | number | null
+  notifications?: Prisma.NotificationListRelationFilter
+  items?: Prisma.RepairOrderItemListRelationFilter
+  services?: Prisma.RepairOrderServiceListRelationFilter
   appointment?: Prisma.XOR<Prisma.AppointmentNullableScalarRelationFilter, Prisma.AppointmentWhereInput> | null
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
-  vehicle?: Prisma.XOR<Prisma.VehicleScalarRelationFilter, Prisma.VehicleWhereInput>
   receptionist?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   technician?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  vehicle?: Prisma.XOR<Prisma.VehicleScalarRelationFilter, Prisma.VehicleWhereInput>
   voucher?: Prisma.XOR<Prisma.VoucherNullableScalarRelationFilter, Prisma.VoucherWhereInput> | null
-  services?: Prisma.RepairOrderServiceListRelationFilter
-  items?: Prisma.RepairOrderItemListRelationFilter
-  notifications?: Prisma.NotificationListRelationFilter
 }
 
 export type RepairOrderOrderByWithRelationInput = {
@@ -382,15 +382,15 @@ export type RepairOrderOrderByWithRelationInput = {
   receptionistId?: Prisma.SortOrder
   technicianId?: Prisma.SortOrder
   voucherId?: Prisma.SortOrderInput | Prisma.SortOrder
+  notifications?: Prisma.NotificationOrderByRelationAggregateInput
+  items?: Prisma.RepairOrderItemOrderByRelationAggregateInput
+  services?: Prisma.RepairOrderServiceOrderByRelationAggregateInput
   appointment?: Prisma.AppointmentOrderByWithRelationInput
   customer?: Prisma.CustomerOrderByWithRelationInput
-  vehicle?: Prisma.VehicleOrderByWithRelationInput
   receptionist?: Prisma.UserOrderByWithRelationInput
   technician?: Prisma.UserOrderByWithRelationInput
+  vehicle?: Prisma.VehicleOrderByWithRelationInput
   voucher?: Prisma.VoucherOrderByWithRelationInput
-  services?: Prisma.RepairOrderServiceOrderByRelationAggregateInput
-  items?: Prisma.RepairOrderItemOrderByRelationAggregateInput
-  notifications?: Prisma.NotificationOrderByRelationAggregateInput
 }
 
 export type RepairOrderWhereUniqueInput = Prisma.AtLeast<{
@@ -415,15 +415,15 @@ export type RepairOrderWhereUniqueInput = Prisma.AtLeast<{
   receptionistId?: Prisma.IntFilter<"RepairOrder"> | number
   technicianId?: Prisma.IntFilter<"RepairOrder"> | number
   voucherId?: Prisma.IntNullableFilter<"RepairOrder"> | number | null
+  notifications?: Prisma.NotificationListRelationFilter
+  items?: Prisma.RepairOrderItemListRelationFilter
+  services?: Prisma.RepairOrderServiceListRelationFilter
   appointment?: Prisma.XOR<Prisma.AppointmentNullableScalarRelationFilter, Prisma.AppointmentWhereInput> | null
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
-  vehicle?: Prisma.XOR<Prisma.VehicleScalarRelationFilter, Prisma.VehicleWhereInput>
   receptionist?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   technician?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  vehicle?: Prisma.XOR<Prisma.VehicleScalarRelationFilter, Prisma.VehicleWhereInput>
   voucher?: Prisma.XOR<Prisma.VoucherNullableScalarRelationFilter, Prisma.VoucherWhereInput> | null
-  services?: Prisma.RepairOrderServiceListRelationFilter
-  items?: Prisma.RepairOrderItemListRelationFilter
-  notifications?: Prisma.NotificationListRelationFilter
 }, "id" | "appointmentId">
 
 export type RepairOrderOrderByWithAggregationInput = {
@@ -488,15 +488,15 @@ export type RepairOrderCreateInput = {
   paidAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRepairOrderInput
+  items?: Prisma.RepairOrderItemCreateNestedManyWithoutRepairOrderInput
+  services?: Prisma.RepairOrderServiceCreateNestedManyWithoutRepairOrderInput
   appointment?: Prisma.AppointmentCreateNestedOneWithoutRepairOrderInput
   customer: Prisma.CustomerCreateNestedOneWithoutRepairOrdersInput
-  vehicle: Prisma.VehicleCreateNestedOneWithoutRepairOrdersInput
   receptionist: Prisma.UserCreateNestedOneWithoutRepairOrdersAsReceptionistInput
   technician: Prisma.UserCreateNestedOneWithoutRepairOrdersAsTechnicianInput
+  vehicle: Prisma.VehicleCreateNestedOneWithoutRepairOrdersInput
   voucher?: Prisma.VoucherCreateNestedOneWithoutRepairOrdersInput
-  services?: Prisma.RepairOrderServiceCreateNestedManyWithoutRepairOrderInput
-  items?: Prisma.RepairOrderItemCreateNestedManyWithoutRepairOrderInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutRepairOrderInput
 }
 
 export type RepairOrderUncheckedCreateInput = {
@@ -518,9 +518,9 @@ export type RepairOrderUncheckedCreateInput = {
   receptionistId: number
   technicianId: number
   voucherId?: number | null
-  services?: Prisma.RepairOrderServiceUncheckedCreateNestedManyWithoutRepairOrderInput
-  items?: Prisma.RepairOrderItemUncheckedCreateNestedManyWithoutRepairOrderInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRepairOrderInput
+  items?: Prisma.RepairOrderItemUncheckedCreateNestedManyWithoutRepairOrderInput
+  services?: Prisma.RepairOrderServiceUncheckedCreateNestedManyWithoutRepairOrderInput
 }
 
 export type RepairOrderUpdateInput = {
@@ -535,15 +535,15 @@ export type RepairOrderUpdateInput = {
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.NotificationUpdateManyWithoutRepairOrderNestedInput
+  items?: Prisma.RepairOrderItemUpdateManyWithoutRepairOrderNestedInput
+  services?: Prisma.RepairOrderServiceUpdateManyWithoutRepairOrderNestedInput
   appointment?: Prisma.AppointmentUpdateOneWithoutRepairOrderNestedInput
   customer?: Prisma.CustomerUpdateOneRequiredWithoutRepairOrdersNestedInput
-  vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRepairOrdersNestedInput
   receptionist?: Prisma.UserUpdateOneRequiredWithoutRepairOrdersAsReceptionistNestedInput
   technician?: Prisma.UserUpdateOneRequiredWithoutRepairOrdersAsTechnicianNestedInput
+  vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRepairOrdersNestedInput
   voucher?: Prisma.VoucherUpdateOneWithoutRepairOrdersNestedInput
-  services?: Prisma.RepairOrderServiceUpdateManyWithoutRepairOrderNestedInput
-  items?: Prisma.RepairOrderItemUpdateManyWithoutRepairOrderNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutRepairOrderNestedInput
 }
 
 export type RepairOrderUncheckedUpdateInput = {
@@ -565,9 +565,9 @@ export type RepairOrderUncheckedUpdateInput = {
   receptionistId?: Prisma.IntFieldUpdateOperationsInput | number
   technicianId?: Prisma.IntFieldUpdateOperationsInput | number
   voucherId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  services?: Prisma.RepairOrderServiceUncheckedUpdateManyWithoutRepairOrderNestedInput
-  items?: Prisma.RepairOrderItemUncheckedUpdateManyWithoutRepairOrderNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRepairOrderNestedInput
+  items?: Prisma.RepairOrderItemUncheckedUpdateManyWithoutRepairOrderNestedInput
+  services?: Prisma.RepairOrderServiceUncheckedUpdateManyWithoutRepairOrderNestedInput
 }
 
 export type RepairOrderCreateManyInput = {
@@ -1039,14 +1039,14 @@ export type RepairOrderCreateWithoutReceptionistInput = {
   paidAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRepairOrderInput
+  items?: Prisma.RepairOrderItemCreateNestedManyWithoutRepairOrderInput
+  services?: Prisma.RepairOrderServiceCreateNestedManyWithoutRepairOrderInput
   appointment?: Prisma.AppointmentCreateNestedOneWithoutRepairOrderInput
   customer: Prisma.CustomerCreateNestedOneWithoutRepairOrdersInput
-  vehicle: Prisma.VehicleCreateNestedOneWithoutRepairOrdersInput
   technician: Prisma.UserCreateNestedOneWithoutRepairOrdersAsTechnicianInput
+  vehicle: Prisma.VehicleCreateNestedOneWithoutRepairOrdersInput
   voucher?: Prisma.VoucherCreateNestedOneWithoutRepairOrdersInput
-  services?: Prisma.RepairOrderServiceCreateNestedManyWithoutRepairOrderInput
-  items?: Prisma.RepairOrderItemCreateNestedManyWithoutRepairOrderInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutRepairOrderInput
 }
 
 export type RepairOrderUncheckedCreateWithoutReceptionistInput = {
@@ -1067,9 +1067,9 @@ export type RepairOrderUncheckedCreateWithoutReceptionistInput = {
   vehicleId: number
   technicianId: number
   voucherId?: number | null
-  services?: Prisma.RepairOrderServiceUncheckedCreateNestedManyWithoutRepairOrderInput
-  items?: Prisma.RepairOrderItemUncheckedCreateNestedManyWithoutRepairOrderInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRepairOrderInput
+  items?: Prisma.RepairOrderItemUncheckedCreateNestedManyWithoutRepairOrderInput
+  services?: Prisma.RepairOrderServiceUncheckedCreateNestedManyWithoutRepairOrderInput
 }
 
 export type RepairOrderCreateOrConnectWithoutReceptionistInput = {
@@ -1094,14 +1094,14 @@ export type RepairOrderCreateWithoutTechnicianInput = {
   paidAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRepairOrderInput
+  items?: Prisma.RepairOrderItemCreateNestedManyWithoutRepairOrderInput
+  services?: Prisma.RepairOrderServiceCreateNestedManyWithoutRepairOrderInput
   appointment?: Prisma.AppointmentCreateNestedOneWithoutRepairOrderInput
   customer: Prisma.CustomerCreateNestedOneWithoutRepairOrdersInput
-  vehicle: Prisma.VehicleCreateNestedOneWithoutRepairOrdersInput
   receptionist: Prisma.UserCreateNestedOneWithoutRepairOrdersAsReceptionistInput
+  vehicle: Prisma.VehicleCreateNestedOneWithoutRepairOrdersInput
   voucher?: Prisma.VoucherCreateNestedOneWithoutRepairOrdersInput
-  services?: Prisma.RepairOrderServiceCreateNestedManyWithoutRepairOrderInput
-  items?: Prisma.RepairOrderItemCreateNestedManyWithoutRepairOrderInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutRepairOrderInput
 }
 
 export type RepairOrderUncheckedCreateWithoutTechnicianInput = {
@@ -1122,9 +1122,9 @@ export type RepairOrderUncheckedCreateWithoutTechnicianInput = {
   vehicleId: number
   receptionistId: number
   voucherId?: number | null
-  services?: Prisma.RepairOrderServiceUncheckedCreateNestedManyWithoutRepairOrderInput
-  items?: Prisma.RepairOrderItemUncheckedCreateNestedManyWithoutRepairOrderInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRepairOrderInput
+  items?: Prisma.RepairOrderItemUncheckedCreateNestedManyWithoutRepairOrderInput
+  services?: Prisma.RepairOrderServiceUncheckedCreateNestedManyWithoutRepairOrderInput
 }
 
 export type RepairOrderCreateOrConnectWithoutTechnicianInput = {
@@ -1205,14 +1205,14 @@ export type RepairOrderCreateWithoutCustomerInput = {
   paidAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRepairOrderInput
+  items?: Prisma.RepairOrderItemCreateNestedManyWithoutRepairOrderInput
+  services?: Prisma.RepairOrderServiceCreateNestedManyWithoutRepairOrderInput
   appointment?: Prisma.AppointmentCreateNestedOneWithoutRepairOrderInput
-  vehicle: Prisma.VehicleCreateNestedOneWithoutRepairOrdersInput
   receptionist: Prisma.UserCreateNestedOneWithoutRepairOrdersAsReceptionistInput
   technician: Prisma.UserCreateNestedOneWithoutRepairOrdersAsTechnicianInput
+  vehicle: Prisma.VehicleCreateNestedOneWithoutRepairOrdersInput
   voucher?: Prisma.VoucherCreateNestedOneWithoutRepairOrdersInput
-  services?: Prisma.RepairOrderServiceCreateNestedManyWithoutRepairOrderInput
-  items?: Prisma.RepairOrderItemCreateNestedManyWithoutRepairOrderInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutRepairOrderInput
 }
 
 export type RepairOrderUncheckedCreateWithoutCustomerInput = {
@@ -1233,9 +1233,9 @@ export type RepairOrderUncheckedCreateWithoutCustomerInput = {
   receptionistId: number
   technicianId: number
   voucherId?: number | null
-  services?: Prisma.RepairOrderServiceUncheckedCreateNestedManyWithoutRepairOrderInput
-  items?: Prisma.RepairOrderItemUncheckedCreateNestedManyWithoutRepairOrderInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRepairOrderInput
+  items?: Prisma.RepairOrderItemUncheckedCreateNestedManyWithoutRepairOrderInput
+  services?: Prisma.RepairOrderServiceUncheckedCreateNestedManyWithoutRepairOrderInput
 }
 
 export type RepairOrderCreateOrConnectWithoutCustomerInput = {
@@ -1276,14 +1276,14 @@ export type RepairOrderCreateWithoutVehicleInput = {
   paidAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRepairOrderInput
+  items?: Prisma.RepairOrderItemCreateNestedManyWithoutRepairOrderInput
+  services?: Prisma.RepairOrderServiceCreateNestedManyWithoutRepairOrderInput
   appointment?: Prisma.AppointmentCreateNestedOneWithoutRepairOrderInput
   customer: Prisma.CustomerCreateNestedOneWithoutRepairOrdersInput
   receptionist: Prisma.UserCreateNestedOneWithoutRepairOrdersAsReceptionistInput
   technician: Prisma.UserCreateNestedOneWithoutRepairOrdersAsTechnicianInput
   voucher?: Prisma.VoucherCreateNestedOneWithoutRepairOrdersInput
-  services?: Prisma.RepairOrderServiceCreateNestedManyWithoutRepairOrderInput
-  items?: Prisma.RepairOrderItemCreateNestedManyWithoutRepairOrderInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutRepairOrderInput
 }
 
 export type RepairOrderUncheckedCreateWithoutVehicleInput = {
@@ -1304,9 +1304,9 @@ export type RepairOrderUncheckedCreateWithoutVehicleInput = {
   receptionistId: number
   technicianId: number
   voucherId?: number | null
-  services?: Prisma.RepairOrderServiceUncheckedCreateNestedManyWithoutRepairOrderInput
-  items?: Prisma.RepairOrderItemUncheckedCreateNestedManyWithoutRepairOrderInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRepairOrderInput
+  items?: Prisma.RepairOrderItemUncheckedCreateNestedManyWithoutRepairOrderInput
+  services?: Prisma.RepairOrderServiceUncheckedCreateNestedManyWithoutRepairOrderInput
 }
 
 export type RepairOrderCreateOrConnectWithoutVehicleInput = {
@@ -1347,14 +1347,14 @@ export type RepairOrderCreateWithoutAppointmentInput = {
   paidAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRepairOrderInput
+  items?: Prisma.RepairOrderItemCreateNestedManyWithoutRepairOrderInput
+  services?: Prisma.RepairOrderServiceCreateNestedManyWithoutRepairOrderInput
   customer: Prisma.CustomerCreateNestedOneWithoutRepairOrdersInput
-  vehicle: Prisma.VehicleCreateNestedOneWithoutRepairOrdersInput
   receptionist: Prisma.UserCreateNestedOneWithoutRepairOrdersAsReceptionistInput
   technician: Prisma.UserCreateNestedOneWithoutRepairOrdersAsTechnicianInput
+  vehicle: Prisma.VehicleCreateNestedOneWithoutRepairOrdersInput
   voucher?: Prisma.VoucherCreateNestedOneWithoutRepairOrdersInput
-  services?: Prisma.RepairOrderServiceCreateNestedManyWithoutRepairOrderInput
-  items?: Prisma.RepairOrderItemCreateNestedManyWithoutRepairOrderInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutRepairOrderInput
 }
 
 export type RepairOrderUncheckedCreateWithoutAppointmentInput = {
@@ -1375,9 +1375,9 @@ export type RepairOrderUncheckedCreateWithoutAppointmentInput = {
   receptionistId: number
   technicianId: number
   voucherId?: number | null
-  services?: Prisma.RepairOrderServiceUncheckedCreateNestedManyWithoutRepairOrderInput
-  items?: Prisma.RepairOrderItemUncheckedCreateNestedManyWithoutRepairOrderInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRepairOrderInput
+  items?: Prisma.RepairOrderItemUncheckedCreateNestedManyWithoutRepairOrderInput
+  services?: Prisma.RepairOrderServiceUncheckedCreateNestedManyWithoutRepairOrderInput
 }
 
 export type RepairOrderCreateOrConnectWithoutAppointmentInput = {
@@ -1408,14 +1408,14 @@ export type RepairOrderUpdateWithoutAppointmentInput = {
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.NotificationUpdateManyWithoutRepairOrderNestedInput
+  items?: Prisma.RepairOrderItemUpdateManyWithoutRepairOrderNestedInput
+  services?: Prisma.RepairOrderServiceUpdateManyWithoutRepairOrderNestedInput
   customer?: Prisma.CustomerUpdateOneRequiredWithoutRepairOrdersNestedInput
-  vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRepairOrdersNestedInput
   receptionist?: Prisma.UserUpdateOneRequiredWithoutRepairOrdersAsReceptionistNestedInput
   technician?: Prisma.UserUpdateOneRequiredWithoutRepairOrdersAsTechnicianNestedInput
+  vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRepairOrdersNestedInput
   voucher?: Prisma.VoucherUpdateOneWithoutRepairOrdersNestedInput
-  services?: Prisma.RepairOrderServiceUpdateManyWithoutRepairOrderNestedInput
-  items?: Prisma.RepairOrderItemUpdateManyWithoutRepairOrderNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutRepairOrderNestedInput
 }
 
 export type RepairOrderUncheckedUpdateWithoutAppointmentInput = {
@@ -1436,9 +1436,9 @@ export type RepairOrderUncheckedUpdateWithoutAppointmentInput = {
   receptionistId?: Prisma.IntFieldUpdateOperationsInput | number
   technicianId?: Prisma.IntFieldUpdateOperationsInput | number
   voucherId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  services?: Prisma.RepairOrderServiceUncheckedUpdateManyWithoutRepairOrderNestedInput
-  items?: Prisma.RepairOrderItemUncheckedUpdateManyWithoutRepairOrderNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRepairOrderNestedInput
+  items?: Prisma.RepairOrderItemUncheckedUpdateManyWithoutRepairOrderNestedInput
+  services?: Prisma.RepairOrderServiceUncheckedUpdateManyWithoutRepairOrderNestedInput
 }
 
 export type RepairOrderCreateWithoutServicesInput = {
@@ -1453,14 +1453,14 @@ export type RepairOrderCreateWithoutServicesInput = {
   paidAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRepairOrderInput
+  items?: Prisma.RepairOrderItemCreateNestedManyWithoutRepairOrderInput
   appointment?: Prisma.AppointmentCreateNestedOneWithoutRepairOrderInput
   customer: Prisma.CustomerCreateNestedOneWithoutRepairOrdersInput
-  vehicle: Prisma.VehicleCreateNestedOneWithoutRepairOrdersInput
   receptionist: Prisma.UserCreateNestedOneWithoutRepairOrdersAsReceptionistInput
   technician: Prisma.UserCreateNestedOneWithoutRepairOrdersAsTechnicianInput
+  vehicle: Prisma.VehicleCreateNestedOneWithoutRepairOrdersInput
   voucher?: Prisma.VoucherCreateNestedOneWithoutRepairOrdersInput
-  items?: Prisma.RepairOrderItemCreateNestedManyWithoutRepairOrderInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutRepairOrderInput
 }
 
 export type RepairOrderUncheckedCreateWithoutServicesInput = {
@@ -1482,8 +1482,8 @@ export type RepairOrderUncheckedCreateWithoutServicesInput = {
   receptionistId: number
   technicianId: number
   voucherId?: number | null
-  items?: Prisma.RepairOrderItemUncheckedCreateNestedManyWithoutRepairOrderInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRepairOrderInput
+  items?: Prisma.RepairOrderItemUncheckedCreateNestedManyWithoutRepairOrderInput
 }
 
 export type RepairOrderCreateOrConnectWithoutServicesInput = {
@@ -1514,14 +1514,14 @@ export type RepairOrderUpdateWithoutServicesInput = {
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.NotificationUpdateManyWithoutRepairOrderNestedInput
+  items?: Prisma.RepairOrderItemUpdateManyWithoutRepairOrderNestedInput
   appointment?: Prisma.AppointmentUpdateOneWithoutRepairOrderNestedInput
   customer?: Prisma.CustomerUpdateOneRequiredWithoutRepairOrdersNestedInput
-  vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRepairOrdersNestedInput
   receptionist?: Prisma.UserUpdateOneRequiredWithoutRepairOrdersAsReceptionistNestedInput
   technician?: Prisma.UserUpdateOneRequiredWithoutRepairOrdersAsTechnicianNestedInput
+  vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRepairOrdersNestedInput
   voucher?: Prisma.VoucherUpdateOneWithoutRepairOrdersNestedInput
-  items?: Prisma.RepairOrderItemUpdateManyWithoutRepairOrderNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutRepairOrderNestedInput
 }
 
 export type RepairOrderUncheckedUpdateWithoutServicesInput = {
@@ -1543,8 +1543,8 @@ export type RepairOrderUncheckedUpdateWithoutServicesInput = {
   receptionistId?: Prisma.IntFieldUpdateOperationsInput | number
   technicianId?: Prisma.IntFieldUpdateOperationsInput | number
   voucherId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  items?: Prisma.RepairOrderItemUncheckedUpdateManyWithoutRepairOrderNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRepairOrderNestedInput
+  items?: Prisma.RepairOrderItemUncheckedUpdateManyWithoutRepairOrderNestedInput
 }
 
 export type RepairOrderCreateWithoutItemsInput = {
@@ -1559,14 +1559,14 @@ export type RepairOrderCreateWithoutItemsInput = {
   paidAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRepairOrderInput
+  services?: Prisma.RepairOrderServiceCreateNestedManyWithoutRepairOrderInput
   appointment?: Prisma.AppointmentCreateNestedOneWithoutRepairOrderInput
   customer: Prisma.CustomerCreateNestedOneWithoutRepairOrdersInput
-  vehicle: Prisma.VehicleCreateNestedOneWithoutRepairOrdersInput
   receptionist: Prisma.UserCreateNestedOneWithoutRepairOrdersAsReceptionistInput
   technician: Prisma.UserCreateNestedOneWithoutRepairOrdersAsTechnicianInput
+  vehicle: Prisma.VehicleCreateNestedOneWithoutRepairOrdersInput
   voucher?: Prisma.VoucherCreateNestedOneWithoutRepairOrdersInput
-  services?: Prisma.RepairOrderServiceCreateNestedManyWithoutRepairOrderInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutRepairOrderInput
 }
 
 export type RepairOrderUncheckedCreateWithoutItemsInput = {
@@ -1588,8 +1588,8 @@ export type RepairOrderUncheckedCreateWithoutItemsInput = {
   receptionistId: number
   technicianId: number
   voucherId?: number | null
-  services?: Prisma.RepairOrderServiceUncheckedCreateNestedManyWithoutRepairOrderInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRepairOrderInput
+  services?: Prisma.RepairOrderServiceUncheckedCreateNestedManyWithoutRepairOrderInput
 }
 
 export type RepairOrderCreateOrConnectWithoutItemsInput = {
@@ -1620,14 +1620,14 @@ export type RepairOrderUpdateWithoutItemsInput = {
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.NotificationUpdateManyWithoutRepairOrderNestedInput
+  services?: Prisma.RepairOrderServiceUpdateManyWithoutRepairOrderNestedInput
   appointment?: Prisma.AppointmentUpdateOneWithoutRepairOrderNestedInput
   customer?: Prisma.CustomerUpdateOneRequiredWithoutRepairOrdersNestedInput
-  vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRepairOrdersNestedInput
   receptionist?: Prisma.UserUpdateOneRequiredWithoutRepairOrdersAsReceptionistNestedInput
   technician?: Prisma.UserUpdateOneRequiredWithoutRepairOrdersAsTechnicianNestedInput
+  vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRepairOrdersNestedInput
   voucher?: Prisma.VoucherUpdateOneWithoutRepairOrdersNestedInput
-  services?: Prisma.RepairOrderServiceUpdateManyWithoutRepairOrderNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutRepairOrderNestedInput
 }
 
 export type RepairOrderUncheckedUpdateWithoutItemsInput = {
@@ -1649,8 +1649,8 @@ export type RepairOrderUncheckedUpdateWithoutItemsInput = {
   receptionistId?: Prisma.IntFieldUpdateOperationsInput | number
   technicianId?: Prisma.IntFieldUpdateOperationsInput | number
   voucherId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  services?: Prisma.RepairOrderServiceUncheckedUpdateManyWithoutRepairOrderNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRepairOrderNestedInput
+  services?: Prisma.RepairOrderServiceUncheckedUpdateManyWithoutRepairOrderNestedInput
 }
 
 export type RepairOrderCreateWithoutVoucherInput = {
@@ -1665,14 +1665,14 @@ export type RepairOrderCreateWithoutVoucherInput = {
   paidAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRepairOrderInput
+  items?: Prisma.RepairOrderItemCreateNestedManyWithoutRepairOrderInput
+  services?: Prisma.RepairOrderServiceCreateNestedManyWithoutRepairOrderInput
   appointment?: Prisma.AppointmentCreateNestedOneWithoutRepairOrderInput
   customer: Prisma.CustomerCreateNestedOneWithoutRepairOrdersInput
-  vehicle: Prisma.VehicleCreateNestedOneWithoutRepairOrdersInput
   receptionist: Prisma.UserCreateNestedOneWithoutRepairOrdersAsReceptionistInput
   technician: Prisma.UserCreateNestedOneWithoutRepairOrdersAsTechnicianInput
-  services?: Prisma.RepairOrderServiceCreateNestedManyWithoutRepairOrderInput
-  items?: Prisma.RepairOrderItemCreateNestedManyWithoutRepairOrderInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutRepairOrderInput
+  vehicle: Prisma.VehicleCreateNestedOneWithoutRepairOrdersInput
 }
 
 export type RepairOrderUncheckedCreateWithoutVoucherInput = {
@@ -1693,9 +1693,9 @@ export type RepairOrderUncheckedCreateWithoutVoucherInput = {
   vehicleId: number
   receptionistId: number
   technicianId: number
-  services?: Prisma.RepairOrderServiceUncheckedCreateNestedManyWithoutRepairOrderInput
-  items?: Prisma.RepairOrderItemUncheckedCreateNestedManyWithoutRepairOrderInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRepairOrderInput
+  items?: Prisma.RepairOrderItemUncheckedCreateNestedManyWithoutRepairOrderInput
+  services?: Prisma.RepairOrderServiceUncheckedCreateNestedManyWithoutRepairOrderInput
 }
 
 export type RepairOrderCreateOrConnectWithoutVoucherInput = {
@@ -1736,14 +1736,14 @@ export type RepairOrderCreateWithoutNotificationsInput = {
   paidAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  items?: Prisma.RepairOrderItemCreateNestedManyWithoutRepairOrderInput
+  services?: Prisma.RepairOrderServiceCreateNestedManyWithoutRepairOrderInput
   appointment?: Prisma.AppointmentCreateNestedOneWithoutRepairOrderInput
   customer: Prisma.CustomerCreateNestedOneWithoutRepairOrdersInput
-  vehicle: Prisma.VehicleCreateNestedOneWithoutRepairOrdersInput
   receptionist: Prisma.UserCreateNestedOneWithoutRepairOrdersAsReceptionistInput
   technician: Prisma.UserCreateNestedOneWithoutRepairOrdersAsTechnicianInput
+  vehicle: Prisma.VehicleCreateNestedOneWithoutRepairOrdersInput
   voucher?: Prisma.VoucherCreateNestedOneWithoutRepairOrdersInput
-  services?: Prisma.RepairOrderServiceCreateNestedManyWithoutRepairOrderInput
-  items?: Prisma.RepairOrderItemCreateNestedManyWithoutRepairOrderInput
 }
 
 export type RepairOrderUncheckedCreateWithoutNotificationsInput = {
@@ -1765,8 +1765,8 @@ export type RepairOrderUncheckedCreateWithoutNotificationsInput = {
   receptionistId: number
   technicianId: number
   voucherId?: number | null
-  services?: Prisma.RepairOrderServiceUncheckedCreateNestedManyWithoutRepairOrderInput
   items?: Prisma.RepairOrderItemUncheckedCreateNestedManyWithoutRepairOrderInput
+  services?: Prisma.RepairOrderServiceUncheckedCreateNestedManyWithoutRepairOrderInput
 }
 
 export type RepairOrderCreateOrConnectWithoutNotificationsInput = {
@@ -1797,14 +1797,14 @@ export type RepairOrderUpdateWithoutNotificationsInput = {
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  items?: Prisma.RepairOrderItemUpdateManyWithoutRepairOrderNestedInput
+  services?: Prisma.RepairOrderServiceUpdateManyWithoutRepairOrderNestedInput
   appointment?: Prisma.AppointmentUpdateOneWithoutRepairOrderNestedInput
   customer?: Prisma.CustomerUpdateOneRequiredWithoutRepairOrdersNestedInput
-  vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRepairOrdersNestedInput
   receptionist?: Prisma.UserUpdateOneRequiredWithoutRepairOrdersAsReceptionistNestedInput
   technician?: Prisma.UserUpdateOneRequiredWithoutRepairOrdersAsTechnicianNestedInput
+  vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRepairOrdersNestedInput
   voucher?: Prisma.VoucherUpdateOneWithoutRepairOrdersNestedInput
-  services?: Prisma.RepairOrderServiceUpdateManyWithoutRepairOrderNestedInput
-  items?: Prisma.RepairOrderItemUpdateManyWithoutRepairOrderNestedInput
 }
 
 export type RepairOrderUncheckedUpdateWithoutNotificationsInput = {
@@ -1826,8 +1826,8 @@ export type RepairOrderUncheckedUpdateWithoutNotificationsInput = {
   receptionistId?: Prisma.IntFieldUpdateOperationsInput | number
   technicianId?: Prisma.IntFieldUpdateOperationsInput | number
   voucherId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  services?: Prisma.RepairOrderServiceUncheckedUpdateManyWithoutRepairOrderNestedInput
   items?: Prisma.RepairOrderItemUncheckedUpdateManyWithoutRepairOrderNestedInput
+  services?: Prisma.RepairOrderServiceUncheckedUpdateManyWithoutRepairOrderNestedInput
 }
 
 export type RepairOrderCreateManyReceptionistInput = {
@@ -1882,14 +1882,14 @@ export type RepairOrderUpdateWithoutReceptionistInput = {
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.NotificationUpdateManyWithoutRepairOrderNestedInput
+  items?: Prisma.RepairOrderItemUpdateManyWithoutRepairOrderNestedInput
+  services?: Prisma.RepairOrderServiceUpdateManyWithoutRepairOrderNestedInput
   appointment?: Prisma.AppointmentUpdateOneWithoutRepairOrderNestedInput
   customer?: Prisma.CustomerUpdateOneRequiredWithoutRepairOrdersNestedInput
-  vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRepairOrdersNestedInput
   technician?: Prisma.UserUpdateOneRequiredWithoutRepairOrdersAsTechnicianNestedInput
+  vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRepairOrdersNestedInput
   voucher?: Prisma.VoucherUpdateOneWithoutRepairOrdersNestedInput
-  services?: Prisma.RepairOrderServiceUpdateManyWithoutRepairOrderNestedInput
-  items?: Prisma.RepairOrderItemUpdateManyWithoutRepairOrderNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutRepairOrderNestedInput
 }
 
 export type RepairOrderUncheckedUpdateWithoutReceptionistInput = {
@@ -1910,9 +1910,9 @@ export type RepairOrderUncheckedUpdateWithoutReceptionistInput = {
   vehicleId?: Prisma.IntFieldUpdateOperationsInput | number
   technicianId?: Prisma.IntFieldUpdateOperationsInput | number
   voucherId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  services?: Prisma.RepairOrderServiceUncheckedUpdateManyWithoutRepairOrderNestedInput
-  items?: Prisma.RepairOrderItemUncheckedUpdateManyWithoutRepairOrderNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRepairOrderNestedInput
+  items?: Prisma.RepairOrderItemUncheckedUpdateManyWithoutRepairOrderNestedInput
+  services?: Prisma.RepairOrderServiceUncheckedUpdateManyWithoutRepairOrderNestedInput
 }
 
 export type RepairOrderUncheckedUpdateManyWithoutReceptionistInput = {
@@ -1947,14 +1947,14 @@ export type RepairOrderUpdateWithoutTechnicianInput = {
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.NotificationUpdateManyWithoutRepairOrderNestedInput
+  items?: Prisma.RepairOrderItemUpdateManyWithoutRepairOrderNestedInput
+  services?: Prisma.RepairOrderServiceUpdateManyWithoutRepairOrderNestedInput
   appointment?: Prisma.AppointmentUpdateOneWithoutRepairOrderNestedInput
   customer?: Prisma.CustomerUpdateOneRequiredWithoutRepairOrdersNestedInput
-  vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRepairOrdersNestedInput
   receptionist?: Prisma.UserUpdateOneRequiredWithoutRepairOrdersAsReceptionistNestedInput
+  vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRepairOrdersNestedInput
   voucher?: Prisma.VoucherUpdateOneWithoutRepairOrdersNestedInput
-  services?: Prisma.RepairOrderServiceUpdateManyWithoutRepairOrderNestedInput
-  items?: Prisma.RepairOrderItemUpdateManyWithoutRepairOrderNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutRepairOrderNestedInput
 }
 
 export type RepairOrderUncheckedUpdateWithoutTechnicianInput = {
@@ -1975,9 +1975,9 @@ export type RepairOrderUncheckedUpdateWithoutTechnicianInput = {
   vehicleId?: Prisma.IntFieldUpdateOperationsInput | number
   receptionistId?: Prisma.IntFieldUpdateOperationsInput | number
   voucherId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  services?: Prisma.RepairOrderServiceUncheckedUpdateManyWithoutRepairOrderNestedInput
-  items?: Prisma.RepairOrderItemUncheckedUpdateManyWithoutRepairOrderNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRepairOrderNestedInput
+  items?: Prisma.RepairOrderItemUncheckedUpdateManyWithoutRepairOrderNestedInput
+  services?: Prisma.RepairOrderServiceUncheckedUpdateManyWithoutRepairOrderNestedInput
 }
 
 export type RepairOrderUncheckedUpdateManyWithoutTechnicianInput = {
@@ -2032,14 +2032,14 @@ export type RepairOrderUpdateWithoutCustomerInput = {
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.NotificationUpdateManyWithoutRepairOrderNestedInput
+  items?: Prisma.RepairOrderItemUpdateManyWithoutRepairOrderNestedInput
+  services?: Prisma.RepairOrderServiceUpdateManyWithoutRepairOrderNestedInput
   appointment?: Prisma.AppointmentUpdateOneWithoutRepairOrderNestedInput
-  vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRepairOrdersNestedInput
   receptionist?: Prisma.UserUpdateOneRequiredWithoutRepairOrdersAsReceptionistNestedInput
   technician?: Prisma.UserUpdateOneRequiredWithoutRepairOrdersAsTechnicianNestedInput
+  vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRepairOrdersNestedInput
   voucher?: Prisma.VoucherUpdateOneWithoutRepairOrdersNestedInput
-  services?: Prisma.RepairOrderServiceUpdateManyWithoutRepairOrderNestedInput
-  items?: Prisma.RepairOrderItemUpdateManyWithoutRepairOrderNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutRepairOrderNestedInput
 }
 
 export type RepairOrderUncheckedUpdateWithoutCustomerInput = {
@@ -2060,9 +2060,9 @@ export type RepairOrderUncheckedUpdateWithoutCustomerInput = {
   receptionistId?: Prisma.IntFieldUpdateOperationsInput | number
   technicianId?: Prisma.IntFieldUpdateOperationsInput | number
   voucherId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  services?: Prisma.RepairOrderServiceUncheckedUpdateManyWithoutRepairOrderNestedInput
-  items?: Prisma.RepairOrderItemUncheckedUpdateManyWithoutRepairOrderNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRepairOrderNestedInput
+  items?: Prisma.RepairOrderItemUncheckedUpdateManyWithoutRepairOrderNestedInput
+  services?: Prisma.RepairOrderServiceUncheckedUpdateManyWithoutRepairOrderNestedInput
 }
 
 export type RepairOrderUncheckedUpdateManyWithoutCustomerInput = {
@@ -2117,14 +2117,14 @@ export type RepairOrderUpdateWithoutVehicleInput = {
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.NotificationUpdateManyWithoutRepairOrderNestedInput
+  items?: Prisma.RepairOrderItemUpdateManyWithoutRepairOrderNestedInput
+  services?: Prisma.RepairOrderServiceUpdateManyWithoutRepairOrderNestedInput
   appointment?: Prisma.AppointmentUpdateOneWithoutRepairOrderNestedInput
   customer?: Prisma.CustomerUpdateOneRequiredWithoutRepairOrdersNestedInput
   receptionist?: Prisma.UserUpdateOneRequiredWithoutRepairOrdersAsReceptionistNestedInput
   technician?: Prisma.UserUpdateOneRequiredWithoutRepairOrdersAsTechnicianNestedInput
   voucher?: Prisma.VoucherUpdateOneWithoutRepairOrdersNestedInput
-  services?: Prisma.RepairOrderServiceUpdateManyWithoutRepairOrderNestedInput
-  items?: Prisma.RepairOrderItemUpdateManyWithoutRepairOrderNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutRepairOrderNestedInput
 }
 
 export type RepairOrderUncheckedUpdateWithoutVehicleInput = {
@@ -2145,9 +2145,9 @@ export type RepairOrderUncheckedUpdateWithoutVehicleInput = {
   receptionistId?: Prisma.IntFieldUpdateOperationsInput | number
   technicianId?: Prisma.IntFieldUpdateOperationsInput | number
   voucherId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  services?: Prisma.RepairOrderServiceUncheckedUpdateManyWithoutRepairOrderNestedInput
-  items?: Prisma.RepairOrderItemUncheckedUpdateManyWithoutRepairOrderNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRepairOrderNestedInput
+  items?: Prisma.RepairOrderItemUncheckedUpdateManyWithoutRepairOrderNestedInput
+  services?: Prisma.RepairOrderServiceUncheckedUpdateManyWithoutRepairOrderNestedInput
 }
 
 export type RepairOrderUncheckedUpdateManyWithoutVehicleInput = {
@@ -2202,14 +2202,14 @@ export type RepairOrderUpdateWithoutVoucherInput = {
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notifications?: Prisma.NotificationUpdateManyWithoutRepairOrderNestedInput
+  items?: Prisma.RepairOrderItemUpdateManyWithoutRepairOrderNestedInput
+  services?: Prisma.RepairOrderServiceUpdateManyWithoutRepairOrderNestedInput
   appointment?: Prisma.AppointmentUpdateOneWithoutRepairOrderNestedInput
   customer?: Prisma.CustomerUpdateOneRequiredWithoutRepairOrdersNestedInput
-  vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRepairOrdersNestedInput
   receptionist?: Prisma.UserUpdateOneRequiredWithoutRepairOrdersAsReceptionistNestedInput
   technician?: Prisma.UserUpdateOneRequiredWithoutRepairOrdersAsTechnicianNestedInput
-  services?: Prisma.RepairOrderServiceUpdateManyWithoutRepairOrderNestedInput
-  items?: Prisma.RepairOrderItemUpdateManyWithoutRepairOrderNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutRepairOrderNestedInput
+  vehicle?: Prisma.VehicleUpdateOneRequiredWithoutRepairOrdersNestedInput
 }
 
 export type RepairOrderUncheckedUpdateWithoutVoucherInput = {
@@ -2230,9 +2230,9 @@ export type RepairOrderUncheckedUpdateWithoutVoucherInput = {
   vehicleId?: Prisma.IntFieldUpdateOperationsInput | number
   receptionistId?: Prisma.IntFieldUpdateOperationsInput | number
   technicianId?: Prisma.IntFieldUpdateOperationsInput | number
-  services?: Prisma.RepairOrderServiceUncheckedUpdateManyWithoutRepairOrderNestedInput
-  items?: Prisma.RepairOrderItemUncheckedUpdateManyWithoutRepairOrderNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRepairOrderNestedInput
+  items?: Prisma.RepairOrderItemUncheckedUpdateManyWithoutRepairOrderNestedInput
+  services?: Prisma.RepairOrderServiceUncheckedUpdateManyWithoutRepairOrderNestedInput
 }
 
 export type RepairOrderUncheckedUpdateManyWithoutVoucherInput = {
@@ -2261,15 +2261,15 @@ export type RepairOrderUncheckedUpdateManyWithoutVoucherInput = {
  */
 
 export type RepairOrderCountOutputType = {
-  services: number
-  items: number
   notifications: number
+  items: number
+  services: number
 }
 
 export type RepairOrderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  services?: boolean | RepairOrderCountOutputTypeCountServicesArgs
-  items?: boolean | RepairOrderCountOutputTypeCountItemsArgs
   notifications?: boolean | RepairOrderCountOutputTypeCountNotificationsArgs
+  items?: boolean | RepairOrderCountOutputTypeCountItemsArgs
+  services?: boolean | RepairOrderCountOutputTypeCountServicesArgs
 }
 
 /**
@@ -2285,8 +2285,8 @@ export type RepairOrderCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.
 /**
  * RepairOrderCountOutputType without action
  */
-export type RepairOrderCountOutputTypeCountServicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.RepairOrderServiceWhereInput
+export type RepairOrderCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NotificationWhereInput
 }
 
 /**
@@ -2299,8 +2299,8 @@ export type RepairOrderCountOutputTypeCountItemsArgs<ExtArgs extends runtime.Typ
 /**
  * RepairOrderCountOutputType without action
  */
-export type RepairOrderCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.NotificationWhereInput
+export type RepairOrderCountOutputTypeCountServicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RepairOrderServiceWhereInput
 }
 
 
@@ -2323,15 +2323,15 @@ export type RepairOrderSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   receptionistId?: boolean
   technicianId?: boolean
   voucherId?: boolean
+  notifications?: boolean | Prisma.RepairOrder$notificationsArgs<ExtArgs>
+  items?: boolean | Prisma.RepairOrder$itemsArgs<ExtArgs>
+  services?: boolean | Prisma.RepairOrder$servicesArgs<ExtArgs>
   appointment?: boolean | Prisma.RepairOrder$appointmentArgs<ExtArgs>
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
-  vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   receptionist?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   technician?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   voucher?: boolean | Prisma.RepairOrder$voucherArgs<ExtArgs>
-  services?: boolean | Prisma.RepairOrder$servicesArgs<ExtArgs>
-  items?: boolean | Prisma.RepairOrder$itemsArgs<ExtArgs>
-  notifications?: boolean | Prisma.RepairOrder$notificationsArgs<ExtArgs>
   _count?: boolean | Prisma.RepairOrderCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["repairOrder"]>
 
@@ -2356,9 +2356,9 @@ export type RepairOrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   voucherId?: boolean
   appointment?: boolean | Prisma.RepairOrder$appointmentArgs<ExtArgs>
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
-  vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   receptionist?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   technician?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   voucher?: boolean | Prisma.RepairOrder$voucherArgs<ExtArgs>
 }, ExtArgs["result"]["repairOrder"]>
 
@@ -2383,9 +2383,9 @@ export type RepairOrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   voucherId?: boolean
   appointment?: boolean | Prisma.RepairOrder$appointmentArgs<ExtArgs>
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
-  vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   receptionist?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   technician?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   voucher?: boolean | Prisma.RepairOrder$voucherArgs<ExtArgs>
 }, ExtArgs["result"]["repairOrder"]>
 
@@ -2412,46 +2412,46 @@ export type RepairOrderSelectScalar = {
 
 export type RepairOrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "status" | "symptoms" | "vehicleConditionNote" | "totalAmount" | "paidAmount" | "paymentMethod" | "warrantyNote" | "technicianNote" | "paidAt" | "createdAt" | "updatedAt" | "appointmentId" | "customerId" | "vehicleId" | "receptionistId" | "technicianId" | "voucherId", ExtArgs["result"]["repairOrder"]>
 export type RepairOrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  notifications?: boolean | Prisma.RepairOrder$notificationsArgs<ExtArgs>
+  items?: boolean | Prisma.RepairOrder$itemsArgs<ExtArgs>
+  services?: boolean | Prisma.RepairOrder$servicesArgs<ExtArgs>
   appointment?: boolean | Prisma.RepairOrder$appointmentArgs<ExtArgs>
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
-  vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   receptionist?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   technician?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   voucher?: boolean | Prisma.RepairOrder$voucherArgs<ExtArgs>
-  services?: boolean | Prisma.RepairOrder$servicesArgs<ExtArgs>
-  items?: boolean | Prisma.RepairOrder$itemsArgs<ExtArgs>
-  notifications?: boolean | Prisma.RepairOrder$notificationsArgs<ExtArgs>
   _count?: boolean | Prisma.RepairOrderCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RepairOrderIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   appointment?: boolean | Prisma.RepairOrder$appointmentArgs<ExtArgs>
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
-  vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   receptionist?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   technician?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   voucher?: boolean | Prisma.RepairOrder$voucherArgs<ExtArgs>
 }
 export type RepairOrderIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   appointment?: boolean | Prisma.RepairOrder$appointmentArgs<ExtArgs>
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
-  vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   receptionist?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   technician?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  vehicle?: boolean | Prisma.VehicleDefaultArgs<ExtArgs>
   voucher?: boolean | Prisma.RepairOrder$voucherArgs<ExtArgs>
 }
 
 export type $RepairOrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "RepairOrder"
   objects: {
+    notifications: Prisma.$NotificationPayload<ExtArgs>[]
+    items: Prisma.$RepairOrderItemPayload<ExtArgs>[]
+    services: Prisma.$RepairOrderServicePayload<ExtArgs>[]
     appointment: Prisma.$AppointmentPayload<ExtArgs> | null
     customer: Prisma.$CustomerPayload<ExtArgs>
-    vehicle: Prisma.$VehiclePayload<ExtArgs>
     receptionist: Prisma.$UserPayload<ExtArgs>
     technician: Prisma.$UserPayload<ExtArgs>
+    vehicle: Prisma.$VehiclePayload<ExtArgs>
     voucher: Prisma.$VoucherPayload<ExtArgs> | null
-    services: Prisma.$RepairOrderServicePayload<ExtArgs>[]
-    items: Prisma.$RepairOrderItemPayload<ExtArgs>[]
-    notifications: Prisma.$NotificationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -2866,15 +2866,15 @@ readonly fields: RepairOrderFieldRefs;
  */
 export interface Prisma__RepairOrderClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  notifications<T extends Prisma.RepairOrder$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RepairOrder$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  items<T extends Prisma.RepairOrder$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RepairOrder$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RepairOrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  services<T extends Prisma.RepairOrder$servicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RepairOrder$servicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RepairOrderServicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   appointment<T extends Prisma.RepairOrder$appointmentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RepairOrder$appointmentArgs<ExtArgs>>): Prisma.Prisma__AppointmentClient<runtime.Types.Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   customer<T extends Prisma.CustomerDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerDefaultArgs<ExtArgs>>): Prisma.Prisma__CustomerClient<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  vehicle<T extends Prisma.VehicleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VehicleDefaultArgs<ExtArgs>>): Prisma.Prisma__VehicleClient<runtime.Types.Result.GetResult<Prisma.$VehiclePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   receptionist<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   technician<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  vehicle<T extends Prisma.VehicleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VehicleDefaultArgs<ExtArgs>>): Prisma.Prisma__VehicleClient<runtime.Types.Result.GetResult<Prisma.$VehiclePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   voucher<T extends Prisma.RepairOrder$voucherArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RepairOrder$voucherArgs<ExtArgs>>): Prisma.Prisma__VoucherClient<runtime.Types.Result.GetResult<Prisma.$VoucherPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  services<T extends Prisma.RepairOrder$servicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RepairOrder$servicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RepairOrderServicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  items<T extends Prisma.RepairOrder$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RepairOrder$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RepairOrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  notifications<T extends Prisma.RepairOrder$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RepairOrder$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3323,6 +3323,78 @@ export type RepairOrderDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.I
 }
 
 /**
+ * RepairOrder.notifications
+ */
+export type RepairOrder$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Notification
+   */
+  select?: Prisma.NotificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Notification
+   */
+  omit?: Prisma.NotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NotificationInclude<ExtArgs> | null
+  where?: Prisma.NotificationWhereInput
+  orderBy?: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[]
+  cursor?: Prisma.NotificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
+}
+
+/**
+ * RepairOrder.items
+ */
+export type RepairOrder$itemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RepairOrderItem
+   */
+  select?: Prisma.RepairOrderItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RepairOrderItem
+   */
+  omit?: Prisma.RepairOrderItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RepairOrderItemInclude<ExtArgs> | null
+  where?: Prisma.RepairOrderItemWhereInput
+  orderBy?: Prisma.RepairOrderItemOrderByWithRelationInput | Prisma.RepairOrderItemOrderByWithRelationInput[]
+  cursor?: Prisma.RepairOrderItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RepairOrderItemScalarFieldEnum | Prisma.RepairOrderItemScalarFieldEnum[]
+}
+
+/**
+ * RepairOrder.services
+ */
+export type RepairOrder$servicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RepairOrderService
+   */
+  select?: Prisma.RepairOrderServiceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RepairOrderService
+   */
+  omit?: Prisma.RepairOrderServiceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RepairOrderServiceInclude<ExtArgs> | null
+  where?: Prisma.RepairOrderServiceWhereInput
+  orderBy?: Prisma.RepairOrderServiceOrderByWithRelationInput | Prisma.RepairOrderServiceOrderByWithRelationInput[]
+  cursor?: Prisma.RepairOrderServiceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RepairOrderServiceScalarFieldEnum | Prisma.RepairOrderServiceScalarFieldEnum[]
+}
+
+/**
  * RepairOrder.appointment
  */
 export type RepairOrder$appointmentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3358,78 +3430,6 @@ export type RepairOrder$voucherArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   include?: Prisma.VoucherInclude<ExtArgs> | null
   where?: Prisma.VoucherWhereInput
-}
-
-/**
- * RepairOrder.services
- */
-export type RepairOrder$servicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the RepairOrderService
-   */
-  select?: Prisma.RepairOrderServiceSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the RepairOrderService
-   */
-  omit?: Prisma.RepairOrderServiceOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.RepairOrderServiceInclude<ExtArgs> | null
-  where?: Prisma.RepairOrderServiceWhereInput
-  orderBy?: Prisma.RepairOrderServiceOrderByWithRelationInput | Prisma.RepairOrderServiceOrderByWithRelationInput[]
-  cursor?: Prisma.RepairOrderServiceWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.RepairOrderServiceScalarFieldEnum | Prisma.RepairOrderServiceScalarFieldEnum[]
-}
-
-/**
- * RepairOrder.items
- */
-export type RepairOrder$itemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the RepairOrderItem
-   */
-  select?: Prisma.RepairOrderItemSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the RepairOrderItem
-   */
-  omit?: Prisma.RepairOrderItemOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.RepairOrderItemInclude<ExtArgs> | null
-  where?: Prisma.RepairOrderItemWhereInput
-  orderBy?: Prisma.RepairOrderItemOrderByWithRelationInput | Prisma.RepairOrderItemOrderByWithRelationInput[]
-  cursor?: Prisma.RepairOrderItemWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.RepairOrderItemScalarFieldEnum | Prisma.RepairOrderItemScalarFieldEnum[]
-}
-
-/**
- * RepairOrder.notifications
- */
-export type RepairOrder$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Notification
-   */
-  select?: Prisma.NotificationSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Notification
-   */
-  omit?: Prisma.NotificationOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.NotificationInclude<ExtArgs> | null
-  where?: Prisma.NotificationWhereInput
-  orderBy?: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[]
-  cursor?: Prisma.NotificationWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
 }
 
 /**

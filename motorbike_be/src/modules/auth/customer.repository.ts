@@ -50,6 +50,7 @@ export class CustomerRepository extends BaseRepository<Customer> {
     password: string;
     customerName: string;
     phone: string;
+    notificationEmail?: string;
   }): Promise<Customer> {
     return this.prisma.customer.create({
       data: {
@@ -57,6 +58,7 @@ export class CustomerRepository extends BaseRepository<Customer> {
         password: data.password,
         customerName: data.customerName,
         phone: data.phone,
+        notificationEmail: data.notificationEmail ?? null,
       },
     });
   }

@@ -268,11 +268,11 @@ export type UserWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   roleId?: Prisma.IntFilter<"User"> | number
-  role?: Prisma.XOR<Prisma.RoleScalarRelationFilter, Prisma.RoleWhereInput>
-  repairOrdersAsReceptionist?: Prisma.RepairOrderListRelationFilter
-  repairOrdersAsTechnician?: Prisma.RepairOrderListRelationFilter
   appointmentsAsTechnician?: Prisma.AppointmentListRelationFilter
   importOrders?: Prisma.ImportOrderListRelationFilter
+  repairOrdersAsReceptionist?: Prisma.RepairOrderListRelationFilter
+  repairOrdersAsTechnician?: Prisma.RepairOrderListRelationFilter
+  role?: Prisma.XOR<Prisma.RoleScalarRelationFilter, Prisma.RoleWhereInput>
   workSchedules?: Prisma.WorkScheduleListRelationFilter
 }
 
@@ -288,11 +288,11 @@ export type UserOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   roleId?: Prisma.SortOrder
-  role?: Prisma.RoleOrderByWithRelationInput
-  repairOrdersAsReceptionist?: Prisma.RepairOrderOrderByRelationAggregateInput
-  repairOrdersAsTechnician?: Prisma.RepairOrderOrderByRelationAggregateInput
   appointmentsAsTechnician?: Prisma.AppointmentOrderByRelationAggregateInput
   importOrders?: Prisma.ImportOrderOrderByRelationAggregateInput
+  repairOrdersAsReceptionist?: Prisma.RepairOrderOrderByRelationAggregateInput
+  repairOrdersAsTechnician?: Prisma.RepairOrderOrderByRelationAggregateInput
+  role?: Prisma.RoleOrderByWithRelationInput
   workSchedules?: Prisma.WorkScheduleOrderByRelationAggregateInput
 }
 
@@ -311,11 +311,11 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   roleId?: Prisma.IntFilter<"User"> | number
-  role?: Prisma.XOR<Prisma.RoleScalarRelationFilter, Prisma.RoleWhereInput>
-  repairOrdersAsReceptionist?: Prisma.RepairOrderListRelationFilter
-  repairOrdersAsTechnician?: Prisma.RepairOrderListRelationFilter
   appointmentsAsTechnician?: Prisma.AppointmentListRelationFilter
   importOrders?: Prisma.ImportOrderListRelationFilter
+  repairOrdersAsReceptionist?: Prisma.RepairOrderListRelationFilter
+  repairOrdersAsTechnician?: Prisma.RepairOrderListRelationFilter
+  role?: Prisma.XOR<Prisma.RoleScalarRelationFilter, Prisma.RoleWhereInput>
   workSchedules?: Prisma.WorkScheduleListRelationFilter
 }, "id" | "username" | "phone" | "email">
 
@@ -365,11 +365,11 @@ export type UserCreateInput = {
   lastLogin?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  role: Prisma.RoleCreateNestedOneWithoutUsersInput
-  repairOrdersAsReceptionist?: Prisma.RepairOrderCreateNestedManyWithoutReceptionistInput
-  repairOrdersAsTechnician?: Prisma.RepairOrderCreateNestedManyWithoutTechnicianInput
   appointmentsAsTechnician?: Prisma.AppointmentCreateNestedManyWithoutTechnicianInput
   importOrders?: Prisma.ImportOrderCreateNestedManyWithoutAdminInput
+  repairOrdersAsReceptionist?: Prisma.RepairOrderCreateNestedManyWithoutReceptionistInput
+  repairOrdersAsTechnician?: Prisma.RepairOrderCreateNestedManyWithoutTechnicianInput
+  role: Prisma.RoleCreateNestedOneWithoutUsersInput
   workSchedules?: Prisma.WorkScheduleCreateNestedManyWithoutUserInput
 }
 
@@ -385,10 +385,10 @@ export type UserUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   roleId: number
-  repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutReceptionistInput
-  repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutTechnicianInput
   appointmentsAsTechnician?: Prisma.AppointmentUncheckedCreateNestedManyWithoutTechnicianInput
   importOrders?: Prisma.ImportOrderUncheckedCreateNestedManyWithoutAdminInput
+  repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutReceptionistInput
+  repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutTechnicianInput
   workSchedules?: Prisma.WorkScheduleUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -402,11 +402,11 @@ export type UserUpdateInput = {
   lastLogin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput
-  repairOrdersAsReceptionist?: Prisma.RepairOrderUpdateManyWithoutReceptionistNestedInput
-  repairOrdersAsTechnician?: Prisma.RepairOrderUpdateManyWithoutTechnicianNestedInput
   appointmentsAsTechnician?: Prisma.AppointmentUpdateManyWithoutTechnicianNestedInput
   importOrders?: Prisma.ImportOrderUpdateManyWithoutAdminNestedInput
+  repairOrdersAsReceptionist?: Prisma.RepairOrderUpdateManyWithoutReceptionistNestedInput
+  repairOrdersAsTechnician?: Prisma.RepairOrderUpdateManyWithoutTechnicianNestedInput
+  role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput
   workSchedules?: Prisma.WorkScheduleUpdateManyWithoutUserNestedInput
 }
 
@@ -422,10 +422,10 @@ export type UserUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   roleId?: Prisma.IntFieldUpdateOperationsInput | number
-  repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedUpdateManyWithoutReceptionistNestedInput
-  repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedUpdateManyWithoutTechnicianNestedInput
   appointmentsAsTechnician?: Prisma.AppointmentUncheckedUpdateManyWithoutTechnicianNestedInput
   importOrders?: Prisma.ImportOrderUncheckedUpdateManyWithoutAdminNestedInput
+  repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedUpdateManyWithoutReceptionistNestedInput
+  repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedUpdateManyWithoutTechnicianNestedInput
   workSchedules?: Prisma.WorkScheduleUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -681,10 +681,10 @@ export type UserCreateWithoutRoleInput = {
   lastLogin?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  repairOrdersAsReceptionist?: Prisma.RepairOrderCreateNestedManyWithoutReceptionistInput
-  repairOrdersAsTechnician?: Prisma.RepairOrderCreateNestedManyWithoutTechnicianInput
   appointmentsAsTechnician?: Prisma.AppointmentCreateNestedManyWithoutTechnicianInput
   importOrders?: Prisma.ImportOrderCreateNestedManyWithoutAdminInput
+  repairOrdersAsReceptionist?: Prisma.RepairOrderCreateNestedManyWithoutReceptionistInput
+  repairOrdersAsTechnician?: Prisma.RepairOrderCreateNestedManyWithoutTechnicianInput
   workSchedules?: Prisma.WorkScheduleCreateNestedManyWithoutUserInput
 }
 
@@ -699,10 +699,10 @@ export type UserUncheckedCreateWithoutRoleInput = {
   lastLogin?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutReceptionistInput
-  repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutTechnicianInput
   appointmentsAsTechnician?: Prisma.AppointmentUncheckedCreateNestedManyWithoutTechnicianInput
   importOrders?: Prisma.ImportOrderUncheckedCreateNestedManyWithoutAdminInput
+  repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutReceptionistInput
+  repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutTechnicianInput
   workSchedules?: Prisma.WorkScheduleUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -759,10 +759,10 @@ export type UserCreateWithoutAppointmentsAsTechnicianInput = {
   lastLogin?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  role: Prisma.RoleCreateNestedOneWithoutUsersInput
+  importOrders?: Prisma.ImportOrderCreateNestedManyWithoutAdminInput
   repairOrdersAsReceptionist?: Prisma.RepairOrderCreateNestedManyWithoutReceptionistInput
   repairOrdersAsTechnician?: Prisma.RepairOrderCreateNestedManyWithoutTechnicianInput
-  importOrders?: Prisma.ImportOrderCreateNestedManyWithoutAdminInput
+  role: Prisma.RoleCreateNestedOneWithoutUsersInput
   workSchedules?: Prisma.WorkScheduleCreateNestedManyWithoutUserInput
 }
 
@@ -778,9 +778,9 @@ export type UserUncheckedCreateWithoutAppointmentsAsTechnicianInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   roleId: number
+  importOrders?: Prisma.ImportOrderUncheckedCreateNestedManyWithoutAdminInput
   repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutReceptionistInput
   repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutTechnicianInput
-  importOrders?: Prisma.ImportOrderUncheckedCreateNestedManyWithoutAdminInput
   workSchedules?: Prisma.WorkScheduleUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -810,10 +810,10 @@ export type UserUpdateWithoutAppointmentsAsTechnicianInput = {
   lastLogin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput
+  importOrders?: Prisma.ImportOrderUpdateManyWithoutAdminNestedInput
   repairOrdersAsReceptionist?: Prisma.RepairOrderUpdateManyWithoutReceptionistNestedInput
   repairOrdersAsTechnician?: Prisma.RepairOrderUpdateManyWithoutTechnicianNestedInput
-  importOrders?: Prisma.ImportOrderUpdateManyWithoutAdminNestedInput
+  role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput
   workSchedules?: Prisma.WorkScheduleUpdateManyWithoutUserNestedInput
 }
 
@@ -829,9 +829,9 @@ export type UserUncheckedUpdateWithoutAppointmentsAsTechnicianInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   roleId?: Prisma.IntFieldUpdateOperationsInput | number
+  importOrders?: Prisma.ImportOrderUncheckedUpdateManyWithoutAdminNestedInput
   repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedUpdateManyWithoutReceptionistNestedInput
   repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedUpdateManyWithoutTechnicianNestedInput
-  importOrders?: Prisma.ImportOrderUncheckedUpdateManyWithoutAdminNestedInput
   workSchedules?: Prisma.WorkScheduleUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -845,10 +845,10 @@ export type UserCreateWithoutRepairOrdersAsReceptionistInput = {
   lastLogin?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  role: Prisma.RoleCreateNestedOneWithoutUsersInput
-  repairOrdersAsTechnician?: Prisma.RepairOrderCreateNestedManyWithoutTechnicianInput
   appointmentsAsTechnician?: Prisma.AppointmentCreateNestedManyWithoutTechnicianInput
   importOrders?: Prisma.ImportOrderCreateNestedManyWithoutAdminInput
+  repairOrdersAsTechnician?: Prisma.RepairOrderCreateNestedManyWithoutTechnicianInput
+  role: Prisma.RoleCreateNestedOneWithoutUsersInput
   workSchedules?: Prisma.WorkScheduleCreateNestedManyWithoutUserInput
 }
 
@@ -864,9 +864,9 @@ export type UserUncheckedCreateWithoutRepairOrdersAsReceptionistInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   roleId: number
-  repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutTechnicianInput
   appointmentsAsTechnician?: Prisma.AppointmentUncheckedCreateNestedManyWithoutTechnicianInput
   importOrders?: Prisma.ImportOrderUncheckedCreateNestedManyWithoutAdminInput
+  repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutTechnicianInput
   workSchedules?: Prisma.WorkScheduleUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -885,10 +885,10 @@ export type UserCreateWithoutRepairOrdersAsTechnicianInput = {
   lastLogin?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  role: Prisma.RoleCreateNestedOneWithoutUsersInput
-  repairOrdersAsReceptionist?: Prisma.RepairOrderCreateNestedManyWithoutReceptionistInput
   appointmentsAsTechnician?: Prisma.AppointmentCreateNestedManyWithoutTechnicianInput
   importOrders?: Prisma.ImportOrderCreateNestedManyWithoutAdminInput
+  repairOrdersAsReceptionist?: Prisma.RepairOrderCreateNestedManyWithoutReceptionistInput
+  role: Prisma.RoleCreateNestedOneWithoutUsersInput
   workSchedules?: Prisma.WorkScheduleCreateNestedManyWithoutUserInput
 }
 
@@ -904,9 +904,9 @@ export type UserUncheckedCreateWithoutRepairOrdersAsTechnicianInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   roleId: number
-  repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutReceptionistInput
   appointmentsAsTechnician?: Prisma.AppointmentUncheckedCreateNestedManyWithoutTechnicianInput
   importOrders?: Prisma.ImportOrderUncheckedCreateNestedManyWithoutAdminInput
+  repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutReceptionistInput
   workSchedules?: Prisma.WorkScheduleUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -936,10 +936,10 @@ export type UserUpdateWithoutRepairOrdersAsReceptionistInput = {
   lastLogin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput
-  repairOrdersAsTechnician?: Prisma.RepairOrderUpdateManyWithoutTechnicianNestedInput
   appointmentsAsTechnician?: Prisma.AppointmentUpdateManyWithoutTechnicianNestedInput
   importOrders?: Prisma.ImportOrderUpdateManyWithoutAdminNestedInput
+  repairOrdersAsTechnician?: Prisma.RepairOrderUpdateManyWithoutTechnicianNestedInput
+  role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput
   workSchedules?: Prisma.WorkScheduleUpdateManyWithoutUserNestedInput
 }
 
@@ -955,9 +955,9 @@ export type UserUncheckedUpdateWithoutRepairOrdersAsReceptionistInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   roleId?: Prisma.IntFieldUpdateOperationsInput | number
-  repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedUpdateManyWithoutTechnicianNestedInput
   appointmentsAsTechnician?: Prisma.AppointmentUncheckedUpdateManyWithoutTechnicianNestedInput
   importOrders?: Prisma.ImportOrderUncheckedUpdateManyWithoutAdminNestedInput
+  repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedUpdateManyWithoutTechnicianNestedInput
   workSchedules?: Prisma.WorkScheduleUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -982,10 +982,10 @@ export type UserUpdateWithoutRepairOrdersAsTechnicianInput = {
   lastLogin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput
-  repairOrdersAsReceptionist?: Prisma.RepairOrderUpdateManyWithoutReceptionistNestedInput
   appointmentsAsTechnician?: Prisma.AppointmentUpdateManyWithoutTechnicianNestedInput
   importOrders?: Prisma.ImportOrderUpdateManyWithoutAdminNestedInput
+  repairOrdersAsReceptionist?: Prisma.RepairOrderUpdateManyWithoutReceptionistNestedInput
+  role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput
   workSchedules?: Prisma.WorkScheduleUpdateManyWithoutUserNestedInput
 }
 
@@ -1001,9 +1001,9 @@ export type UserUncheckedUpdateWithoutRepairOrdersAsTechnicianInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   roleId?: Prisma.IntFieldUpdateOperationsInput | number
-  repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedUpdateManyWithoutReceptionistNestedInput
   appointmentsAsTechnician?: Prisma.AppointmentUncheckedUpdateManyWithoutTechnicianNestedInput
   importOrders?: Prisma.ImportOrderUncheckedUpdateManyWithoutAdminNestedInput
+  repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedUpdateManyWithoutReceptionistNestedInput
   workSchedules?: Prisma.WorkScheduleUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1017,10 +1017,10 @@ export type UserCreateWithoutImportOrdersInput = {
   lastLogin?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  role: Prisma.RoleCreateNestedOneWithoutUsersInput
+  appointmentsAsTechnician?: Prisma.AppointmentCreateNestedManyWithoutTechnicianInput
   repairOrdersAsReceptionist?: Prisma.RepairOrderCreateNestedManyWithoutReceptionistInput
   repairOrdersAsTechnician?: Prisma.RepairOrderCreateNestedManyWithoutTechnicianInput
-  appointmentsAsTechnician?: Prisma.AppointmentCreateNestedManyWithoutTechnicianInput
+  role: Prisma.RoleCreateNestedOneWithoutUsersInput
   workSchedules?: Prisma.WorkScheduleCreateNestedManyWithoutUserInput
 }
 
@@ -1036,9 +1036,9 @@ export type UserUncheckedCreateWithoutImportOrdersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   roleId: number
+  appointmentsAsTechnician?: Prisma.AppointmentUncheckedCreateNestedManyWithoutTechnicianInput
   repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutReceptionistInput
   repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutTechnicianInput
-  appointmentsAsTechnician?: Prisma.AppointmentUncheckedCreateNestedManyWithoutTechnicianInput
   workSchedules?: Prisma.WorkScheduleUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -1068,10 +1068,10 @@ export type UserUpdateWithoutImportOrdersInput = {
   lastLogin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput
+  appointmentsAsTechnician?: Prisma.AppointmentUpdateManyWithoutTechnicianNestedInput
   repairOrdersAsReceptionist?: Prisma.RepairOrderUpdateManyWithoutReceptionistNestedInput
   repairOrdersAsTechnician?: Prisma.RepairOrderUpdateManyWithoutTechnicianNestedInput
-  appointmentsAsTechnician?: Prisma.AppointmentUpdateManyWithoutTechnicianNestedInput
+  role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput
   workSchedules?: Prisma.WorkScheduleUpdateManyWithoutUserNestedInput
 }
 
@@ -1087,9 +1087,9 @@ export type UserUncheckedUpdateWithoutImportOrdersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   roleId?: Prisma.IntFieldUpdateOperationsInput | number
+  appointmentsAsTechnician?: Prisma.AppointmentUncheckedUpdateManyWithoutTechnicianNestedInput
   repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedUpdateManyWithoutReceptionistNestedInput
   repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedUpdateManyWithoutTechnicianNestedInput
-  appointmentsAsTechnician?: Prisma.AppointmentUncheckedUpdateManyWithoutTechnicianNestedInput
   workSchedules?: Prisma.WorkScheduleUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1103,11 +1103,11 @@ export type UserCreateWithoutWorkSchedulesInput = {
   lastLogin?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  role: Prisma.RoleCreateNestedOneWithoutUsersInput
-  repairOrdersAsReceptionist?: Prisma.RepairOrderCreateNestedManyWithoutReceptionistInput
-  repairOrdersAsTechnician?: Prisma.RepairOrderCreateNestedManyWithoutTechnicianInput
   appointmentsAsTechnician?: Prisma.AppointmentCreateNestedManyWithoutTechnicianInput
   importOrders?: Prisma.ImportOrderCreateNestedManyWithoutAdminInput
+  repairOrdersAsReceptionist?: Prisma.RepairOrderCreateNestedManyWithoutReceptionistInput
+  repairOrdersAsTechnician?: Prisma.RepairOrderCreateNestedManyWithoutTechnicianInput
+  role: Prisma.RoleCreateNestedOneWithoutUsersInput
 }
 
 export type UserUncheckedCreateWithoutWorkSchedulesInput = {
@@ -1122,10 +1122,10 @@ export type UserUncheckedCreateWithoutWorkSchedulesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   roleId: number
-  repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutReceptionistInput
-  repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutTechnicianInput
   appointmentsAsTechnician?: Prisma.AppointmentUncheckedCreateNestedManyWithoutTechnicianInput
   importOrders?: Prisma.ImportOrderUncheckedCreateNestedManyWithoutAdminInput
+  repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutReceptionistInput
+  repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutTechnicianInput
 }
 
 export type UserCreateOrConnectWithoutWorkSchedulesInput = {
@@ -1154,11 +1154,11 @@ export type UserUpdateWithoutWorkSchedulesInput = {
   lastLogin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput
-  repairOrdersAsReceptionist?: Prisma.RepairOrderUpdateManyWithoutReceptionistNestedInput
-  repairOrdersAsTechnician?: Prisma.RepairOrderUpdateManyWithoutTechnicianNestedInput
   appointmentsAsTechnician?: Prisma.AppointmentUpdateManyWithoutTechnicianNestedInput
   importOrders?: Prisma.ImportOrderUpdateManyWithoutAdminNestedInput
+  repairOrdersAsReceptionist?: Prisma.RepairOrderUpdateManyWithoutReceptionistNestedInput
+  repairOrdersAsTechnician?: Prisma.RepairOrderUpdateManyWithoutTechnicianNestedInput
+  role?: Prisma.RoleUpdateOneRequiredWithoutUsersNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWorkSchedulesInput = {
@@ -1173,10 +1173,10 @@ export type UserUncheckedUpdateWithoutWorkSchedulesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   roleId?: Prisma.IntFieldUpdateOperationsInput | number
-  repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedUpdateManyWithoutReceptionistNestedInput
-  repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedUpdateManyWithoutTechnicianNestedInput
   appointmentsAsTechnician?: Prisma.AppointmentUncheckedUpdateManyWithoutTechnicianNestedInput
   importOrders?: Prisma.ImportOrderUncheckedUpdateManyWithoutAdminNestedInput
+  repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedUpdateManyWithoutReceptionistNestedInput
+  repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedUpdateManyWithoutTechnicianNestedInput
 }
 
 export type UserCreateManyRoleInput = {
@@ -1202,10 +1202,10 @@ export type UserUpdateWithoutRoleInput = {
   lastLogin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  repairOrdersAsReceptionist?: Prisma.RepairOrderUpdateManyWithoutReceptionistNestedInput
-  repairOrdersAsTechnician?: Prisma.RepairOrderUpdateManyWithoutTechnicianNestedInput
   appointmentsAsTechnician?: Prisma.AppointmentUpdateManyWithoutTechnicianNestedInput
   importOrders?: Prisma.ImportOrderUpdateManyWithoutAdminNestedInput
+  repairOrdersAsReceptionist?: Prisma.RepairOrderUpdateManyWithoutReceptionistNestedInput
+  repairOrdersAsTechnician?: Prisma.RepairOrderUpdateManyWithoutTechnicianNestedInput
   workSchedules?: Prisma.WorkScheduleUpdateManyWithoutUserNestedInput
 }
 
@@ -1220,10 +1220,10 @@ export type UserUncheckedUpdateWithoutRoleInput = {
   lastLogin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedUpdateManyWithoutReceptionistNestedInput
-  repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedUpdateManyWithoutTechnicianNestedInput
   appointmentsAsTechnician?: Prisma.AppointmentUncheckedUpdateManyWithoutTechnicianNestedInput
   importOrders?: Prisma.ImportOrderUncheckedUpdateManyWithoutAdminNestedInput
+  repairOrdersAsReceptionist?: Prisma.RepairOrderUncheckedUpdateManyWithoutReceptionistNestedInput
+  repairOrdersAsTechnician?: Prisma.RepairOrderUncheckedUpdateManyWithoutTechnicianNestedInput
   workSchedules?: Prisma.WorkScheduleUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1246,18 +1246,18 @@ export type UserUncheckedUpdateManyWithoutRoleInput = {
  */
 
 export type UserCountOutputType = {
-  repairOrdersAsReceptionist: number
-  repairOrdersAsTechnician: number
   appointmentsAsTechnician: number
   importOrders: number
+  repairOrdersAsReceptionist: number
+  repairOrdersAsTechnician: number
   workSchedules: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  repairOrdersAsReceptionist?: boolean | UserCountOutputTypeCountRepairOrdersAsReceptionistArgs
-  repairOrdersAsTechnician?: boolean | UserCountOutputTypeCountRepairOrdersAsTechnicianArgs
   appointmentsAsTechnician?: boolean | UserCountOutputTypeCountAppointmentsAsTechnicianArgs
   importOrders?: boolean | UserCountOutputTypeCountImportOrdersArgs
+  repairOrdersAsReceptionist?: boolean | UserCountOutputTypeCountRepairOrdersAsReceptionistArgs
+  repairOrdersAsTechnician?: boolean | UserCountOutputTypeCountRepairOrdersAsTechnicianArgs
   workSchedules?: boolean | UserCountOutputTypeCountWorkSchedulesArgs
 }
 
@@ -1274,20 +1274,6 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountRepairOrdersAsReceptionistArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.RepairOrderWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountRepairOrdersAsTechnicianArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.RepairOrderWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
 export type UserCountOutputTypeCountAppointmentsAsTechnicianArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.AppointmentWhereInput
 }
@@ -1297,6 +1283,20 @@ export type UserCountOutputTypeCountAppointmentsAsTechnicianArgs<ExtArgs extends
  */
 export type UserCountOutputTypeCountImportOrdersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ImportOrderWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountRepairOrdersAsReceptionistArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RepairOrderWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountRepairOrdersAsTechnicianArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RepairOrderWhereInput
 }
 
 /**
@@ -1319,11 +1319,11 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdAt?: boolean
   updatedAt?: boolean
   roleId?: boolean
-  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
-  repairOrdersAsReceptionist?: boolean | Prisma.User$repairOrdersAsReceptionistArgs<ExtArgs>
-  repairOrdersAsTechnician?: boolean | Prisma.User$repairOrdersAsTechnicianArgs<ExtArgs>
   appointmentsAsTechnician?: boolean | Prisma.User$appointmentsAsTechnicianArgs<ExtArgs>
   importOrders?: boolean | Prisma.User$importOrdersArgs<ExtArgs>
+  repairOrdersAsReceptionist?: boolean | Prisma.User$repairOrdersAsReceptionistArgs<ExtArgs>
+  repairOrdersAsTechnician?: boolean | Prisma.User$repairOrdersAsTechnicianArgs<ExtArgs>
+  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
   workSchedules?: boolean | Prisma.User$workSchedulesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -1374,11 +1374,11 @@ export type UserSelectScalar = {
 
 export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "password" | "fullname" | "phone" | "email" | "isActive" | "lastLogin" | "createdAt" | "updatedAt" | "roleId", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
-  repairOrdersAsReceptionist?: boolean | Prisma.User$repairOrdersAsReceptionistArgs<ExtArgs>
-  repairOrdersAsTechnician?: boolean | Prisma.User$repairOrdersAsTechnicianArgs<ExtArgs>
   appointmentsAsTechnician?: boolean | Prisma.User$appointmentsAsTechnicianArgs<ExtArgs>
   importOrders?: boolean | Prisma.User$importOrdersArgs<ExtArgs>
+  repairOrdersAsReceptionist?: boolean | Prisma.User$repairOrdersAsReceptionistArgs<ExtArgs>
+  repairOrdersAsTechnician?: boolean | Prisma.User$repairOrdersAsTechnicianArgs<ExtArgs>
+  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
   workSchedules?: boolean | Prisma.User$workSchedulesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1392,11 +1392,11 @@ export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
   objects: {
-    role: Prisma.$RolePayload<ExtArgs>
-    repairOrdersAsReceptionist: Prisma.$RepairOrderPayload<ExtArgs>[]
-    repairOrdersAsTechnician: Prisma.$RepairOrderPayload<ExtArgs>[]
     appointmentsAsTechnician: Prisma.$AppointmentPayload<ExtArgs>[]
     importOrders: Prisma.$ImportOrderPayload<ExtArgs>[]
+    repairOrdersAsReceptionist: Prisma.$RepairOrderPayload<ExtArgs>[]
+    repairOrdersAsTechnician: Prisma.$RepairOrderPayload<ExtArgs>[]
+    role: Prisma.$RolePayload<ExtArgs>
     workSchedules: Prisma.$WorkSchedulePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1805,11 +1805,11 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  role<T extends Prisma.RoleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RoleDefaultArgs<ExtArgs>>): Prisma.Prisma__RoleClient<runtime.Types.Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  repairOrdersAsReceptionist<T extends Prisma.User$repairOrdersAsReceptionistArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$repairOrdersAsReceptionistArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RepairOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  repairOrdersAsTechnician<T extends Prisma.User$repairOrdersAsTechnicianArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$repairOrdersAsTechnicianArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RepairOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   appointmentsAsTechnician<T extends Prisma.User$appointmentsAsTechnicianArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$appointmentsAsTechnicianArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   importOrders<T extends Prisma.User$importOrdersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$importOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImportOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  repairOrdersAsReceptionist<T extends Prisma.User$repairOrdersAsReceptionistArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$repairOrdersAsReceptionistArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RepairOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  repairOrdersAsTechnician<T extends Prisma.User$repairOrdersAsTechnicianArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$repairOrdersAsTechnicianArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RepairOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  role<T extends Prisma.RoleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RoleDefaultArgs<ExtArgs>>): Prisma.Prisma__RoleClient<runtime.Types.Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   workSchedules<T extends Prisma.User$workSchedulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$workSchedulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkSchedulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2252,54 +2252,6 @@ export type UserDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
- * User.repairOrdersAsReceptionist
- */
-export type User$repairOrdersAsReceptionistArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the RepairOrder
-   */
-  select?: Prisma.RepairOrderSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the RepairOrder
-   */
-  omit?: Prisma.RepairOrderOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.RepairOrderInclude<ExtArgs> | null
-  where?: Prisma.RepairOrderWhereInput
-  orderBy?: Prisma.RepairOrderOrderByWithRelationInput | Prisma.RepairOrderOrderByWithRelationInput[]
-  cursor?: Prisma.RepairOrderWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.RepairOrderScalarFieldEnum | Prisma.RepairOrderScalarFieldEnum[]
-}
-
-/**
- * User.repairOrdersAsTechnician
- */
-export type User$repairOrdersAsTechnicianArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the RepairOrder
-   */
-  select?: Prisma.RepairOrderSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the RepairOrder
-   */
-  omit?: Prisma.RepairOrderOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.RepairOrderInclude<ExtArgs> | null
-  where?: Prisma.RepairOrderWhereInput
-  orderBy?: Prisma.RepairOrderOrderByWithRelationInput | Prisma.RepairOrderOrderByWithRelationInput[]
-  cursor?: Prisma.RepairOrderWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.RepairOrderScalarFieldEnum | Prisma.RepairOrderScalarFieldEnum[]
-}
-
-/**
  * User.appointmentsAsTechnician
  */
 export type User$appointmentsAsTechnicianArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2345,6 +2297,54 @@ export type User$importOrdersArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.ImportOrderScalarFieldEnum | Prisma.ImportOrderScalarFieldEnum[]
+}
+
+/**
+ * User.repairOrdersAsReceptionist
+ */
+export type User$repairOrdersAsReceptionistArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RepairOrder
+   */
+  select?: Prisma.RepairOrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RepairOrder
+   */
+  omit?: Prisma.RepairOrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RepairOrderInclude<ExtArgs> | null
+  where?: Prisma.RepairOrderWhereInput
+  orderBy?: Prisma.RepairOrderOrderByWithRelationInput | Prisma.RepairOrderOrderByWithRelationInput[]
+  cursor?: Prisma.RepairOrderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RepairOrderScalarFieldEnum | Prisma.RepairOrderScalarFieldEnum[]
+}
+
+/**
+ * User.repairOrdersAsTechnician
+ */
+export type User$repairOrdersAsTechnicianArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RepairOrder
+   */
+  select?: Prisma.RepairOrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RepairOrder
+   */
+  omit?: Prisma.RepairOrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RepairOrderInclude<ExtArgs> | null
+  where?: Prisma.RepairOrderWhereInput
+  orderBy?: Prisma.RepairOrderOrderByWithRelationInput | Prisma.RepairOrderOrderByWithRelationInput[]
+  cursor?: Prisma.RepairOrderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RepairOrderScalarFieldEnum | Prisma.RepairOrderScalarFieldEnum[]
 }
 
 /**

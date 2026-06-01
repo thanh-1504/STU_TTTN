@@ -39,40 +39,43 @@ export type CustomerSumAggregateOutputType = {
 export type CustomerMinAggregateOutputType = {
   id: number | null
   phone: string | null
-  email: string | null
-  password: string | null
   customerName: string | null
-  avatarUrl: string | null
   address: string | null
   totalSpent: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
+  email: string | null
+  notificationEmail: string | null
+  password: string | null
+  avatarUrl: string | null
 }
 
 export type CustomerMaxAggregateOutputType = {
   id: number | null
   phone: string | null
-  email: string | null
-  password: string | null
   customerName: string | null
-  avatarUrl: string | null
   address: string | null
   totalSpent: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
+  email: string | null
+  notificationEmail: string | null
+  password: string | null
+  avatarUrl: string | null
 }
 
 export type CustomerCountAggregateOutputType = {
   id: number
   phone: number
-  email: number
-  password: number
   customerName: number
-  avatarUrl: number
   address: number
   totalSpent: number
   createdAt: number
   updatedAt: number
+  email: number
+  notificationEmail: number
+  password: number
+  avatarUrl: number
   _all: number
 }
 
@@ -90,40 +93,43 @@ export type CustomerSumAggregateInputType = {
 export type CustomerMinAggregateInputType = {
   id?: true
   phone?: true
-  email?: true
-  password?: true
   customerName?: true
-  avatarUrl?: true
   address?: true
   totalSpent?: true
   createdAt?: true
   updatedAt?: true
+  email?: true
+  notificationEmail?: true
+  password?: true
+  avatarUrl?: true
 }
 
 export type CustomerMaxAggregateInputType = {
   id?: true
   phone?: true
-  email?: true
-  password?: true
   customerName?: true
-  avatarUrl?: true
   address?: true
   totalSpent?: true
   createdAt?: true
   updatedAt?: true
+  email?: true
+  notificationEmail?: true
+  password?: true
+  avatarUrl?: true
 }
 
 export type CustomerCountAggregateInputType = {
   id?: true
   phone?: true
-  email?: true
-  password?: true
   customerName?: true
-  avatarUrl?: true
   address?: true
   totalSpent?: true
   createdAt?: true
   updatedAt?: true
+  email?: true
+  notificationEmail?: true
+  password?: true
+  avatarUrl?: true
   _all?: true
 }
 
@@ -216,14 +222,15 @@ export type CustomerGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 export type CustomerGroupByOutputType = {
   id: number
   phone: string
-  email: string | null
-  password: string | null
   customerName: string
-  avatarUrl: string | null
   address: string | null
   totalSpent: runtime.Decimal
   createdAt: Date
   updatedAt: Date
+  email: string | null
+  notificationEmail: string | null
+  password: string | null
+  avatarUrl: string | null
   _count: CustomerCountAggregateOutputType | null
   _avg: CustomerAvgAggregateOutputType | null
   _sum: CustomerSumAggregateOutputType | null
@@ -252,37 +259,39 @@ export type CustomerWhereInput = {
   NOT?: Prisma.CustomerWhereInput | Prisma.CustomerWhereInput[]
   id?: Prisma.IntFilter<"Customer"> | number
   phone?: Prisma.StringFilter<"Customer"> | string
-  email?: Prisma.StringNullableFilter<"Customer"> | string | null
-  password?: Prisma.StringNullableFilter<"Customer"> | string | null
   customerName?: Prisma.StringFilter<"Customer"> | string
-  avatarUrl?: Prisma.StringNullableFilter<"Customer"> | string | null
   address?: Prisma.StringNullableFilter<"Customer"> | string | null
   totalSpent?: Prisma.DecimalFilter<"Customer"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
-  vehicles?: Prisma.VehicleListRelationFilter
+  email?: Prisma.StringNullableFilter<"Customer"> | string | null
+  notificationEmail?: Prisma.StringNullableFilter<"Customer"> | string | null
+  password?: Prisma.StringNullableFilter<"Customer"> | string | null
+  avatarUrl?: Prisma.StringNullableFilter<"Customer"> | string | null
   appointments?: Prisma.AppointmentListRelationFilter
+  notifications?: Prisma.NotificationListRelationFilter
   repairOrders?: Prisma.RepairOrderListRelationFilter
   reviews?: Prisma.ReviewListRelationFilter
-  notifications?: Prisma.NotificationListRelationFilter
+  vehicles?: Prisma.VehicleListRelationFilter
 }
 
 export type CustomerOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   phone?: Prisma.SortOrder
-  email?: Prisma.SortOrderInput | Prisma.SortOrder
-  password?: Prisma.SortOrderInput | Prisma.SortOrder
   customerName?: Prisma.SortOrder
-  avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   totalSpent?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  vehicles?: Prisma.VehicleOrderByRelationAggregateInput
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
+  notificationEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  password?: Prisma.SortOrderInput | Prisma.SortOrder
+  avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   appointments?: Prisma.AppointmentOrderByRelationAggregateInput
+  notifications?: Prisma.NotificationOrderByRelationAggregateInput
   repairOrders?: Prisma.RepairOrderOrderByRelationAggregateInput
   reviews?: Prisma.ReviewOrderByRelationAggregateInput
-  notifications?: Prisma.NotificationOrderByRelationAggregateInput
+  vehicles?: Prisma.VehicleOrderByRelationAggregateInput
 }
 
 export type CustomerWhereUniqueInput = Prisma.AtLeast<{
@@ -292,31 +301,33 @@ export type CustomerWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.CustomerWhereInput | Prisma.CustomerWhereInput[]
   OR?: Prisma.CustomerWhereInput[]
   NOT?: Prisma.CustomerWhereInput | Prisma.CustomerWhereInput[]
-  password?: Prisma.StringNullableFilter<"Customer"> | string | null
   customerName?: Prisma.StringFilter<"Customer"> | string
-  avatarUrl?: Prisma.StringNullableFilter<"Customer"> | string | null
   address?: Prisma.StringNullableFilter<"Customer"> | string | null
   totalSpent?: Prisma.DecimalFilter<"Customer"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
-  vehicles?: Prisma.VehicleListRelationFilter
+  notificationEmail?: Prisma.StringNullableFilter<"Customer"> | string | null
+  password?: Prisma.StringNullableFilter<"Customer"> | string | null
+  avatarUrl?: Prisma.StringNullableFilter<"Customer"> | string | null
   appointments?: Prisma.AppointmentListRelationFilter
+  notifications?: Prisma.NotificationListRelationFilter
   repairOrders?: Prisma.RepairOrderListRelationFilter
   reviews?: Prisma.ReviewListRelationFilter
-  notifications?: Prisma.NotificationListRelationFilter
+  vehicles?: Prisma.VehicleListRelationFilter
 }, "id" | "phone" | "email">
 
 export type CustomerOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   phone?: Prisma.SortOrder
-  email?: Prisma.SortOrderInput | Prisma.SortOrder
-  password?: Prisma.SortOrderInput | Prisma.SortOrder
   customerName?: Prisma.SortOrder
-  avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   totalSpent?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
+  notificationEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  password?: Prisma.SortOrderInput | Prisma.SortOrder
+  avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.CustomerCountOrderByAggregateInput
   _avg?: Prisma.CustomerAvgOrderByAggregateInput
   _max?: Prisma.CustomerMaxOrderByAggregateInput
@@ -330,135 +341,144 @@ export type CustomerScalarWhereWithAggregatesInput = {
   NOT?: Prisma.CustomerScalarWhereWithAggregatesInput | Prisma.CustomerScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"Customer"> | number
   phone?: Prisma.StringWithAggregatesFilter<"Customer"> | string
-  email?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
-  password?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
   customerName?: Prisma.StringWithAggregatesFilter<"Customer"> | string
-  avatarUrl?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
   address?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
   totalSpent?: Prisma.DecimalWithAggregatesFilter<"Customer"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Customer"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Customer"> | Date | string
+  email?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
+  notificationEmail?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
+  password?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
+  avatarUrl?: Prisma.StringNullableWithAggregatesFilter<"Customer"> | string | null
 }
 
 export type CustomerCreateInput = {
   phone: string
-  email?: string | null
-  password?: string | null
   customerName: string
-  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  vehicles?: Prisma.VehicleCreateNestedManyWithoutCustomerInput
+  email?: string | null
+  notificationEmail?: string | null
+  password?: string | null
+  avatarUrl?: string | null
   appointments?: Prisma.AppointmentCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   repairOrders?: Prisma.RepairOrderCreateNestedManyWithoutCustomerInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutCustomerInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
+  vehicles?: Prisma.VehicleCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerUncheckedCreateInput = {
   id?: number
   phone: string
-  email?: string | null
-  password?: string | null
   customerName: string
-  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  vehicles?: Prisma.VehicleUncheckedCreateNestedManyWithoutCustomerInput
+  email?: string | null
+  notificationEmail?: string | null
+  password?: string | null
+  avatarUrl?: string | null
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   repairOrders?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutCustomerInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutCustomerInput
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
+  vehicles?: Prisma.VehicleUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerUpdateInput = {
   phone?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  vehicles?: Prisma.VehicleUpdateManyWithoutCustomerNestedInput
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notificationEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   appointments?: Prisma.AppointmentUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   repairOrders?: Prisma.RepairOrderUpdateManyWithoutCustomerNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutCustomerNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
+  vehicles?: Prisma.VehicleUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   phone?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  vehicles?: Prisma.VehicleUncheckedUpdateManyWithoutCustomerNestedInput
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notificationEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   repairOrders?: Prisma.RepairOrderUncheckedUpdateManyWithoutCustomerNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutCustomerNestedInput
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
+  vehicles?: Prisma.VehicleUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerCreateManyInput = {
   id?: number
   phone: string
-  email?: string | null
-  password?: string | null
   customerName: string
-  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  notificationEmail?: string | null
+  password?: string | null
+  avatarUrl?: string | null
 }
 
 export type CustomerUpdateManyMutationInput = {
   phone?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notificationEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CustomerUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   phone?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notificationEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CustomerCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   phone?: Prisma.SortOrder
-  email?: Prisma.SortOrder
-  password?: Prisma.SortOrder
   customerName?: Prisma.SortOrder
-  avatarUrl?: Prisma.SortOrder
   address?: Prisma.SortOrder
   totalSpent?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  email?: Prisma.SortOrder
+  notificationEmail?: Prisma.SortOrder
+  password?: Prisma.SortOrder
+  avatarUrl?: Prisma.SortOrder
 }
 
 export type CustomerAvgOrderByAggregateInput = {
@@ -469,27 +489,29 @@ export type CustomerAvgOrderByAggregateInput = {
 export type CustomerMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   phone?: Prisma.SortOrder
-  email?: Prisma.SortOrder
-  password?: Prisma.SortOrder
   customerName?: Prisma.SortOrder
-  avatarUrl?: Prisma.SortOrder
   address?: Prisma.SortOrder
   totalSpent?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  email?: Prisma.SortOrder
+  notificationEmail?: Prisma.SortOrder
+  password?: Prisma.SortOrder
+  avatarUrl?: Prisma.SortOrder
 }
 
 export type CustomerMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   phone?: Prisma.SortOrder
-  email?: Prisma.SortOrder
-  password?: Prisma.SortOrder
   customerName?: Prisma.SortOrder
-  avatarUrl?: Prisma.SortOrder
   address?: Prisma.SortOrder
   totalSpent?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  email?: Prisma.SortOrder
+  notificationEmail?: Prisma.SortOrder
+  password?: Prisma.SortOrder
+  avatarUrl?: Prisma.SortOrder
 }
 
 export type CustomerSumOrderByAggregateInput = {
@@ -593,35 +615,37 @@ export type CustomerUpdateOneWithoutNotificationsNestedInput = {
 
 export type CustomerCreateWithoutVehiclesInput = {
   phone: string
-  email?: string | null
-  password?: string | null
   customerName: string
-  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  notificationEmail?: string | null
+  password?: string | null
+  avatarUrl?: string | null
   appointments?: Prisma.AppointmentCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   repairOrders?: Prisma.RepairOrderCreateNestedManyWithoutCustomerInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutCustomerInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerUncheckedCreateWithoutVehiclesInput = {
   id?: number
   phone: string
-  email?: string | null
-  password?: string | null
   customerName: string
-  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  email?: string | null
+  notificationEmail?: string | null
+  password?: string | null
+  avatarUrl?: string | null
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCustomerInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   repairOrders?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutCustomerInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutCustomerInput
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerCreateOrConnectWithoutVehiclesInput = {
@@ -642,68 +666,72 @@ export type CustomerUpdateToOneWithWhereWithoutVehiclesInput = {
 
 export type CustomerUpdateWithoutVehiclesInput = {
   phone?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notificationEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   appointments?: Prisma.AppointmentUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   repairOrders?: Prisma.RepairOrderUpdateManyWithoutCustomerNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutCustomerNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerUncheckedUpdateWithoutVehiclesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   phone?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notificationEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCustomerNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   repairOrders?: Prisma.RepairOrderUncheckedUpdateManyWithoutCustomerNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutCustomerNestedInput
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerCreateWithoutAppointmentsInput = {
   phone: string
-  email?: string | null
-  password?: string | null
   customerName: string
-  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  vehicles?: Prisma.VehicleCreateNestedManyWithoutCustomerInput
+  email?: string | null
+  notificationEmail?: string | null
+  password?: string | null
+  avatarUrl?: string | null
+  notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
   repairOrders?: Prisma.RepairOrderCreateNestedManyWithoutCustomerInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutCustomerInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
+  vehicles?: Prisma.VehicleCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerUncheckedCreateWithoutAppointmentsInput = {
   id?: number
   phone: string
-  email?: string | null
-  password?: string | null
   customerName: string
-  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  vehicles?: Prisma.VehicleUncheckedCreateNestedManyWithoutCustomerInput
+  email?: string | null
+  notificationEmail?: string | null
+  password?: string | null
+  avatarUrl?: string | null
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
   repairOrders?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutCustomerInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutCustomerInput
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
+  vehicles?: Prisma.VehicleUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerCreateOrConnectWithoutAppointmentsInput = {
@@ -724,68 +752,72 @@ export type CustomerUpdateToOneWithWhereWithoutAppointmentsInput = {
 
 export type CustomerUpdateWithoutAppointmentsInput = {
   phone?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  vehicles?: Prisma.VehicleUpdateManyWithoutCustomerNestedInput
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notificationEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
   repairOrders?: Prisma.RepairOrderUpdateManyWithoutCustomerNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutCustomerNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
+  vehicles?: Prisma.VehicleUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerUncheckedUpdateWithoutAppointmentsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   phone?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  vehicles?: Prisma.VehicleUncheckedUpdateManyWithoutCustomerNestedInput
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notificationEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
   repairOrders?: Prisma.RepairOrderUncheckedUpdateManyWithoutCustomerNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutCustomerNestedInput
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
+  vehicles?: Prisma.VehicleUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerCreateWithoutRepairOrdersInput = {
   phone: string
-  email?: string | null
-  password?: string | null
   customerName: string
-  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  vehicles?: Prisma.VehicleCreateNestedManyWithoutCustomerInput
+  email?: string | null
+  notificationEmail?: string | null
+  password?: string | null
+  avatarUrl?: string | null
   appointments?: Prisma.AppointmentCreateNestedManyWithoutCustomerInput
-  reviews?: Prisma.ReviewCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
+  reviews?: Prisma.ReviewCreateNestedManyWithoutCustomerInput
+  vehicles?: Prisma.VehicleCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerUncheckedCreateWithoutRepairOrdersInput = {
   id?: number
   phone: string
-  email?: string | null
-  password?: string | null
   customerName: string
-  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  vehicles?: Prisma.VehicleUncheckedCreateNestedManyWithoutCustomerInput
+  email?: string | null
+  notificationEmail?: string | null
+  password?: string | null
+  avatarUrl?: string | null
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCustomerInput
-  reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
+  reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutCustomerInput
+  vehicles?: Prisma.VehicleUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerCreateOrConnectWithoutRepairOrdersInput = {
@@ -806,68 +838,72 @@ export type CustomerUpdateToOneWithWhereWithoutRepairOrdersInput = {
 
 export type CustomerUpdateWithoutRepairOrdersInput = {
   phone?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  vehicles?: Prisma.VehicleUpdateManyWithoutCustomerNestedInput
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notificationEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   appointments?: Prisma.AppointmentUpdateManyWithoutCustomerNestedInput
-  reviews?: Prisma.ReviewUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
+  reviews?: Prisma.ReviewUpdateManyWithoutCustomerNestedInput
+  vehicles?: Prisma.VehicleUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerUncheckedUpdateWithoutRepairOrdersInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   phone?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  vehicles?: Prisma.VehicleUncheckedUpdateManyWithoutCustomerNestedInput
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notificationEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCustomerNestedInput
-  reviews?: Prisma.ReviewUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
+  reviews?: Prisma.ReviewUncheckedUpdateManyWithoutCustomerNestedInput
+  vehicles?: Prisma.VehicleUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerCreateWithoutReviewsInput = {
   phone: string
-  email?: string | null
-  password?: string | null
   customerName: string
-  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  vehicles?: Prisma.VehicleCreateNestedManyWithoutCustomerInput
+  email?: string | null
+  notificationEmail?: string | null
+  password?: string | null
+  avatarUrl?: string | null
   appointments?: Prisma.AppointmentCreateNestedManyWithoutCustomerInput
-  repairOrders?: Prisma.RepairOrderCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutCustomerInput
+  repairOrders?: Prisma.RepairOrderCreateNestedManyWithoutCustomerInput
+  vehicles?: Prisma.VehicleCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerUncheckedCreateWithoutReviewsInput = {
   id?: number
   phone: string
-  email?: string | null
-  password?: string | null
   customerName: string
-  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  vehicles?: Prisma.VehicleUncheckedCreateNestedManyWithoutCustomerInput
+  email?: string | null
+  notificationEmail?: string | null
+  password?: string | null
+  avatarUrl?: string | null
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCustomerInput
-  repairOrders?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutCustomerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutCustomerInput
+  repairOrders?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutCustomerInput
+  vehicles?: Prisma.VehicleUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerCreateOrConnectWithoutReviewsInput = {
@@ -888,68 +924,72 @@ export type CustomerUpdateToOneWithWhereWithoutReviewsInput = {
 
 export type CustomerUpdateWithoutReviewsInput = {
   phone?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  vehicles?: Prisma.VehicleUpdateManyWithoutCustomerNestedInput
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notificationEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   appointments?: Prisma.AppointmentUpdateManyWithoutCustomerNestedInput
-  repairOrders?: Prisma.RepairOrderUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutCustomerNestedInput
+  repairOrders?: Prisma.RepairOrderUpdateManyWithoutCustomerNestedInput
+  vehicles?: Prisma.VehicleUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerUncheckedUpdateWithoutReviewsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   phone?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  vehicles?: Prisma.VehicleUncheckedUpdateManyWithoutCustomerNestedInput
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notificationEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCustomerNestedInput
-  repairOrders?: Prisma.RepairOrderUncheckedUpdateManyWithoutCustomerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutCustomerNestedInput
+  repairOrders?: Prisma.RepairOrderUncheckedUpdateManyWithoutCustomerNestedInput
+  vehicles?: Prisma.VehicleUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerCreateWithoutNotificationsInput = {
   phone: string
-  email?: string | null
-  password?: string | null
   customerName: string
-  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  vehicles?: Prisma.VehicleCreateNestedManyWithoutCustomerInput
+  email?: string | null
+  notificationEmail?: string | null
+  password?: string | null
+  avatarUrl?: string | null
   appointments?: Prisma.AppointmentCreateNestedManyWithoutCustomerInput
   repairOrders?: Prisma.RepairOrderCreateNestedManyWithoutCustomerInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutCustomerInput
+  vehicles?: Prisma.VehicleCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerUncheckedCreateWithoutNotificationsInput = {
   id?: number
   phone: string
-  email?: string | null
-  password?: string | null
   customerName: string
-  avatarUrl?: string | null
   address?: string | null
   totalSpent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  vehicles?: Prisma.VehicleUncheckedCreateNestedManyWithoutCustomerInput
+  email?: string | null
+  notificationEmail?: string | null
+  password?: string | null
+  avatarUrl?: string | null
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCustomerInput
   repairOrders?: Prisma.RepairOrderUncheckedCreateNestedManyWithoutCustomerInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutCustomerInput
+  vehicles?: Prisma.VehicleUncheckedCreateNestedManyWithoutCustomerInput
 }
 
 export type CustomerCreateOrConnectWithoutNotificationsInput = {
@@ -970,35 +1010,37 @@ export type CustomerUpdateToOneWithWhereWithoutNotificationsInput = {
 
 export type CustomerUpdateWithoutNotificationsInput = {
   phone?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  vehicles?: Prisma.VehicleUpdateManyWithoutCustomerNestedInput
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notificationEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   appointments?: Prisma.AppointmentUpdateManyWithoutCustomerNestedInput
   repairOrders?: Prisma.RepairOrderUpdateManyWithoutCustomerNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutCustomerNestedInput
+  vehicles?: Prisma.VehicleUpdateManyWithoutCustomerNestedInput
 }
 
 export type CustomerUncheckedUpdateWithoutNotificationsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   phone?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalSpent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  vehicles?: Prisma.VehicleUncheckedUpdateManyWithoutCustomerNestedInput
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notificationEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCustomerNestedInput
   repairOrders?: Prisma.RepairOrderUncheckedUpdateManyWithoutCustomerNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutCustomerNestedInput
+  vehicles?: Prisma.VehicleUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 
@@ -1007,19 +1049,19 @@ export type CustomerUncheckedUpdateWithoutNotificationsInput = {
  */
 
 export type CustomerCountOutputType = {
-  vehicles: number
   appointments: number
+  notifications: number
   repairOrders: number
   reviews: number
-  notifications: number
+  vehicles: number
 }
 
 export type CustomerCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  vehicles?: boolean | CustomerCountOutputTypeCountVehiclesArgs
   appointments?: boolean | CustomerCountOutputTypeCountAppointmentsArgs
+  notifications?: boolean | CustomerCountOutputTypeCountNotificationsArgs
   repairOrders?: boolean | CustomerCountOutputTypeCountRepairOrdersArgs
   reviews?: boolean | CustomerCountOutputTypeCountReviewsArgs
-  notifications?: boolean | CustomerCountOutputTypeCountNotificationsArgs
+  vehicles?: boolean | CustomerCountOutputTypeCountVehiclesArgs
 }
 
 /**
@@ -1035,15 +1077,15 @@ export type CustomerCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ext
 /**
  * CustomerCountOutputType without action
  */
-export type CustomerCountOutputTypeCountVehiclesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.VehicleWhereInput
+export type CustomerCountOutputTypeCountAppointmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AppointmentWhereInput
 }
 
 /**
  * CustomerCountOutputType without action
  */
-export type CustomerCountOutputTypeCountAppointmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.AppointmentWhereInput
+export type CustomerCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NotificationWhereInput
 }
 
 /**
@@ -1063,76 +1105,80 @@ export type CustomerCountOutputTypeCountReviewsArgs<ExtArgs extends runtime.Type
 /**
  * CustomerCountOutputType without action
  */
-export type CustomerCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.NotificationWhereInput
+export type CustomerCountOutputTypeCountVehiclesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.VehicleWhereInput
 }
 
 
 export type CustomerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   phone?: boolean
-  email?: boolean
-  password?: boolean
   customerName?: boolean
-  avatarUrl?: boolean
   address?: boolean
   totalSpent?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  vehicles?: boolean | Prisma.Customer$vehiclesArgs<ExtArgs>
+  email?: boolean
+  notificationEmail?: boolean
+  password?: boolean
+  avatarUrl?: boolean
   appointments?: boolean | Prisma.Customer$appointmentsArgs<ExtArgs>
+  notifications?: boolean | Prisma.Customer$notificationsArgs<ExtArgs>
   repairOrders?: boolean | Prisma.Customer$repairOrdersArgs<ExtArgs>
   reviews?: boolean | Prisma.Customer$reviewsArgs<ExtArgs>
-  notifications?: boolean | Prisma.Customer$notificationsArgs<ExtArgs>
+  vehicles?: boolean | Prisma.Customer$vehiclesArgs<ExtArgs>
   _count?: boolean | Prisma.CustomerCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["customer"]>
 
 export type CustomerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   phone?: boolean
-  email?: boolean
-  password?: boolean
   customerName?: boolean
-  avatarUrl?: boolean
   address?: boolean
   totalSpent?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  email?: boolean
+  notificationEmail?: boolean
+  password?: boolean
+  avatarUrl?: boolean
 }, ExtArgs["result"]["customer"]>
 
 export type CustomerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   phone?: boolean
-  email?: boolean
-  password?: boolean
   customerName?: boolean
-  avatarUrl?: boolean
   address?: boolean
   totalSpent?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  email?: boolean
+  notificationEmail?: boolean
+  password?: boolean
+  avatarUrl?: boolean
 }, ExtArgs["result"]["customer"]>
 
 export type CustomerSelectScalar = {
   id?: boolean
   phone?: boolean
-  email?: boolean
-  password?: boolean
   customerName?: boolean
-  avatarUrl?: boolean
   address?: boolean
   totalSpent?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  email?: boolean
+  notificationEmail?: boolean
+  password?: boolean
+  avatarUrl?: boolean
 }
 
-export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "phone" | "email" | "password" | "customerName" | "avatarUrl" | "address" | "totalSpent" | "createdAt" | "updatedAt", ExtArgs["result"]["customer"]>
+export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "phone" | "customerName" | "address" | "totalSpent" | "createdAt" | "updatedAt" | "email" | "notificationEmail" | "password" | "avatarUrl", ExtArgs["result"]["customer"]>
 export type CustomerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  vehicles?: boolean | Prisma.Customer$vehiclesArgs<ExtArgs>
   appointments?: boolean | Prisma.Customer$appointmentsArgs<ExtArgs>
+  notifications?: boolean | Prisma.Customer$notificationsArgs<ExtArgs>
   repairOrders?: boolean | Prisma.Customer$repairOrdersArgs<ExtArgs>
   reviews?: boolean | Prisma.Customer$reviewsArgs<ExtArgs>
-  notifications?: boolean | Prisma.Customer$notificationsArgs<ExtArgs>
+  vehicles?: boolean | Prisma.Customer$vehiclesArgs<ExtArgs>
   _count?: boolean | Prisma.CustomerCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CustomerIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1141,23 +1187,24 @@ export type CustomerIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
 export type $CustomerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Customer"
   objects: {
-    vehicles: Prisma.$VehiclePayload<ExtArgs>[]
     appointments: Prisma.$AppointmentPayload<ExtArgs>[]
+    notifications: Prisma.$NotificationPayload<ExtArgs>[]
     repairOrders: Prisma.$RepairOrderPayload<ExtArgs>[]
     reviews: Prisma.$ReviewPayload<ExtArgs>[]
-    notifications: Prisma.$NotificationPayload<ExtArgs>[]
+    vehicles: Prisma.$VehiclePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     phone: string
-    email: string | null
-    password: string | null
     customerName: string
-    avatarUrl: string | null
     address: string | null
     totalSpent: runtime.Decimal
     createdAt: Date
     updatedAt: Date
+    email: string | null
+    notificationEmail: string | null
+    password: string | null
+    avatarUrl: string | null
   }, ExtArgs["result"]["customer"]>
   composites: {}
 }
@@ -1552,11 +1599,11 @@ readonly fields: CustomerFieldRefs;
  */
 export interface Prisma__CustomerClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  vehicles<T extends Prisma.Customer$vehiclesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Customer$vehiclesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VehiclePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   appointments<T extends Prisma.Customer$appointmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Customer$appointmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  notifications<T extends Prisma.Customer$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Customer$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   repairOrders<T extends Prisma.Customer$repairOrdersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Customer$repairOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RepairOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reviews<T extends Prisma.Customer$reviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Customer$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  notifications<T extends Prisma.Customer$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Customer$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  vehicles<T extends Prisma.Customer$vehiclesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Customer$vehiclesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VehiclePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1588,14 +1635,15 @@ export interface Prisma__CustomerClient<T, Null = never, ExtArgs extends runtime
 export interface CustomerFieldRefs {
   readonly id: Prisma.FieldRef<"Customer", 'Int'>
   readonly phone: Prisma.FieldRef<"Customer", 'String'>
-  readonly email: Prisma.FieldRef<"Customer", 'String'>
-  readonly password: Prisma.FieldRef<"Customer", 'String'>
   readonly customerName: Prisma.FieldRef<"Customer", 'String'>
-  readonly avatarUrl: Prisma.FieldRef<"Customer", 'String'>
   readonly address: Prisma.FieldRef<"Customer", 'String'>
   readonly totalSpent: Prisma.FieldRef<"Customer", 'Decimal'>
   readonly createdAt: Prisma.FieldRef<"Customer", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Customer", 'DateTime'>
+  readonly email: Prisma.FieldRef<"Customer", 'String'>
+  readonly notificationEmail: Prisma.FieldRef<"Customer", 'String'>
+  readonly password: Prisma.FieldRef<"Customer", 'String'>
+  readonly avatarUrl: Prisma.FieldRef<"Customer", 'String'>
 }
     
 
@@ -1989,30 +2037,6 @@ export type CustomerDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
- * Customer.vehicles
- */
-export type Customer$vehiclesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Vehicle
-   */
-  select?: Prisma.VehicleSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Vehicle
-   */
-  omit?: Prisma.VehicleOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.VehicleInclude<ExtArgs> | null
-  where?: Prisma.VehicleWhereInput
-  orderBy?: Prisma.VehicleOrderByWithRelationInput | Prisma.VehicleOrderByWithRelationInput[]
-  cursor?: Prisma.VehicleWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.VehicleScalarFieldEnum | Prisma.VehicleScalarFieldEnum[]
-}
-
-/**
  * Customer.appointments
  */
 export type Customer$appointmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2034,6 +2058,30 @@ export type Customer$appointmentsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.AppointmentScalarFieldEnum | Prisma.AppointmentScalarFieldEnum[]
+}
+
+/**
+ * Customer.notifications
+ */
+export type Customer$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Notification
+   */
+  select?: Prisma.NotificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Notification
+   */
+  omit?: Prisma.NotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NotificationInclude<ExtArgs> | null
+  where?: Prisma.NotificationWhereInput
+  orderBy?: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[]
+  cursor?: Prisma.NotificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
 }
 
 /**
@@ -2085,27 +2133,27 @@ export type Customer$reviewsArgs<ExtArgs extends runtime.Types.Extensions.Intern
 }
 
 /**
- * Customer.notifications
+ * Customer.vehicles
  */
-export type Customer$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Customer$vehiclesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Notification
+   * Select specific fields to fetch from the Vehicle
    */
-  select?: Prisma.NotificationSelect<ExtArgs> | null
+  select?: Prisma.VehicleSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Notification
+   * Omit specific fields from the Vehicle
    */
-  omit?: Prisma.NotificationOmit<ExtArgs> | null
+  omit?: Prisma.VehicleOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.NotificationInclude<ExtArgs> | null
-  where?: Prisma.NotificationWhereInput
-  orderBy?: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[]
-  cursor?: Prisma.NotificationWhereUniqueInput
+  include?: Prisma.VehicleInclude<ExtArgs> | null
+  where?: Prisma.VehicleWhereInput
+  orderBy?: Prisma.VehicleOrderByWithRelationInput | Prisma.VehicleOrderByWithRelationInput[]
+  cursor?: Prisma.VehicleWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
+  distinct?: Prisma.VehicleScalarFieldEnum | Prisma.VehicleScalarFieldEnum[]
 }
 
 /**

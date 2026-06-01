@@ -260,8 +260,8 @@ export type SparePartWhereInput = {
   sellingPrice?: Prisma.DecimalFilter<"SparePart"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"SparePart"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SparePart"> | Date | string
-  repairOrderItems?: Prisma.RepairOrderItemListRelationFilter
   importItems?: Prisma.ImportItemListRelationFilter
+  repairOrderItems?: Prisma.RepairOrderItemListRelationFilter
 }
 
 export type SparePartOrderByWithRelationInput = {
@@ -274,8 +274,8 @@ export type SparePartOrderByWithRelationInput = {
   sellingPrice?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  repairOrderItems?: Prisma.RepairOrderItemOrderByRelationAggregateInput
   importItems?: Prisma.ImportItemOrderByRelationAggregateInput
+  repairOrderItems?: Prisma.RepairOrderItemOrderByRelationAggregateInput
 }
 
 export type SparePartWhereUniqueInput = Prisma.AtLeast<{
@@ -291,8 +291,8 @@ export type SparePartWhereUniqueInput = Prisma.AtLeast<{
   sellingPrice?: Prisma.DecimalFilter<"SparePart"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"SparePart"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SparePart"> | Date | string
-  repairOrderItems?: Prisma.RepairOrderItemListRelationFilter
   importItems?: Prisma.ImportItemListRelationFilter
+  repairOrderItems?: Prisma.RepairOrderItemListRelationFilter
 }, "id" | "partNumber">
 
 export type SparePartOrderByWithAggregationInput = {
@@ -336,8 +336,8 @@ export type SparePartCreateInput = {
   sellingPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  repairOrderItems?: Prisma.RepairOrderItemCreateNestedManyWithoutSparePartInput
   importItems?: Prisma.ImportItemCreateNestedManyWithoutSparePartInput
+  repairOrderItems?: Prisma.RepairOrderItemCreateNestedManyWithoutSparePartInput
 }
 
 export type SparePartUncheckedCreateInput = {
@@ -350,8 +350,8 @@ export type SparePartUncheckedCreateInput = {
   sellingPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  repairOrderItems?: Prisma.RepairOrderItemUncheckedCreateNestedManyWithoutSparePartInput
   importItems?: Prisma.ImportItemUncheckedCreateNestedManyWithoutSparePartInput
+  repairOrderItems?: Prisma.RepairOrderItemUncheckedCreateNestedManyWithoutSparePartInput
 }
 
 export type SparePartUpdateInput = {
@@ -363,8 +363,8 @@ export type SparePartUpdateInput = {
   sellingPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  repairOrderItems?: Prisma.RepairOrderItemUpdateManyWithoutSparePartNestedInput
   importItems?: Prisma.ImportItemUpdateManyWithoutSparePartNestedInput
+  repairOrderItems?: Prisma.RepairOrderItemUpdateManyWithoutSparePartNestedInput
 }
 
 export type SparePartUncheckedUpdateInput = {
@@ -377,8 +377,8 @@ export type SparePartUncheckedUpdateInput = {
   sellingPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  repairOrderItems?: Prisma.RepairOrderItemUncheckedUpdateManyWithoutSparePartNestedInput
   importItems?: Prisma.ImportItemUncheckedUpdateManyWithoutSparePartNestedInput
+  repairOrderItems?: Prisma.RepairOrderItemUncheckedUpdateManyWithoutSparePartNestedInput
 }
 
 export type SparePartCreateManyInput = {
@@ -637,13 +637,13 @@ export type SparePartUncheckedUpdateWithoutImportItemsInput = {
  */
 
 export type SparePartCountOutputType = {
-  repairOrderItems: number
   importItems: number
+  repairOrderItems: number
 }
 
 export type SparePartCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  repairOrderItems?: boolean | SparePartCountOutputTypeCountRepairOrderItemsArgs
   importItems?: boolean | SparePartCountOutputTypeCountImportItemsArgs
+  repairOrderItems?: boolean | SparePartCountOutputTypeCountRepairOrderItemsArgs
 }
 
 /**
@@ -659,15 +659,15 @@ export type SparePartCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ex
 /**
  * SparePartCountOutputType without action
  */
-export type SparePartCountOutputTypeCountRepairOrderItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.RepairOrderItemWhereInput
+export type SparePartCountOutputTypeCountImportItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ImportItemWhereInput
 }
 
 /**
  * SparePartCountOutputType without action
  */
-export type SparePartCountOutputTypeCountImportItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ImportItemWhereInput
+export type SparePartCountOutputTypeCountRepairOrderItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RepairOrderItemWhereInput
 }
 
 
@@ -681,8 +681,8 @@ export type SparePartSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   sellingPrice?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  repairOrderItems?: boolean | Prisma.SparePart$repairOrderItemsArgs<ExtArgs>
   importItems?: boolean | Prisma.SparePart$importItemsArgs<ExtArgs>
+  repairOrderItems?: boolean | Prisma.SparePart$repairOrderItemsArgs<ExtArgs>
   _count?: boolean | Prisma.SparePartCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["sparePart"]>
 
@@ -724,8 +724,8 @@ export type SparePartSelectScalar = {
 
 export type SparePartOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "partNumber" | "partName" | "unit" | "stockQuantity" | "minStockLevel" | "sellingPrice" | "createdAt" | "updatedAt", ExtArgs["result"]["sparePart"]>
 export type SparePartInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  repairOrderItems?: boolean | Prisma.SparePart$repairOrderItemsArgs<ExtArgs>
   importItems?: boolean | Prisma.SparePart$importItemsArgs<ExtArgs>
+  repairOrderItems?: boolean | Prisma.SparePart$repairOrderItemsArgs<ExtArgs>
   _count?: boolean | Prisma.SparePartCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SparePartIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -734,8 +734,8 @@ export type SparePartIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
 export type $SparePartPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "SparePart"
   objects: {
-    repairOrderItems: Prisma.$RepairOrderItemPayload<ExtArgs>[]
     importItems: Prisma.$ImportItemPayload<ExtArgs>[]
+    repairOrderItems: Prisma.$RepairOrderItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1141,8 +1141,8 @@ readonly fields: SparePartFieldRefs;
  */
 export interface Prisma__SparePartClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  repairOrderItems<T extends Prisma.SparePart$repairOrderItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SparePart$repairOrderItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RepairOrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   importItems<T extends Prisma.SparePart$importItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SparePart$importItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImportItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  repairOrderItems<T extends Prisma.SparePart$repairOrderItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SparePart$repairOrderItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RepairOrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1574,30 +1574,6 @@ export type SparePartDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
- * SparePart.repairOrderItems
- */
-export type SparePart$repairOrderItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the RepairOrderItem
-   */
-  select?: Prisma.RepairOrderItemSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the RepairOrderItem
-   */
-  omit?: Prisma.RepairOrderItemOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.RepairOrderItemInclude<ExtArgs> | null
-  where?: Prisma.RepairOrderItemWhereInput
-  orderBy?: Prisma.RepairOrderItemOrderByWithRelationInput | Prisma.RepairOrderItemOrderByWithRelationInput[]
-  cursor?: Prisma.RepairOrderItemWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.RepairOrderItemScalarFieldEnum | Prisma.RepairOrderItemScalarFieldEnum[]
-}
-
-/**
  * SparePart.importItems
  */
 export type SparePart$importItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1619,6 +1595,30 @@ export type SparePart$importItemsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.ImportItemScalarFieldEnum | Prisma.ImportItemScalarFieldEnum[]
+}
+
+/**
+ * SparePart.repairOrderItems
+ */
+export type SparePart$repairOrderItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RepairOrderItem
+   */
+  select?: Prisma.RepairOrderItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RepairOrderItem
+   */
+  omit?: Prisma.RepairOrderItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RepairOrderItemInclude<ExtArgs> | null
+  where?: Prisma.RepairOrderItemWhereInput
+  orderBy?: Prisma.RepairOrderItemOrderByWithRelationInput | Prisma.RepairOrderItemOrderByWithRelationInput[]
+  cursor?: Prisma.RepairOrderItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RepairOrderItemScalarFieldEnum | Prisma.RepairOrderItemScalarFieldEnum[]
 }
 
 /**
