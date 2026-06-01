@@ -4,18 +4,19 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../../shared/services/prisma.service';
-import { AppointmentsRepository } from './appointments.repository';
-import { AdminCreateAppointmentDto } from './dto/admin-create-appointment.dto';
-import { CreateAppointmentDto } from './dto/create-appointments.dto';
-import { UpdateAppointmentDto } from './dto/update-appointments.dto';
-import { RescheduleAppointmentDto } from './dto/reschedule-appointment.dto';
 import {
   Appointment,
   AppointmentStatus,
   NotificationType,
   VehicleType,
 } from 'generated/prisma/client';
+import { MailService } from 'src/shared/services/mail.service';
+import { PrismaService } from '../../shared/services/prisma.service';
+import { AppointmentsRepository } from './appointments.repository';
+import { AdminCreateAppointmentDto } from './dto/admin-create-appointment.dto';
+import { CreateAppointmentDto } from './dto/create-appointments.dto';
+import { RescheduleAppointmentDto } from './dto/reschedule-appointment.dto';
+import { UpdateAppointmentDto } from './dto/update-appointments.dto';
 
 @Injectable()
 export class AppointmentsService {
@@ -24,6 +25,7 @@ export class AppointmentsService {
   constructor(
     private readonly appointmentsRepository: AppointmentsRepository,
     private readonly prisma: PrismaService,
+    private readonly mailService: MailService,
   ) {}
 
   async getAvailableSlots(dateStr: string) {
@@ -64,26 +66,44 @@ export class AppointmentsService {
     const appointmentDate = new Date(dto.appointmentTime);
     await this.ensureSlotAvailable(appointmentDate);
 
-    // Kiểm tra khách hàng đã đặt trong cùng ngày + khung giờ này chưa
     const isDuplicate =
       await this.appointmentsRepository.hasCustomerBookingInSlot(
         customerId,
         appointmentDate,
       );
     if (isDuplicate) {
-      const hour = String(appointmentDate.getHours()).padStart(2, '0');
       throw new BadRequestException(
         `Bạn đã có lịch hẹn trong khung giờ này. Vui lòng chọn ngày hoặc khung giờ khác.`,
       );
     }
 
-    return this.appointmentsRepository.createAppointment({
+    const appointment = await this.appointmentsRepository.createAppointment({
       appointmentTime: appointmentDate,
       customerId,
       vehicleId: dto.vehicleId,
       symptoms: dto.symptoms,
       notes: dto.notes,
     });
+
+    // Gửi mail xác nhận
+    const customer = await this.prisma.customer.findUnique({
+      where: { id: customerId },
+      select: { email: true, notificationEmail: true, customerName: true },
+    });
+
+    // Ưu tiên dùng notificationEmail (email Google), fallback về email đăng nhập
+    const mailTo = customer?.notificationEmail || customer?.email;
+    if (mailTo) {
+      this.mailService
+        .sendAppointmentConfirmation(mailTo, {
+          customerName: customer.customerName,
+          appointmentTime: appointmentDate,
+          symptoms: dto.symptoms,
+        })
+        .catch((err) => this.logger.warn(`Gửi mail thất bại: ${err.message}`));
+    }
+
+    return appointment;
   }
 
   async createByAdmin(dto: AdminCreateAppointmentDto): Promise<Appointment> {
@@ -324,7 +344,9 @@ export class AppointmentsService {
 
   private async ensureSlotAvailable(appointmentDate: Date) {
     // Dùng giờ VN (UTC+7) để tính slot đúng, tránh lệch UTC
-    const vnHour = new Date(appointmentDate.getTime() + 7 * 60 * 60 * 1000).getUTCHours();
+    const vnHour = new Date(
+      appointmentDate.getTime() + 7 * 60 * 60 * 1000,
+    ).getUTCHours();
     const booked = await this.appointmentsRepository.countByTimeSlot(
       appointmentDate,
       vnHour,

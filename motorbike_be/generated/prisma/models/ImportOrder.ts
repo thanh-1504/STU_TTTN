@@ -232,8 +232,8 @@ export type ImportOrderWhereInput = {
   notes?: Prisma.StringNullableFilter<"ImportOrder"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ImportOrder"> | Date | string
   adminId?: Prisma.IntFilter<"ImportOrder"> | number
-  admin?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   items?: Prisma.ImportItemListRelationFilter
+  admin?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type ImportOrderOrderByWithRelationInput = {
@@ -243,8 +243,8 @@ export type ImportOrderOrderByWithRelationInput = {
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   adminId?: Prisma.SortOrder
-  admin?: Prisma.UserOrderByWithRelationInput
   items?: Prisma.ImportItemOrderByRelationAggregateInput
+  admin?: Prisma.UserOrderByWithRelationInput
 }
 
 export type ImportOrderWhereUniqueInput = Prisma.AtLeast<{
@@ -257,8 +257,8 @@ export type ImportOrderWhereUniqueInput = Prisma.AtLeast<{
   notes?: Prisma.StringNullableFilter<"ImportOrder"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ImportOrder"> | Date | string
   adminId?: Prisma.IntFilter<"ImportOrder"> | number
-  admin?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   items?: Prisma.ImportItemListRelationFilter
+  admin?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type ImportOrderOrderByWithAggregationInput = {
@@ -292,8 +292,8 @@ export type ImportOrderCreateInput = {
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: string | null
   createdAt?: Date | string
-  admin: Prisma.UserCreateNestedOneWithoutImportOrdersInput
   items?: Prisma.ImportItemCreateNestedManyWithoutImportOrderInput
+  admin: Prisma.UserCreateNestedOneWithoutImportOrdersInput
 }
 
 export type ImportOrderUncheckedCreateInput = {
@@ -311,8 +311,8 @@ export type ImportOrderUpdateInput = {
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  admin?: Prisma.UserUpdateOneRequiredWithoutImportOrdersNestedInput
   items?: Prisma.ImportItemUpdateManyWithoutImportOrderNestedInput
+  admin?: Prisma.UserUpdateOneRequiredWithoutImportOrdersNestedInput
 }
 
 export type ImportOrderUncheckedUpdateInput = {
@@ -636,8 +636,8 @@ export type ImportOrderSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   notes?: boolean
   createdAt?: boolean
   adminId?: boolean
-  admin?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   items?: boolean | Prisma.ImportOrder$itemsArgs<ExtArgs>
+  admin?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ImportOrderCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["importOrder"]>
 
@@ -672,8 +672,8 @@ export type ImportOrderSelectScalar = {
 
 export type ImportOrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "importDate" | "totalAmount" | "notes" | "createdAt" | "adminId", ExtArgs["result"]["importOrder"]>
 export type ImportOrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  admin?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   items?: boolean | Prisma.ImportOrder$itemsArgs<ExtArgs>
+  admin?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ImportOrderCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ImportOrderIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -686,8 +686,8 @@ export type ImportOrderIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.
 export type $ImportOrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ImportOrder"
   objects: {
-    admin: Prisma.$UserPayload<ExtArgs>
     items: Prisma.$ImportItemPayload<ExtArgs>[]
+    admin: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1090,8 +1090,8 @@ readonly fields: ImportOrderFieldRefs;
  */
 export interface Prisma__ImportOrderClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  admin<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   items<T extends Prisma.ImportOrder$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ImportOrder$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImportItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  admin<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

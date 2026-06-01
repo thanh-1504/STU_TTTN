@@ -149,3 +149,8 @@ export type WorkSchedule = Prisma.WorkScheduleModel
  * 
  */
 export type SystemConfig = Prisma.SystemConfigModel
+/**
+ * Model appointment_services
+ * 
+ */
+export type appointment_services = Prisma.appointment_servicesModel

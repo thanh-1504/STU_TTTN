@@ -61,9 +61,17 @@ export const CustomerRegisterSchema = z.object({
   phone: z
     .string()
     .regex(/^(0|\+84)[3-9]\d{8}$/, 'Số điện thoại không hợp lệ'),
+  notificationEmail: z
+    .string()
+    .email('Email nhận thông báo không hợp lệ')
+    .max(255)
+    .optional()
+    .or(z.literal(''))
+    .transform(v => (v === '' ? undefined : v)),
 });
 
 export class CustomerRegisterDto extends createZodDto(CustomerRegisterSchema) {}
+
 
 export const CustomerLoginSchema = z.object({
   email: z

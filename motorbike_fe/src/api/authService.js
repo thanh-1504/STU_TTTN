@@ -39,15 +39,16 @@ export const getStaffMe = async () => {
 
 /**
  * Đăng ký tài khoản khách hàng bằng email + password
- * @param {{ email: string, password: string, customerName: string, phone: string }} data
+ * @param {{ email: string, password: string, customerName: string, phone: string, notificationEmail?: string }} data
  * @returns {Promise<{accessToken: string, customer: object}>}
  */
-export const customerRegister = async ({ email, password, customerName, phone }) => {
+export const customerRegister = async ({ email, password, customerName, phone, notificationEmail }) => {
   const response = await api.post("/auth/customer/register", {
     email,
     password,
     customerName,
     phone,
+    ...(notificationEmail ? { notificationEmail } : {}),
   });
   return response.data;
 };

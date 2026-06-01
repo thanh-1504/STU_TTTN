@@ -1,19 +1,20 @@
 import { Module } from '@nestjs/common';
+import { MailService } from 'src/shared/services/mail.service';
 import {
-  AppointmentsPublicController,
-  AppointmentsCustomerController,
   AppointmentsAdminController,
+  AppointmentsCustomerController,
+  AppointmentsPublicController,
 } from './appointments.controller';
-import { AppointmentsService } from './appointments.service';
 import { AppointmentsRepository } from './appointments.repository';
+import { AppointmentsService } from './appointments.service';
 
 @Module({
   controllers: [
-    AppointmentsPublicController,   // GET /appointments/available-slots (public)
+    AppointmentsPublicController, // GET /appointments/available-slots (public)
     AppointmentsCustomerController, // POST /appointments (Customer JWT)
-    AppointmentsAdminController,    // /admin/appointments (Staff JWT)
+    AppointmentsAdminController, // /admin/appointments (Staff JWT)
   ],
-  providers: [AppointmentsService, AppointmentsRepository],
+  providers: [AppointmentsService, AppointmentsRepository, MailService],
   exports: [AppointmentsService, AppointmentsRepository],
 })
 export class AppointmentsModule {}

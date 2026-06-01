@@ -1,450 +1,273 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
-  moduleFormat    = "cjs"
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-
-// ============================================================
-// ENUMS
-// ============================================================
-
-enum RoleName {
-  ADMIN        // Quản trị viên
-  RECEPTIONIST // Lễ tân
-  TECHNICIAN   // Kỹ thuật viên
-}
-
-enum VehicleType {
-  MANUAL  // Xe số
-  SCOOTER // Xe tay ga
-  BIG     // Xe phân khối lớn (PKL)
-}
-
-enum AppointmentStatus {
-  PENDING   // Chờ xác nhận
-  CONFIRMED // Đã xác nhận
-  CANCELLED // Đã hủy
-  COMPLETED // Đã hoàn thành (chuyển thành phiếu sửa)
-}
-
-enum RepairOrderStatus {
-  RECEIVED    // Đã tiếp nhận
-  IN_PROGRESS // Đang thực hiện
-  PENDING     // Tạm dừng (chờ phụ tùng / chờ khách duyệt giá)
-  COMPLETED   // Hoàn thành (KTV bàn giao lễ tân)
-  PAID        // Đã thanh toán
-  CANCELLED   // Đã hủy
-}
-
-enum PaymentMethod {
-  CASH         // Tiền mặt
-  BANK_TRANSFER // Chuyển khoản
-  QR_CODE      // QR động (VNPay / ZaloPay / Momo)
-}
-
-enum VoucherStatus {
-  ACTIVE  // Đang hoạt động
-  EXPIRED // Đã hết hạn
-  REVOKED // Đã hủy thủ công
-}
-
-enum BlogStatus {
-  DRAFT     // Nháp
-  PUBLISHED // Đã đăng
-  ARCHIVED  // Đã ẩn
-}
-
-enum ReviewStatus {
-  PENDING  // Chờ kiểm duyệt
-  APPROVED // Đã duyệt (hiển thị)
-  HIDDEN   // Đã ẩn
-}
-
-enum NotificationType {
-  APPOINTMENT_CONFIRM   // Xác nhận lịch hẹn
-  APPOINTMENT_REMINDER  // Nhắc lịch hẹn
-  REPAIR_COMPLETED      // Xe sửa xong
-  MAINTENANCE_DUE       // Nhắc bảo dưỡng định kỳ
-  OIL_CHANGE_DUE        // Nhắc thay nhớt
-  STOCK_ALERT           // Cảnh báo hết hàng tồn kho
-  PRICE_APPROVAL        // Yêu cầu duyệt báo giá phát sinh
-}
-
-// ============================================================
-// PHÂN QUYỀN (RBAC)
-// ============================================================
-
 model Role {
-  id        Int      @id @default(autoincrement())
-  roleName  RoleName @unique @map("role_name")
-  users     User[]
+  id       Int      @id @default(autoincrement())
+  roleName RoleName @unique @map("role_name")
+  users    User[]
 
   @@map("roles")
 }
 
-// ============================================================
-// NGƯỜI DÙNG NỘI BỘ (Nhân viên)
-// ============================================================
-
 model User {
-  id           Int       @id @default(autoincrement())
-  username     String    @unique @db.VarChar(50)
-  password String        @db.VarChar(255)
-  fullname     String    @db.VarChar(100)
-  phone        String    @unique @db.VarChar(15)
-  email        String    @unique @db.VarChar(255)
-  isActive     Boolean   @default(true) @map("is_active")
-  lastLogin    DateTime? @map("last_login")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
-
-  // Relations
-  roleId Int  @map("role_id")
-  role   Role @relation(fields: [roleId], references: [id])
-
-  // Là Lễ tân trong phiếu sửa chữa
-  repairOrdersAsReceptionist RepairOrder[] @relation("ReceptionistOrders")
-
-  // Là KTV trong phiếu sửa chữa
-  repairOrdersAsTechnician RepairOrder[] @relation("TechnicianOrders")
-
-  // Là KTV trong lịch hẹn
-  appointmentsAsTechnician Appointment[] @relation("TechnicianAppointments")
-
-  // Lập phiếu nhập kho
-  importOrders ImportOrder[]
-
-  // Lịch ca làm việc
-  workSchedules WorkSchedule[]
+  id                         Int            @id @default(autoincrement())
+  username                   String         @unique @db.VarChar(50)
+  password                   String         @db.VarChar(255)
+  fullname                   String         @db.VarChar(100)
+  phone                      String         @unique @db.VarChar(15)
+  email                      String         @unique @db.VarChar(255)
+  isActive                   Boolean        @default(true) @map("is_active")
+  lastLogin                  DateTime?      @map("last_login")
+  createdAt                  DateTime       @default(now()) @map("created_at")
+  updatedAt                  DateTime       @updatedAt @map("updated_at")
+  roleId                     Int            @map("role_id")
+  appointmentsAsTechnician   Appointment[]  @relation("TechnicianAppointments")
+  importOrders               ImportOrder[]
+  repairOrdersAsReceptionist RepairOrder[]  @relation("ReceptionistOrders")
+  repairOrdersAsTechnician   RepairOrder[]  @relation("TechnicianOrders")
+  role                       Role           @relation(fields: [roleId], references: [id])
+  workSchedules              WorkSchedule[]
 
   @@map("users")
 }
 
-// ============================================================
-// KHÁCH HÀNG (Người dùng bên ngoài / Portal)
-// ============================================================
-
 model Customer {
-  id           Int      @id @default(autoincrement())
-  phone        String   @unique @db.VarChar(15)
-  email        String?  @unique @db.VarChar(255)
-  password     String?  @db.VarChar(255)
-  customerName String   @map("customer_name") @db.VarChar(100)
-  avatarUrl    String?  @map("avatar_url") @db.VarChar(500)
-  address      String?  @db.Text
-  totalSpent   Decimal  @default(0) @map("total_spent") @db.Decimal(15, 2)
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-
-  vehicles     Vehicle[]
-  appointments Appointment[]
-  repairOrders RepairOrder[]
-  reviews      Review[]
+  id            Int            @id @default(autoincrement())
+  phone         String         @unique @db.VarChar(15)
+  customerName  String         @map("customer_name") @db.VarChar(100)
+  address       String?
+  totalSpent    Decimal        @default(0) @map("total_spent") @db.Decimal(15, 2)
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  email         String?        @unique @db.VarChar(255)
+   notificationEmail String?  @map("notification_email") @db.VarChar(255)
+  password      String?        @db.VarChar(255)
+  avatarUrl     String?        @map("avatar_url") @db.VarChar(500)
+  appointments  Appointment[]
   notifications Notification[]
+  repairOrders  RepairOrder[]
+  reviews       Review[]
+  vehicles      Vehicle[]
 
   @@map("customers")
 }
 
-// ============================================================
-// HỒ SƠ XE
-// ============================================================
-
 model Vehicle {
-  id           Int         @id @default(autoincrement())
-  licensePlate String      @unique @map("license_plate") @db.VarChar(20)
-  brand        String      @db.VarChar(50)
-  vehicleType  VehicleType @map("vehicle_type")
-  model        String?     @db.VarChar(100)
-  currentKm    Int?        @map("current_km")
-  imageUrl     String?     @map("image_url") @default("") @db.VarChar(500)
-  notes        String?     @db.Text
-  createdAt    DateTime    @default(now()) @map("created_at")
-  updatedAt    DateTime    @updatedAt @map("updated_at")
-
-  customerId Int      @map("customer_id")
-  customer   Customer @relation(fields: [customerId], references: [id])
-
+  id           Int           @id @default(autoincrement())
+  licensePlate String        @unique @map("license_plate") @db.VarChar(20)
+  brand        String        @db.VarChar(50)
+  vehicleType  VehicleType   @map("vehicle_type")
+  model        String?       @db.VarChar(100)
+  currentKm    Int?          @map("current_km")
+  notes        String?
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  customerId   Int           @map("customer_id")
+  imageUrl     String?       @default("") @map("image_url") @db.VarChar(500)
   appointments Appointment[]
   repairOrders RepairOrder[]
+  customer     Customer      @relation(fields: [customerId], references: [id])
 
   @@map("vehicles")
 }
 
-// ============================================================
-// LỊCH HẸN
-// ============================================================
-
 model Appointment {
-  id              Int               @id @default(autoincrement())
-  appointmentTime DateTime          @map("appointment_time")
-  status          AppointmentStatus @default(PENDING)
-  symptoms        String?           @db.Text  // Mô tả triệu chứng / yêu cầu ban đầu
-  notes           String?           @db.Text
-  createdAt       DateTime          @default(now()) @map("created_at")
-  updatedAt       DateTime          @updatedAt @map("updated_at")
-
-  customerId   Int      @map("customer_id")
-  customer     Customer @relation(fields: [customerId], references: [id])
-
-  vehicleId    Int?     @map("vehicle_id")
-  vehicle      Vehicle? @relation(fields: [vehicleId], references: [id])
-
-  technicianId Int?     @map("technician_id")
-  technician   User?    @relation("TechnicianAppointments", fields: [technicianId], references: [id])
-
-  // Phiếu sửa chữa được tạo từ lịch hẹn này
-  repairOrder RepairOrder?
+  id                   Int                    @id @default(autoincrement())
+  appointmentTime      DateTime               @map("appointment_time")
+  status               AppointmentStatus      @default(PENDING)
+  symptoms             String?
+  notes                String?
+  createdAt            DateTime               @default(now()) @map("created_at")
+  updatedAt            DateTime               @updatedAt @map("updated_at")
+  customerId           Int                    @map("customer_id")
+  vehicleId            Int?                   @map("vehicle_id")
+  technicianId         Int?                   @map("technician_id")
+  appointment_services appointment_services[]
+  customer             Customer               @relation(fields: [customerId], references: [id])
+  technician           User?                  @relation("TechnicianAppointments", fields: [technicianId], references: [id])
+  vehicle              Vehicle?               @relation(fields: [vehicleId], references: [id])
+  repairOrder          RepairOrder?
 
   @@map("appointments")
 }
 
-// ============================================================
-// PHIẾU SỬA CHỮA
-// ============================================================
-
 model RepairOrder {
-  id          Int               @id @default(autoincrement())
-  status      RepairOrderStatus @default(RECEIVED)
-  symptoms    String?           @db.Text        // Triệu chứng lúc tiếp nhận
-  vehicleConditionNote String?  @map("vehicle_condition_note") @db.Text // Ghi chú vết xước/tình trạng vỏ xe
-  totalAmount Decimal           @default(0) @map("total_amount") @db.Decimal(15, 2)
-  paidAmount  Decimal           @default(0) @map("paid_amount") @db.Decimal(15, 2)
-  paymentMethod PaymentMethod?  @map("payment_method")
-  warrantyNote  String?         @map("warranty_note") @db.Text // Ghi chú bảo hành chung
-  technicianNote String?        @map("technician_note") @db.Text // Lưu ý KTV ghi cho khách
-  paidAt      DateTime?         @map("paid_at")
-  createdAt   DateTime          @default(now()) @map("created_at")
-  updatedAt   DateTime          @updatedAt @map("updated_at")
-
-  // Lịch hẹn (nếu có)
-  appointmentId Int?         @unique @map("appointment_id")
-  appointment   Appointment? @relation(fields: [appointmentId], references: [id])
-
-  // Khách hàng
-  customerId Int      @map("customer_id")
-  customer   Customer @relation(fields: [customerId], references: [id])
-
-  // Xe
-  vehicleId Int     @map("vehicle_id")
-  vehicle   Vehicle @relation(fields: [vehicleId], references: [id])
-
-  // Lễ tân lập phiếu
-  receptionistId Int  @map("receptionist_id")
-  receptionist   User @relation("ReceptionistOrders", fields: [receptionistId], references: [id])
-
-  // Kỹ thuật viên phụ trách
-  technicianId Int  @map("technician_id")
-  technician   User @relation("TechnicianOrders", fields: [technicianId], references: [id])
-
-  // Voucher áp dụng (mỗi phiếu tối đa 1 voucher)
-  voucherId Int?     @map("voucher_id")
-  voucher   Voucher? @relation(fields: [voucherId], references: [id])
-
-  // Chi tiết dịch vụ & phụ tùng
-  services     RepairOrderService[]
-  items        RepairOrderItem[]
-  notifications Notification[]
+  id                   Int                  @id @default(autoincrement())
+  status               RepairOrderStatus    @default(RECEIVED)
+  symptoms             String?
+  vehicleConditionNote String?              @map("vehicle_condition_note")
+  totalAmount          Decimal              @default(0) @map("total_amount") @db.Decimal(15, 2)
+  paidAmount           Decimal              @default(0) @map("paid_amount") @db.Decimal(15, 2)
+  paymentMethod        PaymentMethod?       @map("payment_method")
+  warrantyNote         String?              @map("warranty_note")
+  technicianNote       String?              @map("technician_note")
+  paidAt               DateTime?            @map("paid_at")
+  createdAt            DateTime             @default(now()) @map("created_at")
+  updatedAt            DateTime             @updatedAt @map("updated_at")
+  appointmentId        Int?                 @unique @map("appointment_id")
+  customerId           Int                  @map("customer_id")
+  vehicleId            Int                  @map("vehicle_id")
+  receptionistId       Int                  @map("receptionist_id")
+  technicianId         Int                  @map("technician_id")
+  voucherId            Int?                 @map("voucher_id")
+  notifications        Notification[]
+  items                RepairOrderItem[]
+  services             RepairOrderService[]
+  appointment          Appointment?         @relation(fields: [appointmentId], references: [id])
+  customer             Customer             @relation(fields: [customerId], references: [id])
+  receptionist         User                 @relation("ReceptionistOrders", fields: [receptionistId], references: [id])
+  technician           User                 @relation("TechnicianOrders", fields: [technicianId], references: [id])
+  vehicle              Vehicle              @relation(fields: [vehicleId], references: [id])
+  voucher              Voucher?             @relation(fields: [voucherId], references: [id])
 
   @@map("repair_orders")
 }
 
-// ============================================================
-// DỊCH VỤ
-// ============================================================
-
 model Service {
-  id              Int     @id @default(autoincrement())
-  serviceName     String  @unique @map("service_name") @db.VarChar(255)
-  description     String? @db.Text
-  imageUrl        String? @map("image_url") @db.VarChar(500)
-  durationMinutes Int     @map("duration_minutes")
-  priceManual     Decimal @map("price_manual") @db.Decimal(15, 2)   // Giá xe số
-  priceScooter    Decimal @map("price_scooter") @db.Decimal(15, 2)  // Giá xe tay ga
-  priceMoto       Decimal @map("price_moto") @db.Decimal(15, 2)     // Giá PKL
-  isActive        Boolean @default(true) @map("is_active")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
-
-  repairOrderServices RepairOrderService[]
-  comboServices       ComboService[]
+  id                   Int                    @id @default(autoincrement())
+  serviceName          String                 @unique @map("service_name") @db.VarChar(255)
+  description          String?
+  imageUrl             String?                @map("image_url") @db.VarChar(500)
+  durationMinutes      Int                    @map("duration_minutes")
+  priceManual          Decimal                @map("price_manual") @db.Decimal(15, 2)
+  priceScooter         Decimal                @map("price_scooter") @db.Decimal(15, 2)
+  priceMoto            Decimal                @map("price_moto") @db.Decimal(15, 2)
+  isActive             Boolean                @default(true) @map("is_active")
+  createdAt            DateTime               @default(now()) @map("created_at")
+  updatedAt            DateTime               @updatedAt @map("updated_at")
+  appointment_services appointment_services[]
+  comboServices        ComboService[]
+  repairOrderServices  RepairOrderService[]
 
   @@map("services")
 }
 
-// ============================================================
-// GÓI COMBO DỊCH VỤ
-// ============================================================
-
 model Combo {
-  id          Int      @id @default(autoincrement())
-  comboName   String   @map("combo_name") @db.VarChar(255)
-  description String?  @db.Text
-  imageUrl    String?  @map("image_url") @db.VarChar(500)
-  discountPct Decimal? @map("discount_pct") @db.Decimal(5, 2) // % giảm giá khi mua combo
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  services ComboService[]
+  id          Int            @id @default(autoincrement())
+  comboName   String         @map("combo_name") @db.VarChar(255)
+  description String?
+  imageUrl    String?        @map("image_url") @db.VarChar(500)
+  discountPct Decimal?       @map("discount_pct") @db.Decimal(5, 2)
+  isActive    Boolean        @default(true) @map("is_active")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+  services    ComboService[]
 
   @@map("combos")
 }
 
 model ComboService {
-  comboId   Int @map("combo_id")
-  serviceId Int @map("service_id")
-
-  combo   Combo   @relation(fields: [comboId], references: [id])
-  service Service @relation(fields: [serviceId], references: [id])
+  comboId   Int     @map("combo_id")
+  serviceId Int     @map("service_id")
+  combo     Combo   @relation(fields: [comboId], references: [id])
+  service   Service @relation(fields: [serviceId], references: [id])
 
   @@id([comboId, serviceId])
   @@map("combo_services")
 }
 
-// ============================================================
-// CHI TIẾT DỊCH VỤ TRONG PHIẾU SỬA CHỮA
-// ============================================================
-
 model RepairOrderService {
-  id            Int     @id @default(autoincrement())
-  appliedPrice  Decimal @map("applied_price") @db.Decimal(15, 2) // Giá tại thời điểm lập phiếu
-
+  id            Int         @id @default(autoincrement())
+  appliedPrice  Decimal     @map("applied_price") @db.Decimal(15, 2)
   repairOrderId Int         @map("repair_order_id")
+  serviceId     Int         @map("service_id")
   repairOrder   RepairOrder @relation(fields: [repairOrderId], references: [id])
-
-  serviceId Int     @map("service_id")
-  service   Service @relation(fields: [serviceId], references: [id])
+  service       Service     @relation(fields: [serviceId], references: [id])
 
   @@map("repair_order_services")
 }
 
-// ============================================================
-// PHỤ TÙNG / KHO
-// ============================================================
-
 model SparePart {
-  id             Int      @id @default(autoincrement())
-  partNumber     String   @unique @map("part_number") @db.VarChar(50)
-  partName       String   @map("part_name") @db.VarChar(200)
-  unit           String   @default("cái") @db.VarChar(20) // Đơn vị tính
-  stockQuantity  Int      @default(0) @map("stock_quantity")
-  minStockLevel  Int      @default(5) @map("min_stock_level") // Ngưỡng cảnh báo hết hàng
-  sellingPrice   Decimal  @map("selling_price") @db.Decimal(15, 2)
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
-
-  repairOrderItems RepairOrderItem[]
+  id               Int               @id @default(autoincrement())
+  partNumber       String            @unique @map("part_number") @db.VarChar(50)
+  partName         String            @map("part_name") @db.VarChar(200)
+  unit             String            @default("cái") @db.VarChar(20)
+  stockQuantity    Int               @default(0) @map("stock_quantity")
+  minStockLevel    Int               @default(5) @map("min_stock_level")
+  sellingPrice     Decimal           @map("selling_price") @db.Decimal(15, 2)
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
   importItems      ImportItem[]
+  repairOrderItems RepairOrderItem[]
 
   @@map("spare_parts")
 }
 
-// ============================================================
-// CHI TIẾT PHỤ TÙNG TRONG PHIẾU SỬA CHỮA
-// ============================================================
-
 model RepairOrderItem {
-  id          Int     @id @default(autoincrement())
-  quantity    Int
-  unitPrice   Decimal @map("unit_price") @db.Decimal(15, 2) // Giá xuất kho tại thời điểm lập phiếu
-  warrantyNote String? @map("warranty_note") @db.VarChar(255) // Bảo hành cho linh kiện này
-
+  id            Int         @id @default(autoincrement())
+  quantity      Int
+  unitPrice     Decimal     @map("unit_price") @db.Decimal(15, 2)
+  warrantyNote  String?     @map("warranty_note") @db.VarChar(255)
   repairOrderId Int         @map("repair_order_id")
+  sparePartId   Int         @map("spare_part_id")
   repairOrder   RepairOrder @relation(fields: [repairOrderId], references: [id])
-
-  sparePartId Int       @map("spare_part_id")
-  sparePart   SparePart @relation(fields: [sparePartId], references: [id])
+  sparePart     SparePart   @relation(fields: [sparePartId], references: [id])
 
   @@map("repair_order_items")
 }
 
-// ============================================================
-// PHIẾU NHẬP KHO
-// ============================================================
-
 model ImportOrder {
-  id          Int      @id @default(autoincrement())
-  importDate  DateTime @default(now()) @map("import_date")
-  totalAmount Decimal  @map("total_amount") @db.Decimal(15, 2)
-  notes       String?  @db.Text
-  createdAt   DateTime @default(now()) @map("created_at")
-
-  adminId Int  @map("admin_id")
-  admin   User @relation(fields: [adminId], references: [id])
-
-  items ImportItem[]
+  id          Int          @id @default(autoincrement())
+  importDate  DateTime     @default(now()) @map("import_date")
+  totalAmount Decimal      @map("total_amount") @db.Decimal(15, 2)
+  notes       String?
+  createdAt   DateTime     @default(now()) @map("created_at")
+  adminId     Int          @map("admin_id")
+  items       ImportItem[]
+  admin       User         @relation(fields: [adminId], references: [id])
 
   @@map("import_orders")
 }
 
-// ============================================================
-// CHI TIẾT PHIẾU NHẬP KHO
-// ============================================================
-
 model ImportItem {
-  id          Int     @id @default(autoincrement())
-  quantity    Int
-  importPrice Decimal @map("import_price") @db.Decimal(15, 2) // Giá nhập (giá vốn)
-
+  id            Int         @id @default(autoincrement())
+  quantity      Int
+  importPrice   Decimal     @map("import_price") @db.Decimal(15, 2)
   importOrderId Int         @map("import_order_id")
+  sparePartId   Int         @map("spare_part_id")
   importOrder   ImportOrder @relation(fields: [importOrderId], references: [id])
-
-  sparePartId Int       @map("spare_part_id")
-  sparePart   SparePart @relation(fields: [sparePartId], references: [id])
+  sparePart     SparePart   @relation(fields: [sparePartId], references: [id])
 
   @@map("import_items")
 }
 
-// ============================================================
-// VOUCHER / KHUYẾN MÃI
-// ============================================================
-
 model Voucher {
   id              Int           @id @default(autoincrement())
   voucherCode     String        @unique @map("voucher_code") @db.VarChar(50)
-  description     String?       @db.Text
-  discountAmount  Decimal?      @map("discount_amount") @db.Decimal(15, 2) // Giảm cố định (VND)
-  discountPercent Int?          @map("discount_percent")                   // Giảm theo % (1-100)
-  maxDiscount     Decimal?      @map("max_discount") @db.Decimal(15, 2)   // Giảm tối đa khi dùng %
+  description     String?
+  discountAmount  Decimal?      @map("discount_amount") @db.Decimal(15, 2)
+  discountPercent Int?          @map("discount_percent")
+  maxDiscount     Decimal?      @map("max_discount") @db.Decimal(15, 2)
   minOrderValue   Decimal       @default(0) @map("min_order_value") @db.Decimal(15, 2)
   startDate       DateTime      @map("start_date")
   endDate         DateTime      @map("end_date")
   status          VoucherStatus @default(ACTIVE)
   createdAt       DateTime      @default(now()) @map("created_at")
   updatedAt       DateTime      @updatedAt @map("updated_at")
-
-  repairOrders RepairOrder[]
+  repairOrders    RepairOrder[]
 
   @@map("vouchers")
 }
 
-// ============================================================
-// BLOG / TIN TỨC / MẸO XE
-// ============================================================
-
 model BlogPost {
-  id          Int        @id @default(autoincrement())
-  title       String     @db.VarChar(500)
-  slug        String     @unique @db.VarChar(500)
-  content     String     @db.Text
-  thumbnailUrl String?   @map("thumbnail_url") @db.VarChar(500)
-  status      BlogStatus @default(DRAFT)
-  publishedAt DateTime?  @map("published_at")
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime   @updatedAt @map("updated_at")
-
-  categoryId Int?          @map("category_id")
-  category   BlogCategory? @relation(fields: [categoryId], references: [id])
+  id           Int           @id @default(autoincrement())
+  title        String        @db.VarChar(500)
+  slug         String        @unique @db.VarChar(500)
+  content      String
+  thumbnailUrl String?       @map("thumbnail_url") @db.VarChar(500)
+  status       BlogStatus    @default(DRAFT)
+  publishedAt  DateTime?     @map("published_at")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  categoryId   Int?          @map("category_id")
+  category     BlogCategory? @relation(fields: [categoryId], references: [id])
 
   @@map("blog_posts")
 }
@@ -457,97 +280,142 @@ model BlogCategory {
   @@map("blog_categories")
 }
 
-// ============================================================
-// BANNER / SLIDER QUẢNG CÁO
-// ============================================================
-
 model Banner {
-  id          Int      @id @default(autoincrement())
-  title       String?  @db.VarChar(255)
-  imageUrl    String   @map("image_url") @db.VarChar(500)
-  linkUrl     String?  @map("link_url") @db.VarChar(500)
-  sortOrder   Int      @default(0) @map("sort_order")
-  isActive    Boolean  @default(true) @map("is_active")
-  startDate   DateTime? @map("start_date")
-  endDate     DateTime? @map("end_date")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id        Int       @id @default(autoincrement())
+  title     String?   @db.VarChar(255)
+  imageUrl  String    @map("image_url") @db.VarChar(500)
+  linkUrl   String?   @map("link_url") @db.VarChar(500)
+  sortOrder Int       @default(0) @map("sort_order")
+  isActive  Boolean   @default(true) @map("is_active")
+  startDate DateTime? @map("start_date")
+  endDate   DateTime? @map("end_date")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
 
   @@map("banners")
 }
 
-// ============================================================
-// ĐÁNH GIÁ DỊCH VỤ (Review)
-// ============================================================
-
 model Review {
-  id        Int          @id @default(autoincrement())
-  rating    Int          // 1-5 sao
-  comment   String?      @db.Text
-  status    ReviewStatus @default(PENDING)
-  adminReply String?     @map("admin_reply") @db.Text
-  createdAt DateTime     @default(now()) @map("created_at")
-  updatedAt DateTime     @updatedAt @map("updated_at")
-
-  customerId Int      @map("customer_id")
-  customer   Customer @relation(fields: [customerId], references: [id])
+  id         Int          @id @default(autoincrement())
+  rating     Int
+  comment    String?
+  status     ReviewStatus @default(PENDING)
+  adminReply String?      @map("admin_reply")
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+  customerId Int          @map("customer_id")
+  customer   Customer     @relation(fields: [customerId], references: [id])
 
   @@map("reviews")
 }
 
-// ============================================================
-// THÔNG BÁO HỆ THỐNG
-// ============================================================
-
 model Notification {
-  id         Int              @id @default(autoincrement())
-  type       NotificationType
-  title      String           @db.VarChar(255)
-  message    String           @db.Text
-  isRead     Boolean          @default(false) @map("is_read")
-  sentAt     DateTime?        @map("sent_at")
-  createdAt  DateTime         @default(now()) @map("created_at")
-
-  // Thông báo gửi đến khách hàng (nếu có)
-  customerId    Int?         @map("customer_id")
-  customer      Customer?    @relation(fields: [customerId], references: [id])
-
-  // Liên kết với phiếu sửa chữa (nếu có)
-  repairOrderId Int?         @map("repair_order_id")
-  repairOrder   RepairOrder? @relation(fields: [repairOrderId], references: [id])
+  id            Int              @id @default(autoincrement())
+  type          NotificationType
+  title         String           @db.VarChar(255)
+  message       String
+  isRead        Boolean          @default(false) @map("is_read")
+  sentAt        DateTime?        @map("sent_at")
+  createdAt     DateTime         @default(now()) @map("created_at")
+  customerId    Int?             @map("customer_id")
+  repairOrderId Int?             @map("repair_order_id")
+  customer      Customer?        @relation(fields: [customerId], references: [id])
+  repairOrder   RepairOrder?     @relation(fields: [repairOrderId], references: [id])
 
   @@map("notifications")
 }
 
-// ============================================================
-// LỊCH LÀM VIỆC / CA TRỰC
-// ============================================================
-
 model WorkSchedule {
-  id        Int      @id @default(autoincrement())
-  workDate  DateTime @map("work_date") @db.Date
-  shiftStart DateTime @map("shift_start")
-  shiftEnd   DateTime @map("shift_end")
-  maxVehicles Int    @default(10) @map("max_vehicles") // Sức chứa tối đa của ca
-  notes     String?  @db.Text
-  createdAt DateTime @default(now()) @map("created_at")
-
-  userId Int  @map("user_id")
-  user   User @relation(fields: [userId], references: [id])
+  id          Int      @id @default(autoincrement())
+  workDate    DateTime @map("work_date") @db.Date
+  shiftStart  DateTime @map("shift_start")
+  shiftEnd    DateTime @map("shift_end")
+  maxVehicles Int      @default(10) @map("max_vehicles")
+  notes       String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  userId      Int      @map("user_id")
+  user        User     @relation(fields: [userId], references: [id])
 
   @@map("work_schedules")
 }
 
-// ============================================================
-// CẤU HÌNH HỆ THỐNG
-// ============================================================
-
 model SystemConfig {
   id          Int      @id @default(autoincrement())
   configKey   String   @unique @map("config_key") @db.VarChar(100)
-  configValue String   @map("config_value") @db.Text
+  configValue String   @map("config_value")
   description String?  @db.VarChar(255)
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("system_configs")
+}
+
+model appointment_services {
+  appointment_id Int
+  service_id     Int
+  appointments   Appointment @relation(fields: [appointment_id], references: [id], onDelete: Cascade)
+  services       Service     @relation(fields: [service_id], references: [id])
+
+  @@id([appointment_id, service_id])
+}
+
+enum RoleName {
+  ADMIN
+  RECEPTIONIST
+  TECHNICIAN
+}
+
+enum VehicleType {
+  MANUAL
+  SCOOTER
+  BIG
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum RepairOrderStatus {
+  RECEIVED
+  IN_PROGRESS
+  PENDING
+  COMPLETED
+  PAID
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  QR_CODE
+}
+
+enum VoucherStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+}
+
+enum BlogStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  HIDDEN
+}
+
+enum NotificationType {
+  APPOINTMENT_CONFIRM
+  APPOINTMENT_REMINDER
+  REPAIR_COMPLETED
+  MAINTENANCE_DUE
+  OIL_CHANGE_DUE
+  STOCK_ALERT
+  PRICE_APPROVAL
 }
