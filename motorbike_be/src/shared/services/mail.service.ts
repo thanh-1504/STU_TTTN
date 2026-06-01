@@ -1,24 +1,16 @@
+// mail.service.ts
 import { Injectable } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 @Injectable()
 export class MailService {
-  private transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-      user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASS,
-    },
-  });
+  private resend = new Resend(process.env.RESEND_API_KEY);
 
   async sendAppointmentConfirmation(
     to: string,
     data: {
       customerName: string;
       appointmentTime: Date;
-      serviceName?: string;
       symptoms?: string;
     },
   ) {
@@ -30,8 +22,8 @@ export class MailService {
       minute: '2-digit',
     });
 
-    await this.transporter.sendMail({
-      from: process.env.MAIL_FROM,
+    await this.resend.emails.send({
+      from: 'Shop2Bánh <onboarding@resend.dev>', // dùng domain mặc định của Resend khi chưa có domain riêng
       to,
       subject: 'Xác nhận đặt lịch - Shop2Bánh',
       html: `
