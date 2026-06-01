@@ -1,6 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { getServices } from "../../api/servicesService";
+import { getSpareParts } from "../../api/sparePartsService";
 import {
   addRepairItem,
   addRepairService,
@@ -9,8 +11,6 @@ import {
   updateRepairStatus,
   updateVehicleKm,
 } from "../../api/technicianService";
-import { getServices } from "../../api/servicesService";
-import { getSpareParts } from "../../api/sparePartsService";
 import { useNotification } from "../../components/Notification";
 
 const STATUS_OPTS = [
@@ -49,7 +49,8 @@ export default function TechnicianOrderDetail() {
     queryFn: () => getSpareParts(),
   });
 
-  const refresh = () => qc.invalidateQueries({ queryKey: ["technician-order", id] });
+  const refresh = () =>
+    qc.invalidateQueries({ queryKey: ["technician-order", id] });
 
   const statusM = useMutation({
     mutationFn: (payload) => updateRepairStatus(id, payload),
@@ -69,7 +70,8 @@ export default function TechnicianOrderDetail() {
       setNewPartPrice("");
       refresh();
     },
-    onError: (e) => notify.error(e.response?.data?.message || "Lỗi thêm phụ tùng"),
+    onError: (e) =>
+      notify.error(e.response?.data?.message || "Lỗi thêm phụ tùng"),
   });
 
   const addServiceM = useMutation({
@@ -80,7 +82,8 @@ export default function TechnicianOrderDetail() {
       setNewServicePrice("");
       refresh();
     },
-    onError: (e) => notify.error(e.response?.data?.message || "Lỗi thêm dịch vụ"),
+    onError: (e) =>
+      notify.error(e.response?.data?.message || "Lỗi thêm dịch vụ"),
   });
 
   const kmM = useMutation({
@@ -90,7 +93,8 @@ export default function TechnicianOrderDetail() {
       setKmInput("");
       refresh();
     },
-    onError: (e) => notify.error(e.response?.data?.message || "Lỗi cập nhật KM"),
+    onError: (e) =>
+      notify.error(e.response?.data?.message || "Lỗi cập nhật KM"),
   });
 
   const completeM = useMutation({
@@ -183,17 +187,17 @@ export default function TechnicianOrderDetail() {
                 → {s.label}
               </button>
             ))}
-            <Link
+            {/* <Link
               to={`/technician/orders/${order.id}/extra-quote`}
               className="text-xs bg-amber-500 text-white px-3 py-1 rounded ml-auto"
             >
               📋 Yêu cầu báo giá phát sinh
-            </Link>
+            </Link> */}
             <button
               onClick={() => setShowCompleteModal(true)}
               className="text-xs bg-emerald-600 text-white px-3 py-1 rounded"
             >
-              ✅ Hoàn thành
+              Hoàn thành
             </button>
           </>
         )}

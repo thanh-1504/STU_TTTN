@@ -2,10 +2,10 @@ import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { logout } from "../../api/authService";
 
 const technicianNavItems = [
-  { to: "/technician", label: "📊 Dashboard", end: true },
-  { to: "/technician/tasks", label: "🛠️ Công việc được giao" },
-  { to: "/technician/extra-quotes", label: "📋 Chờ duyệt báo giá" },
-  { to: "/technician/completed", label: "✅ Hoàn thành" },
+  { to: "/technician", label: "Dashboard", end: true },
+  { to: "/technician/tasks", label: "Công việc được giao" },
+  { to: "/technician/extra-quotes", label: "Chờ duyệt báo giá" },
+  { to: "/technician/completed", label: "Hoàn thành" },
 ];
 
 export default function TechnicianLayout() {

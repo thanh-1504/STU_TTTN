@@ -2,12 +2,12 @@ import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { logout } from "../../api/authService";
 
 const receptionistNavItems = [
-  { to: "/receptionist", label: "📊 Dashboard", end: true },
-  { to: "/receptionist/appointments", label: "📅 Quản lý lịch hẹn" },
-  { to: "/receptionist/repair-orders", label: "📝 Tiếp nhận & Phiếu sửa" },
-  { to: "/receptionist/payment", label: "💵 Thanh toán & Bàn giao" },
-  { to: "/receptionist/customers", label: "👤 Khách hàng" },
-  { to: "/receptionist/vehicles", label: "🏍️ Hồ sơ xe" },
+  { to: "/receptionist", label: "Dashboard", end: true },
+  { to: "/receptionist/appointments", label: "Quản lý lịch hẹn" },
+  { to: "/receptionist/repair-orders", label: "Tiếp nhận & Phiếu sửa" },
+  { to: "/receptionist/payment", label: "Thanh toán & Bàn giao" },
+  { to: "/receptionist/customers", label: "Khách hàng" },
+  { to: "/receptionist/vehicles", label: "Hồ sơ xe" },
 ];
 
 export default function ReceptionistLayout() {

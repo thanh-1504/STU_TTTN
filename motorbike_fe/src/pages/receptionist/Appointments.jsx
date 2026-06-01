@@ -1,5 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader } from "lucide-react";
+import {
+  Ban,
+  CheckCircle2,
+  ClipboardList,
+  Clock,
+  Loader,
+  UserCheck,
+} from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -21,6 +28,9 @@ const STATUS_LABEL = {
   CANCELLED: { label: "Đã hủy", badge: "bg-red-100 text-red-700" },
   COMPLETED: { label: "Đã chuyển phiếu", badge: "bg-emerald-100 text-emerald-700" },
 };
+
+const iconBtnBase =
+  "inline-flex h-9 w-9 items-center justify-center rounded-lg border transition-colors hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-60";
 
 export default function ReceptionistAppointments() {
   const qc = useQueryClient();
@@ -297,36 +307,59 @@ export default function ReceptionistAppointments() {
                         a.technician?.fullname || "Chưa phân công"
                       )}
                     </td>
-                    <td className="p-3">
-                      <span className={`px-2 py-1 rounded text-xs ${s.badge}`}>{s.label}</span>
+                    <td className="p-3 min-w-[100px]">
+                      <span className={` py-1 rounded text-xs ${s.badge}`}>{s.label}</span>
                     </td>
-                    <td className="p-3 space-x-2 text-xs">
-                      {a.status === "PENDING" && (
-                        <button onClick={() => confirmM.mutate(a.id)} className="text-green-700 font-semibold">
-                          ✔ Xác nhận
-                        </button>
-                      )}
-                      {isAssignable && (
-                        <>
-                          <button onClick={() => handleAssign(a)} className="text-blue-700">
-                            👷 Phân công
+                    <td className="p-3">
+                      <div className="flex flex-wrap gap-2">
+                        {a.status === "PENDING" && (
+                          <button
+                            type="button"
+                            onClick={() => confirmM.mutate(a.id)}
+                            title="Xác nhận lịch hẹn"
+                            className={`${iconBtnBase} border-emerald-200 bg-emerald-50 text-emerald-600 hover:bg-emerald-100`}
+                          >
+                            <CheckCircle2 size={16} />
                           </button>
-                          <button onClick={() => openReschedule(a)} className="text-orange-600">
-                            🕒 Đổi lịch
-                          </button>
-                          <button onClick={() => handleCancel(a.id)} className="text-red-600">
-                            ✕ Hủy
-                          </button>
-                        </>
-                      )}
-                      {a.status === "CONFIRMED" && (
-                        <Link
-                          to={`/receptionist/repair-orders/create?appointmentId=${a.id}`}
-                          className="text-red-700 font-semibold"
-                        >
-                          📝 Lập phiếu
-                        </Link>
-                      )}
+                        )}
+                        {isAssignable && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => handleAssign(a)}
+                              title="Phân công kỹ thuật viên"
+                              className={`${iconBtnBase} border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100`}
+                            >
+                              <UserCheck size={16} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => openReschedule(a)}
+                              title="Đổi lịch hẹn"
+                              className={`${iconBtnBase} border-orange-200 bg-orange-50 text-orange-500 hover:bg-orange-100`}
+                            >
+                              <Clock size={16} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleCancel(a.id)}
+                              title="Hủy lịch hẹn"
+                              className={`${iconBtnBase} border-rose-200 bg-rose-50 text-rose-500 hover:bg-rose-100`}
+                            >
+                              <Ban size={16} />
+                            </button>
+                          </>
+                        )}
+                        {a.status === "CONFIRMED" && (
+                          <Link
+                            to={`/receptionist/repair-orders/create?appointmentId=${a.id}`}
+                            title="Lập phiếu sửa chữa"
+                            className={`${iconBtnBase} border-red-200 bg-red-50 text-red-600 hover:bg-red-100`}
+                          >
+                            <ClipboardList size={16} />
+                          </Link>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );

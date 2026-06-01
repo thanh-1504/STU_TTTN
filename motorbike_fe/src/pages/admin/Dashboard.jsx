@@ -225,29 +225,21 @@ export default function Dashboard() {
           <StatCard
             label="Tổng doanh thu"
             value={`${Number(totalRevenue).toLocaleString("vi-VN")}đ`}
-            icon="💰"
-            bg="bg-emerald-50"
             loading={loadingRevenue}
           />
           <StatCard
             label={`Đơn hàng ${periodLabel}`}
             value={`${totalOrders} đơn`}
-            icon="📋"
-            bg="bg-orange-50"
             loading={loadingRevenue}
           />
           <StatCard
             label="Lịch hẹn chờ"
             value={dashStats?.pendingAppointments ?? 0}
-            icon="📅"
-            bg="bg-yellow-50"
             loading={loadingDash}
           />
           <StatCard
             label="Tổng khách hàng"
             value={dashStats?.totalCustomers ?? 0}
-            icon="👤"
-            bg="bg-blue-50"
             loading={loadingDash}
           />
         </div>

@@ -3,15 +3,15 @@ import Swal from "sweetalert2";
 import { logout } from "../../api/authService";
 
 const adminNavItems = [
-  { to: "/admin", label: "📊 Dashboard", end: true },
-  { to: "/admin/appointments", label: "📅 Lịch hẹn" },
-  { to: "/admin/services", label: "🔧 Dịch vụ" },
-  { to: "/admin/combos", label: "📦 Combo" },
-  { to: "/admin/spare-parts", label: "🏪 Kho phụ tùng" },
-  { to: "/admin/stock", label: "🏪 Nhập kho" },
-  { to: "/admin/vouchers", label: "🎟️ Voucher" },
-  { to: "/admin/staff", label: "👤 Nhân viên" },
-  { to: "/admin/blog", label: "📝 Blog" },
+  { to: "/admin", label: "Dashboard", end: true },
+  { to: "/admin/appointments", label: "Lịch hẹn" },
+  { to: "/admin/services", label: "Dịch vụ" },
+  { to: "/admin/combos", label: "Combo" },
+  { to: "/admin/spare-parts", label: "Kho phụ tùng" },
+  { to: "/admin/stock", label: "Nhập kho" },
+  { to: "/admin/vouchers", label: "Voucher" },
+  { to: "/admin/staff", label: "Nhân viên" },
+  { to: "/admin/blog", label: "Blog" },
 ];
 
 export default function AdminLayout() {

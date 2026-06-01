@@ -125,7 +125,7 @@ export default function MyTasks() {
                         {o.vehicle?.licensePlate}
                       </p>
                     </td>
-                    <td className="p-3 text-xs">
+                    <td className="p-3 text-xs max-w-[280px]">
                       {o.services?.length > 0
                         ? o.services
                             .map((sv) => sv.service?.serviceName)
@@ -135,8 +135,8 @@ export default function MyTasks() {
                         {o.items?.length || 0} phụ tùng
                       </p>
                     </td>
-                    <td className="p-3">
-                      <span className={`px-2 py-1 rounded text-xs ${s.badge}`}>
+                    <td className="p-3 min-w-[100px]">
+                      <span className={`py-1 rounded text-xs ${s.badge}`}>
                         {s.label}
                       </span>
                     </td>

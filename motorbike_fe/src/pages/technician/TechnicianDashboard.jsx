@@ -42,29 +42,21 @@ export default function TechnicianDashboard() {
         <StatCard
           label="Lịch hẹn hôm nay"
           value={data?.todayAppointments ?? 0}
-          icon="📅"
-          bg="bg-blue-50"
           loading={isLoading}
         />
         <StatCard
           label="Phiếu đang phụ trách"
           value={data?.inProgressOrders ?? 0}
-          icon="🔧"
-          bg="bg-orange-50"
           loading={isLoading}
         />
         <StatCard
           label="Hoàn thành hôm nay"
           value={data?.completedToday ?? 0}
-          icon="✅"
-          bg="bg-emerald-50"
           loading={isLoading}
         />
         <StatCard
           label="Lịch hẹn sắp tới"
           value={data?.upcomingAppointments?.length ?? 0}
-          icon="🕒"
-          bg="bg-purple-50"
           loading={isLoading}
         />
       </div>

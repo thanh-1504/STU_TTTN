@@ -50,29 +50,21 @@ export default function ReceptionistDashboard() {
         <StatCard
           label="Lịch hẹn hôm nay"
           value={data?.todayAppointments ?? 0}
-          icon="📅"
-          bg="bg-blue-50"
           loading={isLoading}
         />
         <StatCard
           label="Xe đang sửa"
           value={data?.inProgressOrders ?? 0}
-          icon="🔧"
-          bg="bg-orange-50"
           loading={isLoading}
         />
         <StatCard
           label="Phiếu chờ thanh toán"
           value={data?.pendingPayment ?? 0}
-          icon="💳"
-          bg="bg-yellow-50"
           loading={isLoading}
         />
         <StatCard
           label="Doanh thu hôm nay"
           value={`${Number(data?.todayRevenue ?? 0).toLocaleString("vi-VN")}đ`}
-          icon="💰"
-          bg="bg-emerald-50"
           loading={isLoading}
         />
       </div>
