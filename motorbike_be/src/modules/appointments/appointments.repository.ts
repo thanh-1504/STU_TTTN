@@ -37,7 +37,7 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
    * Chỉ tính các lịch PENDING / CONFIRMED (không tính CANCELLED / COMPLETED).
    */
   async countByTimeSlot(date: Date, hour: number): Promise<number> {
-    // hour được truyền vào là giờ VN, cần map về khoảng UTC tương ứng
+    // hour được truyền vào là giờ VN, cần map về khoảng UTC tương ưởng
     const slotStart = new Date(date);
     slotStart.setUTCHours(hour - 7, 0, 0, 0); // VN 7h = UTC 0h
 
@@ -57,9 +57,9 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
    *
    * Logic:
    * 1. Tìm WorkSchedule của ngày đó (nếu có) để lấy maxVehicles.
-   * Nếu không có → dùng DEFAULT_MAX_PER_SLOT.
+   *    Nếu không có → dùng DEFAULT_MAX_PER_SLOT.
    * 2. Duyệt từng giờ trong khung làm việc của WorkSchedule
-   * (hoặc WORK_HOURS_START→WORK_HOURS_END nếu không có).
+   *    (hoặc WORK_HOURS_START→WORK_HOURS_END nếu không có).
    * 3. Slot nào count < max → còn chỗ.
    *
    * @returns Mảng chuỗi giờ còn trống, dạng "HH:00"
@@ -72,7 +72,7 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
     const vnMonth = vnDate.getUTCMonth();
     const vnDay = vnDate.getUTCDate();
 
-    // dayStart/dayEnd theo UTC tương ứng với 00:00–23:59 VN
+    // dayStart/dayEnd theo UTC tương ưởng với 00:00–23:59 VN
     const dayStart = new Date(Date.UTC(vnYear, vnMonth, vnDay, 0, 0, 0, 0) - VN_OFFSET_MS);
     const dayEnd = new Date(Date.UTC(vnYear, vnMonth, vnDay, 23, 59, 59, 999) - VN_OFFSET_MS);
 
@@ -133,7 +133,7 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
     excludeId?: number,
   ): Promise<boolean> {
     const vnHour = getVNHour(date);
-    // Tính slotStart/slotEnd theo UTC tương ứng với giờ VN
+    // Tính slotStart/slotEnd theo UTC tương ưởng với giờ VN
     const slotStart = new Date(date);
     slotStart.setUTCHours(vnHour - 7, 0, 0, 0);
 
@@ -179,9 +179,9 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
         status: AppointmentStatus.PENDING,
         ...(serviceIds.length > 0
           ? {
-              appointment_services: {
+              services: {
                 createMany: {
-                  data: serviceIds.map((serviceId) => ({ service_id: serviceId })), // Fix mapping name
+                  data: serviceIds.map((serviceId) => ({ serviceId })),
                   skipDuplicates: true,
                 },
               },
@@ -191,7 +191,7 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
       include: {
         customer: true,
         vehicle: true,
-        appointment_services: { include: { services: true } }, // Fix mapping name sang model viết thường
+        services: { include: { service: true } },
       },
     });
   }
@@ -216,7 +216,7 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
       include: {
         vehicle: true,
         technician: { select: { id: true, fullname: true, username: true } },
-        appointment_services: { include: { services: true } }, // Fix mapping name
+        services: { include: { service: true } },
       },
       orderBy: { appointmentTime: 'desc' },
     });
@@ -264,7 +264,7 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
         customer: { select: { id: true, customerName: true, phone: true } },
         vehicle: { select: { id: true, licensePlate: true, brand: true, vehicleType: true } },
         technician: { select: { id: true, fullname: true } },
-        appointment_services: { include: { services: true } }, // Fix mapping name
+        services: { include: { service: true } },
       },
       orderBy: { appointmentTime: 'asc' },
     });
@@ -278,7 +278,7 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
         customer: true,
         vehicle: true,
         technician: { select: { id: true, fullname: true, phone: true } },
-        appointment_services: { include: { services: true } }, // Fix mapping name
+        services: { include: { service: true } },
       },
     });
   }

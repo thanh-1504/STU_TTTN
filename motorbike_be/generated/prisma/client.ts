@@ -65,6 +65,11 @@ export type Vehicle = Prisma.VehicleModel
  */
 export type Appointment = Prisma.AppointmentModel
 /**
+ * Model AppointmentService
+ * 
+ */
+export type AppointmentService = Prisma.AppointmentServiceModel
+/**
  * Model RepairOrder
  * 
  */
@@ -149,8 +154,3 @@ export type WorkSchedule = Prisma.WorkScheduleModel
  * 
  */
 export type SystemConfig = Prisma.SystemConfigModel
-/**
- * Model appointment_services
- * 
- */
-export type appointment_services = Prisma.appointment_servicesModel

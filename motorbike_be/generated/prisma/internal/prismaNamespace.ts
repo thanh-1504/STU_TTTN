@@ -389,6 +389,7 @@ export const ModelName = {
   Customer: 'Customer',
   Vehicle: 'Vehicle',
   Appointment: 'Appointment',
+  AppointmentService: 'AppointmentService',
   RepairOrder: 'RepairOrder',
   Service: 'Service',
   Combo: 'Combo',
@@ -405,8 +406,7 @@ export const ModelName = {
   Review: 'Review',
   Notification: 'Notification',
   WorkSchedule: 'WorkSchedule',
-  SystemConfig: 'SystemConfig',
-  appointment_services: 'appointment_services'
+  SystemConfig: 'SystemConfig'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -422,7 +422,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "role" | "user" | "customer" | "vehicle" | "appointment" | "repairOrder" | "service" | "combo" | "comboService" | "repairOrderService" | "sparePart" | "repairOrderItem" | "importOrder" | "importItem" | "voucher" | "blogPost" | "blogCategory" | "banner" | "review" | "notification" | "workSchedule" | "systemConfig" | "appointment_services"
+    modelProps: "role" | "user" | "customer" | "vehicle" | "appointment" | "appointmentService" | "repairOrder" | "service" | "combo" | "comboService" | "repairOrderService" | "sparePart" | "repairOrderItem" | "importOrder" | "importItem" | "voucher" | "blogPost" | "blogCategory" | "banner" | "review" | "notification" | "workSchedule" | "systemConfig"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -793,6 +793,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.AppointmentCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.AppointmentCountAggregateOutputType> | number
+        }
+      }
+    }
+    AppointmentService: {
+      payload: Prisma.$AppointmentServicePayload<ExtArgs>
+      fields: Prisma.AppointmentServiceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AppointmentServiceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentServicePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AppointmentServiceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentServicePayload>
+        }
+        findFirst: {
+          args: Prisma.AppointmentServiceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentServicePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AppointmentServiceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentServicePayload>
+        }
+        findMany: {
+          args: Prisma.AppointmentServiceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentServicePayload>[]
+        }
+        create: {
+          args: Prisma.AppointmentServiceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentServicePayload>
+        }
+        createMany: {
+          args: Prisma.AppointmentServiceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AppointmentServiceCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentServicePayload>[]
+        }
+        delete: {
+          args: Prisma.AppointmentServiceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentServicePayload>
+        }
+        update: {
+          args: Prisma.AppointmentServiceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentServicePayload>
+        }
+        deleteMany: {
+          args: Prisma.AppointmentServiceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AppointmentServiceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AppointmentServiceUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentServicePayload>[]
+        }
+        upsert: {
+          args: Prisma.AppointmentServiceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentServicePayload>
+        }
+        aggregate: {
+          args: Prisma.AppointmentServiceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAppointmentService>
+        }
+        groupBy: {
+          args: Prisma.AppointmentServiceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AppointmentServiceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AppointmentServiceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AppointmentServiceCountAggregateOutputType> | number
         }
       }
     }
@@ -2054,80 +2128,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    appointment_services: {
-      payload: Prisma.$appointment_servicesPayload<ExtArgs>
-      fields: Prisma.appointment_servicesFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.appointment_servicesFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$appointment_servicesPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.appointment_servicesFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$appointment_servicesPayload>
-        }
-        findFirst: {
-          args: Prisma.appointment_servicesFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$appointment_servicesPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.appointment_servicesFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$appointment_servicesPayload>
-        }
-        findMany: {
-          args: Prisma.appointment_servicesFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$appointment_servicesPayload>[]
-        }
-        create: {
-          args: Prisma.appointment_servicesCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$appointment_servicesPayload>
-        }
-        createMany: {
-          args: Prisma.appointment_servicesCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.appointment_servicesCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$appointment_servicesPayload>[]
-        }
-        delete: {
-          args: Prisma.appointment_servicesDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$appointment_servicesPayload>
-        }
-        update: {
-          args: Prisma.appointment_servicesUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$appointment_servicesPayload>
-        }
-        deleteMany: {
-          args: Prisma.appointment_servicesDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.appointment_servicesUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.appointment_servicesUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$appointment_servicesPayload>[]
-        }
-        upsert: {
-          args: Prisma.appointment_servicesUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$appointment_servicesPayload>
-        }
-        aggregate: {
-          args: Prisma.Appointment_servicesAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateAppointment_services>
-        }
-        groupBy: {
-          args: Prisma.appointment_servicesGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.Appointment_servicesGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.appointment_servicesCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.Appointment_servicesCountAggregateOutputType> | number
-        }
-      }
-    }
   }
 } & {
   other: {
@@ -2240,6 +2240,14 @@ export const AppointmentScalarFieldEnum = {
 } as const
 
 export type AppointmentScalarFieldEnum = (typeof AppointmentScalarFieldEnum)[keyof typeof AppointmentScalarFieldEnum]
+
+
+export const AppointmentServiceScalarFieldEnum = {
+  appointmentId: 'appointmentId',
+  serviceId: 'serviceId'
+} as const
+
+export type AppointmentServiceScalarFieldEnum = (typeof AppointmentServiceScalarFieldEnum)[keyof typeof AppointmentServiceScalarFieldEnum]
 
 
 export const RepairOrderScalarFieldEnum = {
@@ -2475,14 +2483,6 @@ export const SystemConfigScalarFieldEnum = {
 } as const
 
 export type SystemConfigScalarFieldEnum = (typeof SystemConfigScalarFieldEnum)[keyof typeof SystemConfigScalarFieldEnum]
-
-
-export const Appointment_servicesScalarFieldEnum = {
-  appointment_id: 'appointment_id',
-  service_id: 'service_id'
-} as const
-
-export type Appointment_servicesScalarFieldEnum = (typeof Appointment_servicesScalarFieldEnum)[keyof typeof Appointment_servicesScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -2832,6 +2832,7 @@ export type GlobalOmitConfig = {
   customer?: Prisma.CustomerOmit
   vehicle?: Prisma.VehicleOmit
   appointment?: Prisma.AppointmentOmit
+  appointmentService?: Prisma.AppointmentServiceOmit
   repairOrder?: Prisma.RepairOrderOmit
   service?: Prisma.ServiceOmit
   combo?: Prisma.ComboOmit
@@ -2849,7 +2850,6 @@ export type GlobalOmitConfig = {
   notification?: Prisma.NotificationOmit
   workSchedule?: Prisma.WorkScheduleOmit
   systemConfig?: Prisma.SystemConfigOmit
-  appointment_services?: Prisma.appointment_servicesOmit
 }
 
 /* Types for Logging */

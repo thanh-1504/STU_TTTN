@@ -77,7 +77,7 @@ export default function CreateRepairOrder() {
 
   const { data: appointmentDetail } = useQuery({
     queryKey: ["receptionist-appointment-detail", appointmentId],
-    queryFn: () => getReceptionistAppointmentDetail(appointmentId),
+queryFn: () => getReceptionistAppointmentDetail(appointmentId),
     enabled: Boolean(appointmentId),
     onError: (e) =>
       notify.error(e.response?.data?.message || "Không tải được lịch hẹn"),
@@ -178,7 +178,7 @@ export default function CreateRepairOrder() {
     setItems([
       ...items,
       {
-        sparePartId: p.id,
+sparePartId: p.id,
         quantity: 1,
         unitPrice: Number(p.sellingPrice),
         name: p.partName,
@@ -273,7 +273,7 @@ export default function CreateRepairOrder() {
               value={phoneSearch}
               onChange={(e) => setPhoneSearch(e.target.value)}
               placeholder="SĐT khách"
-              className="border p-2 rounded flex-1"
+className="border p-2 rounded flex-1"
             />
             <button type="button" onClick={searchCustomer} className="bg-zinc-800 text-white px-4 rounded">
               Tìm
@@ -355,7 +355,7 @@ export default function CreateRepairOrder() {
               />
               <select
                 value={newVehicle.vehicleType}
-                onChange={(e) =>
+onChange={(e) =>
                   setNewVehicle({ ...newVehicle, vehicleType: e.target.value })
                 }
                 className="border p-2 rounded"
@@ -434,7 +434,7 @@ export default function CreateRepairOrder() {
                     <td className="p-2">
                       <button
                         type="button"
-                        onClick={() => setServices(services.filter((_, i) => i !== idx))}
+onClick={() => setServices(services.filter((_, i) => i !== idx))}
                         className="text-red-600"
                       >
                         ✕
@@ -508,7 +508,7 @@ export default function CreateRepairOrder() {
                       >
                         ✕
                       </button>
-                    </td>
+</td>
                   </tr>
                 ))}
               </tbody>
