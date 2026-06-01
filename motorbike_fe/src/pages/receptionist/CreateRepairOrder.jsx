@@ -1,9 +1,10 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../../api/axios";
 import {
   createRepairOrder,
+  getReceptionistAppointmentDetail,
   getReceptionistCustomers,
   getReceptionistTechnicians,
 } from "../../api/receptionistService";
@@ -17,8 +18,21 @@ const VEHICLE_TYPES = [
   { value: "BIG", label: "PKL" },
 ];
 
+const resolveServicePrice = (service, vehicleType) => {
+  if (!service) return 0;
+  if (vehicleType === "SCOOTER") return Number(service.priceScooter ?? service.priceManual ?? 0);
+  if (vehicleType === "BIG") return Number(service.priceMoto ?? service.priceManual ?? 0);
+  return Number(service.priceManual ?? 0);
+};
+
 export default function CreateRepairOrder() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const appointmentIdParam = searchParams.get("appointmentId");
+  const appointmentId = appointmentIdParam && !Number.isNaN(Number(appointmentIdParam))
+    ? Number(appointmentIdParam)
+    : null;
+  const hasPrefilledFromAppointment = useRef(false);
   const { notify, notifications, NotificationContainer, removeNotification } =
     useNotification();
 
@@ -61,6 +75,72 @@ export default function CreateRepairOrder() {
     queryFn: () => getSpareParts(),
   });
 
+  const { data: appointmentDetail } = useQuery({
+    queryKey: ["receptionist-appointment-detail", appointmentId],
+queryFn: () => getReceptionistAppointmentDetail(appointmentId),
+    enabled: Boolean(appointmentId),
+    onError: (e) =>
+      notify.error(e.response?.data?.message || "Không tải được lịch hẹn"),
+  });
+
+  const loadVehiclesForCustomer = async (customerId, preferredVehicleId) => {
+    const vs = await api.get(`/vehicles/by-customer?customerId=${customerId}`);
+    const list = vs.data || [];
+    setVehicles(list);
+    if (preferredVehicleId) {
+      setVehicleId(String(preferredVehicleId));
+    }
+    return list;
+  };
+
+  useEffect(() => {
+    if (!appointmentDetail || hasPrefilledFromAppointment.current) return;
+
+    if (appointmentDetail.customer) {
+      setCustomer(appointmentDetail.customer);
+      setPhoneSearch(appointmentDetail.customer.phone || "");
+      setNewCustomer({ customerName: "", address: "" });
+      setUseNewVehicle(false);
+      if (appointmentDetail.customer.id) {
+        loadVehiclesForCustomer(
+          appointmentDetail.customer.id,
+          appointmentDetail.vehicle?.id,
+        ).catch(() => setVehicles([]));
+      }
+    }
+
+    if (appointmentDetail.vehicle?.id) {
+      setVehicleId(String(appointmentDetail.vehicle.id));
+    }
+
+    if (appointmentDetail.technician?.id) {
+      setTechnicianId(String(appointmentDetail.technician.id));
+    }
+
+    if (appointmentDetail.symptoms) {
+      setSymptoms(appointmentDetail.symptoms);
+    }
+
+    const apptServices = Array.isArray(appointmentDetail.services)
+      ? appointmentDetail.services
+          .map((s) => s.service || s)
+          .filter(Boolean)
+      : [];
+
+    if (apptServices.length > 0) {
+      const vehicleType = appointmentDetail.vehicle?.vehicleType;
+      setServices(
+        apptServices.map((svc) => ({
+          serviceId: svc.id,
+          appliedPrice: resolveServicePrice(svc, vehicleType),
+          name: svc.serviceName,
+        })),
+      );
+    }
+
+    hasPrefilledFromAppointment.current = true;
+  }, [appointmentDetail]);
+
   const searchCustomer = async () => {
     if (!phoneSearch.trim()) return;
     try {
@@ -73,8 +153,8 @@ export default function CreateRepairOrder() {
       }
       const c = list[0];
       setCustomer(c);
-      const vs = await api.get(`/vehicles/by-customer?customerId=${c.id}`);
-      setVehicles(vs.data || []);
+      setUseNewVehicle(false);
+      await loadVehiclesForCustomer(c.id);
       notify.success(`Đã tìm thấy: ${c.customerName}`);
     } catch (e) {
       notify.error(e.response?.data?.message || "Lỗi tìm khách");
@@ -98,7 +178,7 @@ export default function CreateRepairOrder() {
     setItems([
       ...items,
       {
-        sparePartId: p.id,
+sparePartId: p.id,
         quantity: 1,
         unitPrice: Number(p.sellingPrice),
         name: p.partName,
@@ -140,6 +220,7 @@ export default function CreateRepairOrder() {
     }
 
     const payload = {
+      ...(appointmentId ? { appointmentId } : {}),
       technicianId: Number(technicianId),
       services: services.map((s) => ({
         serviceId: s.serviceId,
@@ -192,7 +273,7 @@ export default function CreateRepairOrder() {
               value={phoneSearch}
               onChange={(e) => setPhoneSearch(e.target.value)}
               placeholder="SĐT khách"
-              className="border p-2 rounded flex-1"
+className="border p-2 rounded flex-1"
             />
             <button type="button" onClick={searchCustomer} className="bg-zinc-800 text-white px-4 rounded">
               Tìm
@@ -274,7 +355,7 @@ export default function CreateRepairOrder() {
               />
               <select
                 value={newVehicle.vehicleType}
-                onChange={(e) =>
+onChange={(e) =>
                   setNewVehicle({ ...newVehicle, vehicleType: e.target.value })
                 }
                 className="border p-2 rounded"
@@ -353,7 +434,7 @@ export default function CreateRepairOrder() {
                     <td className="p-2">
                       <button
                         type="button"
-                        onClick={() => setServices(services.filter((_, i) => i !== idx))}
+onClick={() => setServices(services.filter((_, i) => i !== idx))}
                         className="text-red-600"
                       >
                         ✕
@@ -427,7 +508,7 @@ export default function CreateRepairOrder() {
                       >
                         ✕
                       </button>
-                    </td>
+</td>
                   </tr>
                 ))}
               </tbody>

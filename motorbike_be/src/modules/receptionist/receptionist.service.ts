@@ -98,10 +98,20 @@ export class ReceptionistService {
     status?: string;
     date?: string;
     technicianId?: number;
+    search?: string;
   }) {
     const where: Prisma.AppointmentWhereInput = {};
     if (params.status) where.status = params.status as AppointmentStatus;
     if (params.technicianId) where.technicianId = params.technicianId;
+    const search = params.search?.trim();
+    if (search) {
+      where.customer = {
+        OR: [
+          { phone: { contains: search, mode: 'insensitive' } },
+          { customerName: { contains: search, mode: 'insensitive' } },
+        ],
+      };
+    }
     if (params.date) {
       const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(params.date);
       if (!m)
@@ -129,6 +139,14 @@ export class ReceptionistService {
         technician: { select: { id: true, fullname: true } },
       },
     });
+  }
+
+  async getAppointmentDetail(id: number) {
+    const appt = await this.appointmentsRepository.findById(id);
+    if (!appt) {
+      throw new NotFoundException(`Không tìm thấy lịch hẹn #${id}`);
+    }
+    return appt;
   }
 
   async createAppointment(dto: CreateAppointmentByStaffDto) {

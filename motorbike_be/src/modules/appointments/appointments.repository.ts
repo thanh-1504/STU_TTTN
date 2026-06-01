@@ -166,7 +166,9 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
     vehicleId?: number;
     symptoms?: string;
     notes?: string;
+    serviceIds?: number[];
   }): Promise<Appointment> {
+    const serviceIds = data.serviceIds ?? [];
     return this.prisma.appointment.create({
       data: {
         appointmentTime: data.appointmentTime,
@@ -175,10 +177,21 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
         symptoms: data.symptoms ?? null,
         notes: data.notes ?? null,
         status: AppointmentStatus.PENDING,
+        ...(serviceIds.length > 0
+          ? {
+              services: {
+                createMany: {
+                  data: serviceIds.map((serviceId) => ({ serviceId })),
+                  skipDuplicates: true,
+                },
+              },
+            }
+          : {}),
       },
       include: {
         customer: true,
         vehicle: true,
+        services: { include: { service: true } },
       },
     });
   }
@@ -203,6 +216,7 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
       include: {
         vehicle: true,
         technician: { select: { id: true, fullname: true, username: true } },
+        services: { include: { service: true } },
       },
       orderBy: { appointmentTime: 'desc' },
     });
@@ -250,6 +264,7 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
         customer: { select: { id: true, customerName: true, phone: true } },
         vehicle: { select: { id: true, licensePlate: true, brand: true, vehicleType: true } },
         technician: { select: { id: true, fullname: true } },
+        services: { include: { service: true } },
       },
       orderBy: { appointmentTime: 'asc' },
     });
@@ -263,6 +278,7 @@ export class AppointmentsRepository extends BaseRepository<Appointment> {
         customer: true,
         vehicle: true,
         technician: { select: { id: true, fullname: true, phone: true } },
+        services: { include: { service: true } },
       },
     });
   }

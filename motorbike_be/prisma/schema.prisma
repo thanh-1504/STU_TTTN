@@ -39,22 +39,22 @@ model User {
 }
 
 model Customer {
-  id            Int            @id @default(autoincrement())
-  phone         String         @unique @db.VarChar(15)
-  customerName  String         @map("customer_name") @db.VarChar(100)
-  address       String?
-  totalSpent    Decimal        @default(0) @map("total_spent") @db.Decimal(15, 2)
-  createdAt     DateTime       @default(now()) @map("created_at")
-  updatedAt     DateTime       @updatedAt @map("updated_at")
-  email         String?        @unique @db.VarChar(255)
-   notificationEmail String?  @map("notification_email") @db.VarChar(255)
-  password      String?        @db.VarChar(255)
-  avatarUrl     String?        @map("avatar_url") @db.VarChar(500)
-  appointments  Appointment[]
-  notifications Notification[]
-  repairOrders  RepairOrder[]
-  reviews       Review[]
-  vehicles      Vehicle[]
+  id                Int            @id @default(autoincrement())
+  phone             String         @unique @db.VarChar(15)
+  customerName      String         @map("customer_name") @db.VarChar(100)
+  address           String?
+  totalSpent        Decimal        @default(0) @map("total_spent") @db.Decimal(15, 2)
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+  email             String?        @unique @db.VarChar(255)
+  notificationEmail String?        @map("notification_email") @db.VarChar(255) // Tính năng Email của bạn
+  password          String?        @db.VarChar(255)
+  avatarUrl         String?        @map("avatar_url") @db.VarChar(500)
+  appointments      Appointment[]
+  notifications     Notification[]
+  repairOrders      RepairOrder[]
+  reviews           Review[]
+  vehicles          Vehicle[]
 
   @@map("customers")
 }
@@ -89,13 +89,24 @@ model Appointment {
   customerId           Int                    @map("customer_id")
   vehicleId            Int?                   @map("vehicle_id")
   technicianId         Int?                   @map("technician_id")
-  appointment_services appointment_services[]
-  customer             Customer               @relation(fields: [customerId], references: [id])
-  technician           User?                  @relation("TechnicianAppointments", fields: [technicianId], references: [id])
-  vehicle              Vehicle?               @relation(fields: [vehicleId], references: [id])
-  repairOrder          RepairOrder?
+  services   AppointmentService[]
+  customer   Customer               @relation(fields: [customerId], references: [id])
+  technician User?                  @relation("TechnicianAppointments", fields: [technicianId], references: [id])
+  vehicle    Vehicle?               @relation(fields: [vehicleId], references: [id])
+  repairOrder RepairOrder?
 
   @@map("appointments")
+}
+
+model AppointmentService {
+ appointmentId Int @map("appointment_id")
+  serviceId     Int @map("service_id")
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id])
+  service     Service     @relation(fields: [serviceId], references: [id])
+
+  @@id([appointmentId, serviceId])
+  @@map("appointment_services")
 }
 
 model RepairOrder {
@@ -131,18 +142,18 @@ model RepairOrder {
 }
 
 model Service {
-  id                   Int                    @id @default(autoincrement())
-  serviceName          String                 @unique @map("service_name") @db.VarChar(255)
-  description          String?
-  imageUrl             String?                @map("image_url") @db.VarChar(500)
-  durationMinutes      Int                    @map("duration_minutes")
-  priceManual          Decimal                @map("price_manual") @db.Decimal(15, 2)
-  priceScooter         Decimal                @map("price_scooter") @db.Decimal(15, 2)
-  priceMoto            Decimal                @map("price_moto") @db.Decimal(15, 2)
-  isActive             Boolean                @default(true) @map("is_active")
-  createdAt            DateTime               @default(now()) @map("created_at")
-  updatedAt            DateTime               @updatedAt @map("updated_at")
-  appointment_services appointment_services[]
+  id              Int                    @id @default(autoincrement())
+  serviceName     String                 @unique @map("service_name") @db.VarChar(255)
+  description     String?                @db.Text // Tối ưu kiểu dữ liệu Text của Kiên
+  imageUrl        String?                @map("image_url") @db.VarChar(500)
+  durationMinutes Int                    @map("duration_minutes")
+  priceManual     Decimal                @map("price_manual") @db.Decimal(15, 2)
+  priceScooter    Decimal                @map("price_scooter") @db.Decimal(15, 2)
+  priceMoto       Decimal                @map("price_moto") @db.Decimal(15, 2)
+  isActive        Boolean                @default(true) @map("is_active")
+  createdAt       DateTime               @default(now()) @map("created_at")
+  updatedAt       DateTime               @updatedAt @map("updated_at")
+  appointmentServices AppointmentService[]
   comboServices        ComboService[]
   repairOrderServices  RepairOrderService[]
 
@@ -349,14 +360,6 @@ model SystemConfig {
   @@map("system_configs")
 }
 
-model appointment_services {
-  appointment_id Int
-  service_id     Int
-  appointments   Appointment @relation(fields: [appointment_id], references: [id], onDelete: Cascade)
-  services       Service     @relation(fields: [service_id], references: [id])
-
-  @@id([appointment_id, service_id])
-}
 
 enum RoleName {
   ADMIN

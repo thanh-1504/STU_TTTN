@@ -59,7 +59,7 @@ export class AppointmentsService {
     };
   }
 
-  async createByCustomer(
+ async createByCustomer(
     dto: CreateAppointmentDto,
     customerId: number,
   ): Promise<Appointment> {
@@ -77,15 +77,36 @@ export class AppointmentsService {
       );
     }
 
+    // --- Giữ lại Logic kiểm tra dịch vụ hợp lệ của Kiên ---
+    const serviceIds = Array.isArray(dto.serviceIds)
+      ? Array.from(new Set(dto.serviceIds))
+      : [];
+
+    if (serviceIds.length > 0) {
+      const existing = await this.prisma.service.findMany({
+        where: { id: { in: serviceIds } },
+        select: { id: true },
+      });
+      const existingIds = new Set(existing.map((s) => s.id));
+      const missing = serviceIds.filter((id) => !existingIds.has(id));
+      if (missing.length > 0) {
+        throw new BadRequestException(
+          `Dịch vụ không tồn tại: ID ${missing.join(', ')}`,
+        );
+      }
+    }
+
+    // --- Gán kết quả vào biến appointment để chuẩn bị gửi Email theo nhánh main ---
     const appointment = await this.appointmentsRepository.createAppointment({
       appointmentTime: appointmentDate,
       customerId,
       vehicleId: dto.vehicleId,
       symptoms: dto.symptoms,
       notes: dto.notes,
+      serviceIds,
     });
 
-    // Gửi mail xác nhận
+    // --- Giữ lại tính năng gửi mail xác nhận của bạn trên main ---
     const customer = await this.prisma.customer.findUnique({
       where: { id: customerId },
       select: { email: true, notificationEmail: true, customerName: true },

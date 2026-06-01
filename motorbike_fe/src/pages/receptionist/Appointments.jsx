@@ -27,6 +27,7 @@ export default function ReceptionistAppointments() {
   const [statusFilter, setStatusFilter] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [techFilter, setTechFilter] = useState("");
+  const [searchFilter, setSearchFilter] = useState("");
   const [assignSelections, setAssignSelections] = useState({});
   const [rescheduleTarget, setRescheduleTarget] = useState(null);
   const [rescheduleDate, setRescheduleDate] = useState("");
@@ -42,12 +43,19 @@ export default function ReceptionistAppointments() {
   });
 
   const { data: appointments = [], isLoading } = useQuery({
-    queryKey: ["receptionist-appointments", statusFilter, dateFilter, techFilter],
+    queryKey: [
+      "receptionist-appointments",
+      statusFilter,
+      dateFilter,
+      techFilter,
+      searchFilter,
+    ],
     queryFn: () =>
       getReceptionistAppointments({
         status: statusFilter || undefined,
         date: dateFilter || undefined,
         technicianId: techFilter || undefined,
+        search: searchFilter || undefined,
       }),
   });
 
@@ -183,7 +191,14 @@ export default function ReceptionistAppointments() {
         </Link>
       </div>
 
-      <div className="bg-white p-4 border rounded mb-6 grid md:grid-cols-4 gap-4">
+      <div className="bg-white p-4 border rounded mb-6 grid md:grid-cols-5 gap-4">
+        <input
+          type="text"
+          value={searchFilter}
+          onChange={(e) => setSearchFilter(e.target.value)}
+          placeholder="Tìm tên hoặc SĐT"
+          className="border p-2 rounded"
+        />
         <input
           type="date"
           value={dateFilter}
