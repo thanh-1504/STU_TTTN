@@ -1,10 +1,17 @@
-// mail.service.ts
-import { Injectable } from '@nestjs/common';
-import { Resend } from 'resend';
+import { BrevoClient, BrevoEnvironment } from '@getbrevo/brevo';
+import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class MailService {
-  private resend = new Resend(process.env.RESEND_API_KEY);
+  private readonly logger = new Logger(MailService.name);
+  private client: BrevoClient;
+
+  constructor() {
+    this.client = new BrevoClient({
+      apiKey: process.env.BREVO_API_KEY!,
+      environment: BrevoEnvironment.Default,
+    });
+  }
 
   async sendAppointmentConfirmation(
     to: string,
@@ -22,11 +29,11 @@ export class MailService {
       minute: '2-digit',
     });
 
-    await this.resend.emails.send({
-      from: 'Shop2Bánh <onboarding@resend.dev>', // dùng domain mặc định của Resend khi chưa có domain riêng
-      to,
+    await this.client.transactionalEmails.sendTransacEmail({
+      sender: { email: 'duongthanhdataz09@gmail.com', name: 'Shop2Bánh' },
+      to: [{ email: to }],
       subject: 'Xác nhận đặt lịch - Shop2Bánh',
-      html: `
+      htmlContent: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: #c0392b; padding: 24px; text-align: center;">
             <h1 style="color: white; margin: 0;">Shop2Bánh</h1>
